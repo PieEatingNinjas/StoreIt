@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="StoreIt.Maui.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:models="clr-namespace:StoreIt.Maui.Models"
+    xmlns:local="clr-namespace:StoreIt.Maui.Views"
+    xmlns:vm="clr-namespace:StoreIt.Maui.ViewModels"
+    x:Name="mainPage"
+    Title="Mijn Kaarten"
+    x:DataType="vm:MainViewModel">
+    <ContentPage.Resources>
+        <Style TargetType="Label" x:Key="MessageLabelStyle">
+            <Setter Property="TextColor" Value="{AppThemeBinding Light=Gray,
+                                                    Dark=LightGray}" />
+        </Style>
+        <Style TargetType="Border" BasedOn="{StaticResource CardBorderStyle}" x:Key="CardBorderWithShadowStyle">
+            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}" />
+            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource VeryLightGray}, Dark={StaticResource Gray600}}" />
+            <Setter Property="Shadow">
+                <Setter.Value>
+                    <Shadow
+                        Brush="{AppThemeBinding Light=Black, Dark=Transparent}"
+                        Opacity="0.1"
+                        Radius="8"
+                        Offset="0,2" />
+                </Setter.Value>
+            </Setter>
+        </Style> 
+    </ContentPage.Resources>
+    <Grid>
+        <CollectionView
+            BackgroundColor="transparent"
+            ItemSizingStrategy="MeasureAllItems"
+            ItemsSource="{Binding Cards}"
+            VerticalOptions="Fill">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout
+                    HorizontalOptions="Center"
+                    Spacing="20"
+                    VerticalOptions="Center">
+                    <Label
+                        FontSize="60"
+                        HorizontalOptions="Center"
+                        Text="👋" />
+
+                    <Label
+                        FontSize="18"
+                        HorizontalOptions="Center"
+                        Text="Geen klantenkaarten gevonden"
+                        Style="{StaticResource MessageLabelStyle}" />
+
+                    <Label
+                        FontSize="14"
+                        HorizontalOptions="Center"
+                        Text="Tik op de + knop om je eerste kaart toe te voegen"
+                        Style="{StaticResource MessageLabelStyle}" />
+
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:CustomerCard">
+                    <ContentView x:Name="element"
+                        Margin="10,5"
+                        Padding="0"
+                        BackgroundColor="transparent">
+                        <Border Style="{StaticResource CardBorderWithShadowStyle}" Margin="10,5">
+                            <Grid
+                                Padding="0"
+                                ColumnDefinitions="8,*,Auto,Auto"
+                                RowDefinitions="Auto, Auto">
+
+                                <!--  Color Strip  -->
+                                <BoxView
+                                    Grid.RowSpan="2"
+                                    Grid.Column="0"
+                                    Margin="0,0,0,-10"
+                                    BackgroundColor="{Binding Color}"
+                                    WidthRequest="8" />
+
+                                <!--  Card Content  -->
+                                <VerticalStackLayout
+                                    Grid.Column="1"
+                                    Padding="15,12"
+                                    Spacing="4">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Text="{Binding Name}"
+                                        TextColor="{AppThemeBinding Light=Black,
+                                                                    Dark=White}" />
+
+                                    <Label
+                                        FontSize="14"
+                                        IsVisible="{Binding Description, Converter={StaticResource IsStringNotNullOrEmptyConverter}}"
+                                        Text="{Binding Description}"
+                                        TextColor="{AppThemeBinding Light=Gray,
+                                                                    Dark=LightGray}" />
+                                </VerticalStackLayout>
+
+                                <!--  Favorite Button  -->
+                                <Button
+                                    Grid.Column="3"
+                                    Padding="8"
+                                    BackgroundColor="Transparent"
+                                    Command="{Binding ViewModel.ToggleFavoriteCommand, Source={x:Reference mainPage}, x:DataType=local:MainPage}"
+                                    CommandParameter="{Binding .}"
+                                    FontSize="18"
+                                    HeightRequest="40"
+                                    Text="{Binding IsFavorite, Converter={StaticResource BoolToStarConverter}}"
+                                    TextColor="{Binding IsFavorite, Converter={StaticResource BoolToColorConverter}}"
+                                    WidthRequest="40" />
+
+                                <!--  Last Used  -->
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Margin="15,0,15,12"
+                                    FontSize="11"
+                                    Text="{Binding LastUsed, StringFormat='Laatst gebruikt: {0:dd MMM yyyy}'}"
+                                    TextColor="{AppThemeBinding Light=#999,
+                                                                Dark=#777}" />
+
+                                <!--  Tap Gesture  -->
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer 
+                                        Command="{Binding ViewModel.ViewCardCommand, Source={x:Reference mainPage}, x:DataType=local:MainPage}" 
+                                        CommandParameter="{Binding .}" Tapped="TapGestureRecognizer_Tapped"/>
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </Border>
+                    </ContentView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!--  Floating Action Button  -->
+        <Button Style="{StaticResource RoundFloatingActionButton}"
+            Command="{Binding AddCardCommand}"
+            HorizontalOptions="End"
+            Text="+"
+            VerticalOptions="End"  />
+
+        <!-- Loading Indicator -->
+        <Grid VerticalOptions="Fill" HorizontalOptions="Fill" 
+                IsVisible="{Binding IsLoading}"
+                BackgroundColor="{Binding BackgroundColor, Source={x:Reference mainPage}, x:DataType=local:MainPage}">
+            <ActivityIndicator
+                IsVisible="{Binding IsLoading}"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                HeightRequest="25"
+                IsRunning="{Binding IsLoading}" />
+        </Grid>
+
+    </Grid>
+</ContentPage>

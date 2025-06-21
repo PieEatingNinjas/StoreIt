@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="StoreIt.Maui.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:StoreIt.Maui.ViewModels"
+    Title="Instellingen"
+    x:DataType="vm:SettingsViewModel">
+
+    <ScrollView Padding="20">
+        <StackLayout Spacing="25">
+
+            <!--  Header  -->
+            <StackLayout Spacing="5">
+                <Label
+                    FontSize="16"
+                    Text="Pas de app aan naar jouw voorkeur"
+                    TextColor="{AppThemeBinding Light=#666,
+                                                Dark=#AAA}" />
+            </StackLayout>
+
+            <!--  Theme Section  -->
+            <Border Padding="20" Style="{StaticResource CardBorderStyle}">
+                <StackLayout Spacing="15">
+                    <StackLayout Spacing="5">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            Text="🎨 Thema"
+                            TextColor="{AppThemeBinding Light=#333,
+                                                        Dark=#FFF}" />
+                        <Label
+                            FontSize="14"
+                            Text="Kies het uiterlijk van de app"
+                            TextColor="{AppThemeBinding Light=#666,
+                                                        Dark=#AAA}" />
+                    </StackLayout>
+
+                    <!--  Theme Options  -->
+                    <StackLayout Spacing="10">
+                        <!--  System/Device Theme  -->
+                        <Border
+                            Padding="15"
+                            BackgroundColor="{Binding IsSystemTheme, Converter={StaticResource BoolToThemeBackgroundConverter}}"
+                            Stroke="{Binding IsSystemTheme, Converter={StaticResource BoolToThemeBorderConverter}}"
+                            StrokeThickness="2">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Label
+                                    Grid.Column="0"
+                                    FontSize="20"
+                                    Text="📱"
+                                    VerticalOptions="Center" />
+
+                                <StackLayout
+                                    Grid.Column="1"
+                                    Margin="15,0,0,0"
+                                    VerticalOptions="Center">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Text="Apparaat volgen"
+                                        TextColor="{Binding IsSystemTheme, Converter={StaticResource BoolToThemeTextColorConverter}}" />
+                                    <Label
+                                        FontSize="12"
+                                        Text="Gebruikt de systeeminstelling"
+                                        TextColor="{AppThemeBinding Light=#666,
+                                                                    Dark=#AAA}" />
+                                </StackLayout>
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSystemThemeTapped" />
+                            </Border.GestureRecognizers>
+                        </Border>                        
+                        <!--  Light Theme  -->
+                        <Border
+                            Padding="15"
+                            BackgroundColor="{Binding IsLightTheme, Converter={StaticResource BoolToThemeBackgroundConverter}}"
+                            Stroke="{Binding IsLightTheme, Converter={StaticResource BoolToThemeBorderConverter}}"
+                            StrokeThickness="2">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Label
+                                    Grid.Column="0"
+                                    FontSize="20"
+                                    Text="☀️"
+                                    VerticalOptions="Center" />
+
+                                <StackLayout
+                                    Grid.Column="1"
+                                    Margin="15,0,0,0"
+                                    VerticalOptions="Center">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Text="Licht thema"
+                                        TextColor="{Binding IsLightTheme, Converter={StaticResource BoolToThemeTextColorConverter}}" />
+                                    <Label
+                                        FontSize="12"
+                                        Text="Lichte achtergrond met donkere tekst"
+                                        TextColor="{AppThemeBinding Light=#666,
+                                                                    Dark=#AAA}" />
+                                </StackLayout>
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLightThemeTapped" />
+                            </Border.GestureRecognizers>
+                        </Border>                        
+                        <!--  Dark Theme  -->
+                        <Border
+                            Padding="15"
+                            BackgroundColor="{Binding IsDarkTheme, Converter={StaticResource BoolToThemeBackgroundConverter}}"
+                            Stroke="{Binding IsDarkTheme, Converter={StaticResource BoolToThemeBorderConverter}}"
+                            StrokeThickness="2">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Label
+                                    Grid.Column="0"
+                                    FontSize="20"
+                                    Text="🌙"
+                                    VerticalOptions="Center" />
+
+                                <StackLayout
+                                    Grid.Column="1"
+                                    Margin="15,0,0,0"
+                                    VerticalOptions="Center">
+                                    <Label
+                                        FontAttributes="Bold"
+                                        FontSize="16"
+                                        Text="Donker thema"
+                                        TextColor="{Binding IsDarkTheme, Converter={StaticResource BoolToThemeTextColorConverter}}" />
+                                    <Label
+                                        FontSize="12"
+                                        Text="Donkere achtergrond met lichte tekst"
+                                        TextColor="{AppThemeBinding Light=#666,
+                                                                    Dark=#AAA}" />
+                                </StackLayout>
+                            </Grid>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnDarkThemeTapped" />
+                            </Border.GestureRecognizers>                        
+                        </Border>
+                    </StackLayout>
+                </StackLayout>
+            </Border>
+
+            <!--  Hints Section  -->
+            <Border Padding="20" Style="{StaticResource CardBorderStyle}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+
+                <StackLayout Spacing="15">
+                    <StackLayout Spacing="5">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            Text="💡 Hints"
+                            TextColor="{AppThemeBinding Light=#333,
+                                                        Dark=#FFF}" />
+
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label
+                                FontSize="13"
+                                Text="Schakel dit uit om geen hints meer te zien"
+                                TextColor="{AppThemeBinding Light=#666,
+                                                            Dark=#AAA}"
+                                VerticalOptions="Center" />
+                            <Switch
+                                Grid.Column="1"
+                                HorizontalOptions="End"
+                                IsToggled="{Binding HintsEnabled}"
+                                VerticalOptions="Center" />
+                        </Grid>
+                    </StackLayout>
+                </StackLayout>
+            </Border>
+
+            <!--  Future Settings Sections  -->
+            <Border Padding="20" Style="{StaticResource CardBorderStyle}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <StackLayout Spacing="10">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        Text="ℹ️ Over de app"
+                        TextColor="{AppThemeBinding Light=#333,
+                                                    Dark=#FFF}" />
+                    <Label
+                        FontSize="14"
+                        Text="StoreIt v0.1"
+                        TextColor="{AppThemeBinding Light=#666,
+                                                    Dark=#AAA}" />
+                    <!-- <Label Text="Bewaar en beheer al je klantenkaarten en codes op één plek"
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#666, Dark=#AAA}"/>-->
+
+                    <!--  Spacer  -->
+                    <BoxView BackgroundColor="Transparent" HeightRequest="10" />
+
+                    <!--  Built with love message  -->
+                    <Label
+                        FontAttributes="Italic"
+                        FontSize="12"
+                        HorizontalTextAlignment="Center"
+                        Text="Built with ❤️ in Belgium"
+                        TextColor="{AppThemeBinding Light=#999,
+                                                    Dark=#777}" />
+                </StackLayout>
+            </Border>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

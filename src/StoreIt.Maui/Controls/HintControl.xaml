@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView x:Class="StoreIt.Maui.Controls.HintControl"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:StoreIt.Maui.Controls"
+             x:DataType="controls:HintControl"
+             x:Name="Root" InputTransparent="True">
+    <Border 
+        InputTransparent="True"
+        x:Name="hintBorder"
+        Padding="15, 8"
+        BackgroundColor="#BB000000"
+        HorizontalOptions="Center">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="15" />
+        </Border.StrokeShape>
+        <Grid ColumnDefinitions="Auto, *" HorizontalOptions="Center">
+            <Label
+                FontSize="{Binding Source={x:Reference Root}, Path=FontSize, x:dataType=controls:HintControl}"
+                Text="{Binding Source={x:Reference Root}, Path=Icon, x:dataType=controls:HintControl}"
+                Margin="0, 0, 8, 0"
+                TextColor="White"
+                VerticalOptions="Center" />
+            <Label Grid.Column="1"
+                FontSize="{Binding Source={x:Reference Root}, Path=FontSize, x:dataType=controls:HintControl}"
+                Text="{Binding Source={x:Reference Root}, Path=Text, x:dataType=controls:HintControl}"
+                TextColor="White"
+                VerticalOptions="Center" />
+        </Grid>
+    </Border>
+</ContentView>

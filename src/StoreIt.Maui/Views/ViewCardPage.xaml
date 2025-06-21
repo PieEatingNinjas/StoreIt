@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="StoreIt.Maui.Views.ViewCardPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:StoreIt.Maui.Controls"
+    xmlns:vm="clr-namespace:StoreIt.Maui.ViewModels"
+    xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
+    Title="{Binding Card.Name}"
+    x:DataType="vm:ViewCardViewModel"
+    Shell.PresentationMode="ModalAnimated">
+    <ContentPage.Resources>
+       
+    </ContentPage.Resources>
+    <ScrollView Padding="20">
+        <VerticalStackLayout>
+            <!--  Controls Row  -->
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                <!--  Back Button  -->
+                <Button
+                    Grid.Column="0"
+                    Command="{Binding GoBackCommand}"
+                    Style="{StaticResource ControlButtonStyle}"
+                    Text="✕" />
+
+                <!--  Favorite Button  -->
+                <Button
+                    Grid.Column="2"
+                    Command="{Binding ToggleFavoriteCommand}"
+                    Style="{StaticResource ControlButtonStyle}"
+                    Text="{Binding Card.IsFavorite, Converter={StaticResource BoolToStarConverter}}"
+                    TextColor="{Binding Card.IsFavorite, Converter={StaticResource BoolToColorConverter}}" />
+
+                <!--  More Options Button  -->
+                <Button
+                    Grid.Column="3"
+                    Clicked="OnMoreOptionsClicked"
+                    Style="{StaticResource ControlButtonStyle}"
+                    Text="⋮" />
+            </Grid>
+
+            <!--  Card Header  -->
+            <Border
+                Margin="0,15,0,20"
+                Padding="20,10"
+                BackgroundColor="{Binding Card.Color}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+
+                <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="22"
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        Text="{Binding Card.Name}"
+                        TextColor="White" />
+
+                    <Label
+                        FontSize="16"
+                        HorizontalOptions="Center"
+                        HorizontalTextAlignment="Center"
+                        IsVisible="{Binding Card.Description, Converter={StaticResource IsStringNotNullOrEmptyConverter}}"
+                        Text="{Binding Card.Description}"
+                        TextColor="#CCFFFFFF" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!--  Barcode/Code Display Section  -->
+            <Border Padding="20">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Style.Triggers>
+                            <!--  Barcode style: for scannability  -->
+                            <DataTrigger
+                                Binding="{Binding Card.HasBarcode}"
+                                TargetType="Border"
+                                Value="True">
+                                <Setter Property="BackgroundColor" Value="White" />
+                                <Setter Property="Stroke" Value="{StaticResource VeryLightGray}" />
+                            </DataTrigger>
+                            <!--  Custom code style: theme-aware  -->
+                            <DataTrigger
+                                Binding="{Binding Card.HasBarcode}"
+                                TargetType="Border"
+                                Value="False">
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource VeryLightGray}, Dark={StaticResource OffBlack}}" />
+                                <Setter Property="Stroke" Value="{AppThemeBinding Light=#E9ECEF, Dark=#333}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="StrokeThickness" Value="1" />
+                    </Style>
+                </Border.Style>
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+
+                <Grid>
+                    <VerticalStackLayout
+                        HorizontalOptions="Center"
+                        Spacing="15"
+                        VerticalOptions="Center">
+
+                        <!--  Barcode Display  -->
+                        <VerticalStackLayout
+                            HorizontalOptions="Center"
+                            IsVisible="{Binding Card.HasBarcode}"
+                            Spacing="15"
+                            VerticalOptions="Center">
+
+                            <zxing:BarcodeGeneratorView
+                                x:Name="barcodeGenerator"
+                                BackgroundColor="White"
+                                ForegroundColor="Black"
+                                Format="{Binding Card.BarcodeFormat, Converter={StaticResource StringToBarcodeFormatConverter}}"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                Value="{Binding Card.BarcodeData}" />
+                                
+                            <!--  Barcode Data  -->
+                            <Label
+                                FontFamily="Courier"
+                                FontSize="16"
+                                HorizontalOptions="Center"
+                                HorizontalTextAlignment="Center"
+                                Text="{Binding Card.BarcodeData}"
+                                TextColor="#666" />
+
+                            <VerticalStackLayout.GestureRecognizers>
+                                <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="OnBarcodeTapped" />
+                            </VerticalStackLayout.GestureRecognizers>
+                        </VerticalStackLayout>
+
+                        <!--  Custom Code Display  -->
+                        <Label
+                            FontAttributes="Bold"
+                            FontFamily="Courier"
+                            FontSize="32"
+                            HorizontalOptions="Center"
+                            HorizontalTextAlignment="Center"
+                            IsVisible="{Binding Card.HasCustomCode}"
+                            Text="{Binding Card.CustomCode}"
+                            TextColor="{AppThemeBinding Light=#333,
+                                                        Dark=#FFF}" />
+                    </VerticalStackLayout>
+
+                    <!--  Zoom Hint  -->
+                    <controls:HintControl
+                        Margin="20,0,20,0"
+                        HorizontalOptions="Center"
+                        Icon="👆"
+                        IsShowing="{Binding ShowZoomHint}"
+                        ShowDuration="1500"
+                        Text="Tik om te zoomen"
+                        VerticalOptions="End" />
+                </Grid>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
