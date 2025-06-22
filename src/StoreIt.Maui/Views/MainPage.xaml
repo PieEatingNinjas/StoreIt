@@ -3,31 +3,34 @@
     x:Class="StoreIt.Maui.Views.MainPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-    xmlns:models="clr-namespace:StoreIt.Maui.Models"
     xmlns:local="clr-namespace:StoreIt.Maui.Views"
+    xmlns:models="clr-namespace:StoreIt.Maui.Models"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:StoreIt.Maui.ViewModels"
     x:Name="mainPage"
     Title="Mijn Kaarten"
     x:DataType="vm:MainViewModel">
     <ContentPage.Resources>
-        <Style TargetType="Label" x:Key="MessageLabelStyle">
-            <Setter Property="TextColor" Value="{AppThemeBinding Light=Gray,
-                                                    Dark=LightGray}" />
+        <Style x:Key="MessageLabelStyle" TargetType="Label">
+            <Setter Property="TextColor" Value="{AppThemeBinding Light=Gray, Dark=LightGray}" />
         </Style>
-        <Style TargetType="Border" BasedOn="{StaticResource CardBorderStyle}" x:Key="CardBorderWithShadowStyle">
+        <Style
+            x:Key="CardBorderWithShadowStyle"
+            BasedOn="{StaticResource CardBorderStyle}"
+            TargetType="Border">
             <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}" />
             <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource VeryLightGray}, Dark={StaticResource Gray600}}" />
             <Setter Property="Shadow">
                 <Setter.Value>
                     <Shadow
-                        Brush="{AppThemeBinding Light=Black, Dark=Transparent}"
+                        Brush="{AppThemeBinding Light=Black,
+                                                Dark=Transparent}"
                         Opacity="0.1"
                         Radius="8"
                         Offset="0,2" />
                 </Setter.Value>
             </Setter>
-        </Style> 
+        </Style>
     </ContentPage.Resources>
     <Grid>
         <CollectionView
@@ -48,25 +51,26 @@
                     <Label
                         FontSize="18"
                         HorizontalOptions="Center"
-                        Text="Geen klantenkaarten gevonden"
-                        Style="{StaticResource MessageLabelStyle}" />
+                        Style="{StaticResource MessageLabelStyle}"
+                        Text="Geen klantenkaarten gevonden" />
 
                     <Label
                         FontSize="14"
                         HorizontalOptions="Center"
-                        Text="Tik op de + knop om je eerste kaart toe te voegen"
-                        Style="{StaticResource MessageLabelStyle}" />
+                        Style="{StaticResource MessageLabelStyle}"
+                        Text="Tik op de + knop om je eerste kaart toe te voegen" />
 
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:CustomerCard">
-                    <ContentView x:Name="element"
+                    <ContentView
+                        x:Name="element"
                         Margin="10,5"
                         Padding="0"
                         BackgroundColor="transparent">
-                        <Border Style="{StaticResource CardBorderWithShadowStyle}" Margin="10,5">
+                        <Border Margin="10,5" Style="{StaticResource CardBorderWithShadowStyle}">
                             <Grid
                                 Padding="0"
                                 ColumnDefinitions="8,*,Auto,Auto"
@@ -125,9 +129,10 @@
 
                                 <!--  Tap Gesture  -->
                                 <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer 
-                                        Command="{Binding ViewModel.ViewCardCommand, Source={x:Reference mainPage}, x:DataType=local:MainPage}" 
-                                        CommandParameter="{Binding .}" Tapped="TapGestureRecognizer_Tapped"/>
+                                    <TapGestureRecognizer
+                                        Command="{Binding ViewModel.ViewCardCommand, Source={x:Reference mainPage}, x:DataType=local:MainPage}"
+                                        CommandParameter="{Binding .}"
+                                        Tapped="TapGestureRecognizer_Tapped" />
                                 </Grid.GestureRecognizers>
                             </Grid>
                         </Border>
@@ -137,22 +142,25 @@
         </CollectionView>
 
         <!--  Floating Action Button  -->
-        <Button Style="{StaticResource RoundFloatingActionButton}"
+        <Button
             Command="{Binding AddCardCommand}"
             HorizontalOptions="End"
+            Style="{StaticResource RoundFloatingActionButton}"
             Text="+"
-            VerticalOptions="End"  />
+            VerticalOptions="End" />
 
-        <!-- Loading Indicator -->
-        <Grid VerticalOptions="Fill" HorizontalOptions="Fill" 
-                IsVisible="{Binding IsLoading}"
-                BackgroundColor="{Binding BackgroundColor, Source={x:Reference mainPage}, x:DataType=local:MainPage}">
+        <!--  Loading Indicator  -->
+        <Grid
+            BackgroundColor="{Binding BackgroundColor, Source={x:Reference mainPage}, x:DataType=local:MainPage}"
+            HorizontalOptions="Fill"
+            IsVisible="{Binding IsLoading}"
+            VerticalOptions="Fill">
             <ActivityIndicator
-                IsVisible="{Binding IsLoading}"
-                VerticalOptions="Center"
-                HorizontalOptions="Center"
                 HeightRequest="25"
-                IsRunning="{Binding IsLoading}" />
+                HorizontalOptions="Center"
+                IsRunning="{Binding IsLoading}"
+                IsVisible="{Binding IsLoading}"
+                VerticalOptions="Center" />
         </Grid>
 
     </Grid>

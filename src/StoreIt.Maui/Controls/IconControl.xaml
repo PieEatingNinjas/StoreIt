@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView x:Class="StoreIt.Maui.Controls.IconControl"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:StoreIt.Maui.Controls"
+             x:DataType="controls:IconControl"
+             x:Name="Root">
+    <Border BackgroundColor="{Binding Source={x:Reference Root}, Path=IconBackgroundColor}"
+            WidthRequest="{Binding Source={x:Reference Root}, Path=BorderSize}"
+            HeightRequest="{Binding Source={x:Reference Root}, Path=BorderSize}"
+            VerticalOptions="Center">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="{Binding Source={x:Reference Root}, Path=CornerRadius}" />
+        </Border.StrokeShape>
+        <Label Text="{Binding Source={x:Reference Root}, Path=Icon}"
+               FontSize="{Binding Source={x:Reference Root}, Path=IconSize}"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               TextColor="White"/>
+    </Border>
+</ContentView>

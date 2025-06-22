@@ -2,8 +2,6 @@ namespace StoreIt.Maui.Controls;
 
 public partial class HintControl : ContentView
 {
-    #region Bindable Properties
-
     public static readonly BindableProperty TextProperty =
         BindableProperty.Create(nameof(Text), typeof(string), typeof(HintControl), string.Empty);
 
@@ -22,9 +20,6 @@ public partial class HintControl : ContentView
     public static readonly BindableProperty FadeAnimationDurationProperty =
         BindableProperty.Create(nameof(FadeAnimationDuration), typeof(uint), typeof(HintControl), 500u);
 
-    #endregion
-
-    #region Properties
 
     public string Text
     {
@@ -62,8 +57,6 @@ public partial class HintControl : ContentView
         set => SetValue(FadeAnimationDurationProperty, value);
     }
 
-    #endregion
-
     public HintControl()
     {
         InitializeComponent();
@@ -71,19 +64,14 @@ public partial class HintControl : ContentView
         hintBorder.IsVisible = false;
     }
 
-    #region Methods
-
     public async Task ShowHintBrieflyAsync()
     {
         IsVisible = true;
-        
+
         // Wait for the specified duration, then hide the hint
         await Task.Delay(ShowDuration);
         IsVisible = false;
     }
-    #endregion
-
-    #region Event Handlers
 
     private static async void OnIsShowingChanged(BindableObject bindable, object oldValue, object newValue)
     {
@@ -118,6 +106,4 @@ public partial class HintControl : ContentView
             hintBorder.IsVisible = false;
         }
     }
-
-    #endregion
 }

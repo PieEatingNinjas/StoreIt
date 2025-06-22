@@ -8,7 +8,7 @@
     x:Name="Root"
     x:DataType="controls:BarcodePreviewControl"
     InputTransparent="True">
-    <StackLayout Spacing="5">
+    <VerticalStackLayout Spacing="5">
         <Border
             Padding="15"
             BackgroundColor="{AppThemeBinding Light=#F0F8FF,
@@ -47,5 +47,5 @@
                                                 Dark=#87CEEB}" />
             </VerticalStackLayout>
         </Border>
-    </StackLayout>
+    </VerticalStackLayout>
 </ContentView>

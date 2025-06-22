@@ -1,35 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage x:Class="StoreIt.Maui.Views.ManualBarcodePage"
-             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
-             xmlns:controls="clr-namespace:StoreIt.Maui.Controls"
-             xmlns:vm="clr-namespace:StoreIt.Maui.ViewModels"
-             x:DataType="vm:ManualBarcodeViewModel"
-             Title="Barcode Invoeren"
-             Shell.PresentationMode="ModalAnimated">
+<ContentPage
+    x:Class="StoreIt.Maui.Views.ManualBarcodePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:StoreIt.Maui.Controls"
+    xmlns:vm="clr-namespace:StoreIt.Maui.ViewModels"
+    xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
+    Title="Barcode Invoeren"
+    x:DataType="vm:ManualBarcodeViewModel"
+    Shell.PresentationMode="ModalAnimated">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-            
-            <!-- Header -->
-            <Grid ColumnDefinitions="50,*,50">
-                <!-- Back Button -->
-                <Button Grid.Column="0"
-                        Style="{StaticResource ControlButtonStyle}"
-                        Text="✕"
-                        HorizontalOptions="Start"
-                        Command="{Binding CancelCommand}"/>
 
-                <!-- Title -->
-                <Label Grid.Column="1"
-                       Text="Barcode handmatig invoeren"
-                       FontSize="18"
-                       FontAttributes="Bold"
-                       VerticalOptions="Center"
-                       HorizontalOptions="Center"/>
+            <!--  Header  -->
+            <Grid ColumnDefinitions="50,*,50">
+                <!--  Back Button  -->
+                <Button
+                    Grid.Column="0"
+                    Command="{Binding CancelCommand}"
+                    Style="{StaticResource BackButtonStyle}" />
+
+                <!--  Title  -->
+                <Label
+                    Grid.Column="1"
+                    Style="{StaticResource PageTitleStyle}"
+                    Text="Barcode handmatig invoeren" />
             </Grid>
 
-            <!-- Instructions -->
+            <!--  Instructions  -->
             <!-- <Border BackgroundColor="{AppThemeBinding Light=#E3F2FD, Dark=#1E3A5F}"
                     Stroke="{AppThemeBinding Light=#2196F3, Dark=#64B5F6}"
                     StrokeThickness="1"
@@ -37,7 +35,7 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="8"/>
                 </Border.StrokeShape>
-                <StackLayout Spacing="8">
+                <VerticalStackLayout Spacing="8">
                     <Label Text="ℹ️ Barcode handmatig invoeren"
                            FontSize="16"
                            FontAttributes="Bold"
@@ -45,86 +43,101 @@
                     <Label Text="Kies het barcode type en voer het nummer exact in zoals het op je kaart staat."
                            FontSize="14"
                            TextColor="{AppThemeBinding Light=#1976D2, Dark=#90CAF9}"/>
-                </StackLayout>
-            </Border> -->
+                </VerticalStackLayout>
+            </Border>-->
 
-            <!-- Barcode Type Selection -->
+            <!--  Barcode Type Selection  -->
             <VerticalStackLayout Spacing="8">
-                <Label Text="Barcode Type"
-                       Style="{StaticResource InputLabelStyle}" />
-                <Picker ItemsSource="{Binding AvailableBarcodeTypes}"
-                        SelectedItem="{Binding SelectedBarcodeType}"
-                        FontSize="16"
-                        BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2D2D2D}"/>
-                <Label Text="Veelvoorkomende types: Code128, EAN13, QR_CODE"
-                        Style="{StaticResource InputLabelSubStyle}"/>
+                <Label Style="{StaticResource InputLabelStyle}" Text="Barcode Type" />
+                <Picker
+                    BackgroundColor="{AppThemeBinding Light=#F5F5F5,
+                                                      Dark=#2D2D2D}"
+                    FontSize="16"
+                    ItemsSource="{Binding AvailableBarcodeTypes}"
+                    SelectedItem="{Binding SelectedBarcodeType}" />
+                <Label Style="{StaticResource InputLabelSubStyle}" Text="Veelvoorkomende types: Code128, EAN13, QR_CODE" />
             </VerticalStackLayout>
 
-            <!-- Barcode Number Input -->
+            <!--  Barcode Number Input  -->
             <VerticalStackLayout Spacing="8">
-                <Label Text="Barcode Nummer"
-                       Style="{StaticResource InputLabelStyle}" />
-                <Entry Text="{Binding BarcodeInput}"
-                       Placeholder="Voer het barcode nummer in..."
-                       Style="{StaticResource CodeInputEntryStyle}"/>
-                <Label Text="Voer het barcode nummer exact in zoals het op de kaart staat."
-                       Style="{StaticResource InputLabelSubStyle}"/>
+                <Label Style="{StaticResource InputLabelStyle}" Text="Barcode Nummer" />
+                <Entry
+                    Placeholder="Voer het barcode nummer in..."
+                    Style="{StaticResource CodeInputEntryStyle}"
+                    Text="{Binding BarcodeInput}" />
+                <Label Style="{StaticResource InputLabelSubStyle}" Text="Voer het barcode nummer exact in zoals het op de kaart staat." />
             </VerticalStackLayout>
 
             <controls:BarcodePreviewControl
-                            Margin="0,0,0,10"
-                            BarcodeData="{Binding BarcodeInput}"
-                            ShowValidation="True"
-                            BarcodeFormat="{Binding SelectedBarcodeType}"
-                            IsVisible="{Binding ShowBarcodePreview}"/>
+                Margin="0,0,0,10"
+                BarcodeData="{Binding BarcodeInput}"
+                BarcodeFormat="{Binding SelectedBarcodeType}"
+                IsVisible="{Binding ShowBarcodePreview}"
+                ShowValidation="True" />
 
-            <!-- Action Buttons -->
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="15" Margin="0,20,0,0">
-                <Button Grid.Column="0"
-                        Text="Annuleren"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource VeryLightGray}, Dark={StaticResource Gray600}}"
-                        TextColor="{AppThemeBinding Light=#666, Dark=#AAA}"
-                        HeightRequest="50"
-                        Command="{Binding CancelCommand}"/>
-                
-                <Button Grid.Column="1"
-                        Text="Toevoegen"
-                        BackgroundColor="{StaticResource Secondary}"
-                        TextColor="White"
-                        HeightRequest="50"
-                        IsEnabled="{Binding CanAccept}"
-                        Command="{Binding AcceptCommand}"/>
+            <!--  Action Buttons  -->
+            <Grid
+                Margin="0,20,0,0"
+                ColumnDefinitions="*,*"
+                ColumnSpacing="15">
+                <Button
+                    Grid.Column="0"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource VeryLightGray},
+                                                      Dark={StaticResource Gray600}}"
+                    Command="{Binding CancelCommand}"
+                    HeightRequest="50"
+                    Text="Annuleren"
+                    TextColor="{AppThemeBinding Light=#666,
+                                                Dark=#AAA}" />
+
+                <Button
+                    Grid.Column="1"
+                    BackgroundColor="{StaticResource Secondary}"
+                    Command="{Binding AcceptCommand}"
+                    HeightRequest="50"
+                    IsEnabled="{Binding CanAccept}"
+                    Text="Toevoegen"
+                    TextColor="White" />
             </Grid>
 
-            <!-- Quick Access to Scan -->
-            <Border BackgroundColor="{AppThemeBinding Light=#FFF3E0, Dark=#2D1B0E}"
-                    Stroke="{AppThemeBinding Light=#FF9800, Dark=#FFB74D}"
-                    StrokeThickness="1"
-                    Padding="15"
-                    Margin="0,10,0,0">
+            <!--  Quick Access to Scan  -->
+            <Border
+                Margin="0,10,0,0"
+                Padding="15"
+                BackgroundColor="{AppThemeBinding Light=#FFF3E0,
+                                                  Dark=#2D1B0E}"
+                Stroke="{AppThemeBinding Light=#FF9800,
+                                         Dark=#FFB74D}"
+                StrokeThickness="1">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="8"/>
+                    <RoundRectangle CornerRadius="8" />
                 </Border.StrokeShape>
                 <Grid ColumnDefinitions="Auto,*,Auto">
-                    <Label Grid.Column="0"
-                           Text="📷"
-                           FontSize="20"
-                           VerticalOptions="Center"/>
+                    <Label
+                        Grid.Column="0"
+                        FontSize="20"
+                        Text="📷"
+                        VerticalOptions="Center" />
                     <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0">
-                        <Label Text="Liever scannen?"
-                               FontSize="14"
-                               FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Light=#E65100, Dark=#FFB74D}"/>
-                        <Label Text="Gebruik de camera om automatisch te scannen"
-                               FontSize="12"
-                               TextColor="{AppThemeBinding Light=#E65100, Dark=#FFB74D}"/>
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            Text="Liever scannen?"
+                            TextColor="{AppThemeBinding Light=#E65100,
+                                                        Dark=#FFB74D}" />
+                        <Label
+                            FontSize="12"
+                            Text="Gebruik de camera om automatisch te scannen"
+                            TextColor="{AppThemeBinding Light=#E65100,
+                                                        Dark=#FFB74D}" />
                     </VerticalStackLayout>
-                    <Button Grid.Column="2"
-                            Text="Scannen"
-                            BackgroundColor="#FF9800"
-                            TextColor="White"
-                            HeightRequest="40"
-                            Command="{Binding SwitchToScanCommand}"/>
+                    <Button
+                        Grid.Column="2"
+                        BackgroundColor="#FF9800"
+                        Command="{Binding SwitchToScanCommand}"
+                        HeightRequest="40"
+                        Text="Scannen"
+                        TextColor="White" />
                 </Grid>
             </Border>
         </VerticalStackLayout>

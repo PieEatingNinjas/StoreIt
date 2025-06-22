@@ -36,9 +36,16 @@ public class BoolToColorConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if(value is bool b)
-            return b ? Colors.Gold : Colors.Gray;
+        if (value is bool b && Application.Current?.Resources is not null)
+        {
+            var resources = Application.Current.Resources;
+            if (b)
+                return resources["FavoriteColor"];
+            else
+                return resources["UnfavoriteColor"];
+        }
 
+        // Fallback
         return Colors.Gray;
     }
 
@@ -70,15 +77,22 @@ public class BoolToCardTypeBackgroundConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         bool isSelected = (bool)(value ?? false);
-        if (Application.Current?.RequestedTheme == AppTheme.Dark)
+        
+        if (Application.Current?.Resources is not null)
         {
-            //ToDo: take color from resources
-            return isSelected ? Color.FromArgb("#1565C0") : Color.FromArgb("#1E1E1E"); //OffBlack
+            var resources = Application.Current.Resources;
+            if (Application.Current?.RequestedTheme == AppTheme.Dark)
+            {
+                return isSelected ? resources["SelectionBackgroundDark"] : resources["UnselectedBackgroundDark"];
+            }
+            else
+            {
+                return isSelected ? resources["SelectionBackgroundLight"] : resources["UnselectedBackgroundLight"];
+            }
         }
-        else
-        {
-            return isSelected ? Color.FromArgb("#E3F2FD") : Color.FromArgb("#FFFFFF");
-        }
+        
+        // Fallback
+        return Colors.Gray;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -91,17 +105,23 @@ public class BoolToCardTypeBorderConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        //ToDo: take color from resources
         bool isSelected = (bool)(value ?? false);
         
-        if (Application.Current?.RequestedTheme == AppTheme.Dark)
+        if (Application.Current?.Resources is not null)
         {
-            return isSelected ? Color.FromArgb("#2196F3") : Color.FromArgb("#404040");
+            var resources = Application.Current.Resources;
+            if (Application.Current?.RequestedTheme == AppTheme.Dark)
+            {
+                return isSelected ? resources["SelectionBorderDark"] : resources["UnselectedBorderDark"];
+            }
+            else
+            {
+                return isSelected ? resources["SelectionBorderLight"] : resources["UnselectedBorderLight"];
+            }
         }
-        else
-        {
-            return isSelected ? Color.FromArgb("#2196F3") : Color.FromArgb("#E0E0E0");
-        }
+        
+        // Fallback
+        return Colors.Gray;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -114,16 +134,23 @@ public class BoolToCardTypeTextColorConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        //ToDo: take color from resources
         bool isSelected = (bool)(value ?? false);
-        if (Application.Current?.RequestedTheme == AppTheme.Dark)
+        
+        if (Application.Current?.Resources is not null)
         {
-            return isSelected ? Colors.White : Color.FromArgb("#AAA");
+            var resources = Application.Current.Resources;
+            if (Application.Current?.RequestedTheme == AppTheme.Dark)
+            {
+                return isSelected ? resources["SelectionTextDark"] : resources["UnselectedTextDark"];
+            }
+            else
+            {
+                return isSelected ? resources["SelectionTextLight"] : resources["UnselectedTextLight"];
+            }
         }
-        else
-        {
-            return isSelected ? Colors.Black : Color.FromArgb("#666");
-        }
+
+        // Fallback
+        return Colors.Gray;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -136,16 +163,23 @@ public class BoolToThemeBackgroundConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        //ToDo: take color from resources
         bool isSelected = (bool)(value ?? false);
-        if (Application.Current?.RequestedTheme == AppTheme.Dark)
+        
+        if (Application.Current?.Resources is not null)
         {
-            return isSelected ? Color.FromArgb("#1565C0") : Color.FromArgb("#2A2A2A");
+            var resources = Application.Current.Resources;
+            if (Application.Current?.RequestedTheme == AppTheme.Dark)
+            {
+                return isSelected ? resources["SelectionBackgroundDark"] : resources["UnselectedBackgroundDark"];
+            }
+            else
+            {
+                return isSelected ? resources["SelectionBackgroundLight"] : resources["UnselectedBackgroundLight"];
+            }
         }
-        else
-        {
-            return isSelected ? Color.FromArgb("#E3F2FD") : Color.FromArgb("#FFFFFF");
-        }
+        
+        // Fallback
+        return Colors.Gray;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -156,19 +190,25 @@ public class BoolToThemeBackgroundConverter : IValueConverter
 
 public class BoolToThemeBorderConverter : IValueConverter
 {
-    //ToDo: take color from resources
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         bool isSelected = (bool)(value ?? false);
-
-        if (Application.Current?.RequestedTheme == AppTheme.Dark)
+        
+        if (Application.Current?.Resources is not null)
         {
-            return isSelected ? Color.FromArgb("#2196F3") : Color.FromArgb("#444");
+            var resources = Application.Current.Resources;
+            if (Application.Current?.RequestedTheme == AppTheme.Dark)
+            {
+                return isSelected ? resources["SelectionBorderDark"] : resources["UnselectedBorderDark"];
+            }
+            else
+            {
+                return isSelected ? resources["SelectionBorderLight"] : resources["UnselectedBorderLight"];
+            }
         }
-        else
-        {
-            return isSelected ? Color.FromArgb("#2196F3") : Color.FromArgb("#DEE2E6");
-        }
+        
+        // Fallback
+        return Colors.Gray;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -181,16 +221,23 @@ public class BoolToThemeTextColorConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        //ToDo: take color from resources
         bool isSelected = (bool)(value ?? false);
-        if (Application.Current?.RequestedTheme == AppTheme.Dark)
+        
+        if (Application.Current?.Resources is not null)
         {
-            return isSelected ? Colors.White : Color.FromArgb("#AAA");
+            var resources = Application.Current.Resources;
+            if (Application.Current?.RequestedTheme == AppTheme.Dark)
+            {
+                return isSelected ? resources["SelectionTextDark"] : resources["UnselectedTextDark"];
+            }
+            else
+            {
+                return isSelected ? resources["SelectionTextLight"] : resources["UnselectedTextLight"];
+            }
         }
-        else
-        {
-            return isSelected ? Colors.Black : Color.FromArgb("#333");
-        }
+        
+        // Fallback
+        return Colors.Gray;
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

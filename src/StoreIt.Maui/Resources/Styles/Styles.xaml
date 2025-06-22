@@ -508,4 +508,29 @@
                                                 Radius=8,
                                                 Offset='0,4'}}"/>
     </Style>
+
+    <!-- Selection Container Style (for theme options, card types, etc.) -->
+     <Style TargetType="Border" x:Key="SelectionContainerStyle">
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource UnselectedBackgroundLight}, Dark={StaticResource UnselectedBackgroundDark}}" />
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource UnselectedBorderLight}, Dark={StaticResource UnselectedBorderDark}}" />
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="Padding" Value="15" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="8" />
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Label" x:Key="PageTitleStyle">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="VerticalOptions" Value="Center" />
+    </Style>
+
+    <Style TargetType="Button" x:Key="BackButtonStyle" BasedOn="{StaticResource ControlButtonStyle}">
+        <Setter Property="HorizontalOptions" Value="Start" />
+        <Setter Property="Text" Value="✕" />
+    </Style>
 </ResourceDictionary>

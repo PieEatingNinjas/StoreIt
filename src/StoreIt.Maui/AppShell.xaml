@@ -8,17 +8,17 @@
     Title="StoreIt"
     FlyoutBehavior="Disabled">
 
-    <!-- Main Tab -->
+    <!--  Main Tab  -->
     <TabBar>
         <ShellContent
             Title="Mijn Kaarten"
-            Icon="cards"
             ContentTemplate="{DataTemplate views:MainPage}"
+            Icon="cards"
             Route="main" />
         <ShellContent
             Title="Instellingen"
-            Icon="settings"
             ContentTemplate="{DataTemplate views:SettingsPage}"
+            Icon="settings"
             Route="settings" />
     </TabBar>
 

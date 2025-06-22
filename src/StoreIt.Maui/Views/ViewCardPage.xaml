@@ -9,8 +9,46 @@
     Title="{Binding Card.Name}"
     x:DataType="vm:ViewCardViewModel"
     Shell.PresentationMode="ModalAnimated">
+    <ContentPage.Style>
+        <Style TargetType="ContentPage">
+            <Style.Triggers>
+                <!--  Barcode Page Style - Zwarte achtergrond voor optimaal scannen  -->
+                <DataTrigger
+                    Binding="{Binding Card.HasBarcode}"
+                    TargetType="ContentPage"
+                    Value="True">
+                    <Setter Property="BackgroundColor" Value="Black" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </ContentPage.Style>
     <ContentPage.Resources>
-       
+        <Style
+            x:Key="BarcodeOptimizedControlButtonStyle"
+            BasedOn="{StaticResource ControlButtonStyle}"
+            TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger
+                    Binding="{Binding Card.HasBarcode}"
+                    TargetType="Button"
+                    Value="True">
+                    <Setter Property="TextColor" Value="White" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style
+            x:Key="BarcodeOptimizedBackButtonStyle"
+            BasedOn="{StaticResource BackButtonStyle}"
+            TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger
+                    Binding="{Binding Card.HasBarcode}"
+                    TargetType="Button"
+                    Value="True">
+                    <Setter Property="TextColor" Value="White" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </ContentPage.Resources>
     <ScrollView Padding="20">
         <VerticalStackLayout>
@@ -20,14 +58,13 @@
                 <Button
                     Grid.Column="0"
                     Command="{Binding GoBackCommand}"
-                    Style="{StaticResource ControlButtonStyle}"
-                    Text="✕" />
+                    Style="{StaticResource BarcodeOptimizedBackButtonStyle}" />
 
                 <!--  Favorite Button  -->
                 <Button
                     Grid.Column="2"
                     Command="{Binding ToggleFavoriteCommand}"
-                    Style="{StaticResource ControlButtonStyle}"
+                    Style="{StaticResource BarcodeOptimizedControlButtonStyle}"
                     Text="{Binding Card.IsFavorite, Converter={StaticResource BoolToStarConverter}}"
                     TextColor="{Binding Card.IsFavorite, Converter={StaticResource BoolToColorConverter}}" />
 
@@ -35,7 +72,7 @@
                 <Button
                     Grid.Column="3"
                     Clicked="OnMoreOptionsClicked"
-                    Style="{StaticResource ControlButtonStyle}"
+                    Style="{StaticResource BarcodeOptimizedControlButtonStyle}"
                     Text="⋮" />
             </Grid>
 
@@ -117,7 +154,7 @@
                                 HorizontalOptions="Center"
                                 VerticalOptions="Center"
                                 Value="{Binding Card.BarcodeData}" />
-                                
+
                             <!--  Barcode Data  -->
                             <Label
                                 FontFamily="Courier"
