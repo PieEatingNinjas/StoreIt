@@ -1,11 +1,15 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using StoreIt.Navigation;
+using StoreIt.Services;
 using ZXing.Net.Maui;
 
 namespace StoreIt.Maui.ViewModels;
 
 public partial class ScanBarcodeViewModel : ObservableObject
 {
+    private readonly IAppNavigationService _navigationService;
+
     [ObservableProperty]
     private bool isScanning = true;
 
@@ -16,29 +20,22 @@ public partial class ScanBarcodeViewModel : ObservableObject
     private string? scannedFormat;
 
     [RelayCommand]
-    public async Task Cancel()
-    {
-        await Shell.Current.GoToAsync("..");
-    }
+    public Task Cancel() => _navigationService.GoBack();
 
     [RelayCommand]
-    public async Task SwitchToManual()
-    {
-        await Shell.Current.GoToAsync("../manualbarcode");
-    }
+    public Task SwitchToManual() => _navigationService.SwitchToManualBarCodePage();
 
-    public async Task Accept()
+    public Task Accept()
     {
         if (!string.IsNullOrEmpty(ScannedData) && !string.IsNullOrEmpty(ScannedFormat))
         {
-            var navigationParameter = new Dictionary<string, object>
+            return _navigationService.GoBack(new Dictionary<string, object>
             {
-                ["barcodeData"] = ScannedData,
-                ["barcodeFormat"] = ScannedFormat
-            };
-            
-            await Shell.Current.GoToAsync("..", navigationParameter);
+                [NavigationParams.BarcodeData] = ScannedData,
+                [NavigationParams.BarcodeFormat] = ScannedFormat
+            });
         }
+        return Task.CompletedTask;
     }
 
     public void OnBarcodeDetected(BarcodeDetectionEventArgs e)
@@ -48,8 +45,13 @@ public partial class ScanBarcodeViewModel : ObservableObject
             IsScanning = false;
             ScannedData = barcode.Value;
             ScannedFormat = barcode.Format.ToString();
-            _= Accept();
+            _ = Accept();
         }
+    }
+    
+    public ScanBarcodeViewModel(IAppNavigationService appNavigationService)
+    {
+       _navigationService = appNavigationService;
     }
 }
 

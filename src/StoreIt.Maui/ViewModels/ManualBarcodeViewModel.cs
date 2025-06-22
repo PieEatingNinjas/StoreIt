@@ -1,13 +1,17 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using StoreIt.Maui.Helpers;
+using StoreIt.Navigation;
+using StoreIt.Services;
 
 namespace StoreIt.Maui.ViewModels;
 
-[QueryProperty(nameof(ExistingBarcodeData), "barcodeData")]
-[QueryProperty(nameof(ExistingBarcodeFormat), "barcodeFormat")]
+[QueryProperty(nameof(ExistingBarcodeData), NavigationParams.BarcodeData)]
+[QueryProperty(nameof(ExistingBarcodeFormat), NavigationParams.BarcodeFormat)]
 public partial class ManualBarcodeViewModel : ObservableObject
 {
+    private readonly IAppNavigationService _appNavigationService;
+
     [ObservableProperty]
     private string barcodeInput = string.Empty;
 
@@ -28,6 +32,11 @@ public partial class ManualBarcodeViewModel : ObservableObject
 
     public List<string> AvailableBarcodeTypes { get; } = BarCodeHelper.GetSupportedBarcodeFormats();
 
+    public ManualBarcodeViewModel(IAppNavigationService appNavigationService)
+    {
+        _appNavigationService = appNavigationService;
+    }
+
     partial void OnExistingBarcodeDataChanged(string? value)
     {
         if (!string.IsNullOrEmpty(value))
@@ -45,14 +54,10 @@ public partial class ManualBarcodeViewModel : ObservableObject
     }
 
     partial void OnBarcodeInputChanged(string value)
-    {
-        UpdatePreview();
-    }
+        => UpdatePreview();
 
     partial void OnSelectedBarcodeTypeChanged(string value)
-    {
-        UpdatePreview();
-    }
+        => UpdatePreview();
 
     private void UpdatePreview()
     {
@@ -77,29 +82,22 @@ public partial class ManualBarcodeViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task Cancel()
-    {
-        await Shell.Current.GoToAsync("..");
-    }
+    public Task Cancel() => _appNavigationService.GoBack();
 
     [RelayCommand]
-    public async Task SwitchToScan()
-    {
-        await Shell.Current.GoToAsync("../scanbarcode");
-    }
+    public Task SwitchToScan() => _appNavigationService.SwitchToScanBarCodePage();
 
     [RelayCommand]
-    public async Task Accept()
+    public Task Accept()
     {
         if (CanAccept && !string.IsNullOrEmpty(BarcodeInput))
         {
-            var navigationParameter = new Dictionary<string, object>
+            return _appNavigationService.GoBack(new Dictionary<string, object>
             {
-                ["barcodeData"] = BarcodeInput,
-                ["barcodeFormat"] = SelectedBarcodeType
-            };
-            
-            await Shell.Current.GoToAsync("..", navigationParameter);
+                [NavigationParams.BarcodeData] = BarcodeInput,
+                [NavigationParams.BarcodeFormat] = SelectedBarcodeType
+            });
         }
+        return Task.CompletedTask; 
     }
 }

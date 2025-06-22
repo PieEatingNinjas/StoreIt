@@ -1,10 +1,12 @@
+using CommunityToolkit.Mvvm.Messaging;
+
 namespace StoreIt.Maui.Services;
 
 public class ThemeService : IThemeService
 {
     private readonly IUserPreferencesService _userPreferencesService;
-    
-    public event EventHandler<ThemeOption>? ThemeChanged;
+
+    // public event EventHandler<ThemeOption>? ThemeChanged;
 
     public ThemeService(IUserPreferencesService userPreferencesService)
     {
@@ -20,18 +22,18 @@ public class ThemeService : IThemeService
     {
         // Save preference
         _userPreferencesService.SetSelectedTheme(theme);
-        
+
         // Apply theme to application
         ApplyTheme(theme);
-        
+
         // Notify listeners
-        ThemeChanged?.Invoke(this, theme);
+        WeakReferenceMessenger.Default.Send(new ThemeChangedMessage(theme));
     }
 
     public AppTheme GetAppTheme()
     {
         var currentTheme = GetCurrentTheme();
-        
+
         return currentTheme switch
         {
             ThemeOption.Light => AppTheme.Light,
@@ -53,5 +55,15 @@ public class ThemeService : IThemeService
         {
             Application.Current.UserAppTheme = GetAppTheme();
         }
+    }
+}
+
+internal class ThemeChangedMessage
+{
+    public ThemeOption Theme { get; }
+
+    public ThemeChangedMessage(ThemeOption theme)
+    {
+        Theme = theme;
     }
 }

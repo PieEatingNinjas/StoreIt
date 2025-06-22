@@ -7,9 +7,9 @@ public partial class ViewCardPage : ContentPage
     // Zoom sizes - cycle through these on tap
     private readonly (double width, double height)[] _zoomSizes = new[]
     {
-        (250.0, 125.0),  // A - Normal size
-        (350.0, 175.0),  // B - Large size  
-        (150.0, 75.0)    // C - Small size
+        (250.0, 125.0),
+        (350.0, 175.0), 
+        (150.0, 75.0)   
     };
 
     private int _currentZoomIndex = 0;
@@ -27,7 +27,6 @@ public partial class ViewCardPage : ContentPage
     {
         base.OnAppearing();
 
-        // Set initial barcode size (A - Normal)
         SetZoomSize(0);
 
         // Keep screen on when viewing barcode
@@ -38,11 +37,6 @@ public partial class ViewCardPage : ContentPage
             _shouldReloadCard = false;
             ViewModel.ReloadCardCommand.Execute(null);
         }
-        // else if(ViewModel.Card?.HasBarcode ?? false)
-        // {
-        //     // Show zoom hint briefly, then fade it out
-        //     ShowZoomHintBriefly();
-        // }
     }
 
     protected override void OnDisappearing()
@@ -55,42 +49,9 @@ public partial class ViewCardPage : ContentPage
 
     private void OnBarcodeTapped(object sender, TappedEventArgs e)
     {
-        // Cycle to next zoom size on double tap
         CycleZoom();
-
-        // Hide the hint after first use
-       // HideZoomHint();
     }
 
-    // Zoom hint management
-    // private async void ShowZoomHintBriefly()
-    // {
-    //     if (zoomHint != null)
-    //     {
-    //         zoomHint.Opacity = 1;
-    //         zoomHint.IsVisible = true;
-
-    //         // Wait 3 seconds, then fade out
-    //         await Task.Delay(3000);
-    //         await FadeOutZoomHint();
-    //     }
-    // }
-
-    // private async void HideZoomHint()
-    // {
-    //     await FadeOutZoomHint();
-    // }
-
-    // private async Task FadeOutZoomHint()
-    // {
-    //     if (zoomHint != null && zoomHint.IsVisible)
-    //     {
-    //         await zoomHint.FadeTo(0, 500); // 500ms fade out
-    //         zoomHint.IsVisible = false;
-    //     }
-    // }
-
-    // Zoom methods
     private void CycleZoom()
     {
         _currentZoomIndex = (_currentZoomIndex + 1) % _zoomSizes.Length;
@@ -113,7 +74,7 @@ public partial class ViewCardPage : ContentPage
         {
             case "Bewerken":
                 _shouldReloadCard = true;
-                await Shell.Current.GoToAsync($"addcard?cardId={ViewModel.CardId}");
+                await ViewModel.EditCardCommand.ExecuteAsync(null);
                 break;
             case "Verwijderen":
                 await ViewModel.DeleteCardCommand.ExecuteAsync(null);

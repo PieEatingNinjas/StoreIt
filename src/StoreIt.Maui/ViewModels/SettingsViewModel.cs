@@ -1,46 +1,44 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using StoreIt.Maui.Services;
+using StoreIt.Services;
 
 namespace StoreIt.Maui.ViewModels;
 
 public partial class SettingsViewModel : ObservableObject
 {
+    private readonly IAppNavigationService _navigationService;
     private readonly IThemeService _themeService;
     private readonly IUserPreferencesService _userPreferencesService;
 
     [ObservableProperty]
     private ThemeOption selectedTheme;
-    
+
     [ObservableProperty]
     private bool hintsEnabled;
 
-    public SettingsViewModel(IThemeService themeService, IUserPreferencesService userPreferencesService)
+    public SettingsViewModel(IThemeService themeService,
+        IUserPreferencesService userPreferencesService, IAppNavigationService appNavigationService)
     {
+        _navigationService = appNavigationService;
         _themeService = themeService;
         _userPreferencesService = userPreferencesService;
 
         // Load current theme
         SelectedTheme = _themeService.GetCurrentTheme();
-        
+
         // Load hints setting
         HintsEnabled = _userPreferencesService.GetHintsEnabled();
 
         // Listen for theme changes
-        _themeService.ThemeChanged += OnThemeChanged;
+        WeakReferenceMessenger.Default.Register<ThemeChangedMessage>(this, (_, _) => OnThemeChanged());
     }
 
-    partial void OnSelectedThemeChanged(ThemeOption value)
-    {
-        _themeService.SetTheme(value);
-    }
-    
     partial void OnHintsEnabledChanged(bool value)
-    {
-        _userPreferencesService.SetHintsEnabled(value);
-    }
+        => _userPreferencesService.SetHintsEnabled(value);
 
-    private void OnThemeChanged(object? sender, ThemeOption theme)
+    private void OnThemeChanged()
     {
         OnPropertyChanged(nameof(IsSystemTheme));
         OnPropertyChanged(nameof(IsLightTheme));
@@ -49,10 +47,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task GoBack()
-    {
-        await Shell.Current.GoToAsync("..");
-    }
+    private Task GoBack() => _navigationService.GoBack();
 
     public bool IsSystemTheme
     {
@@ -70,5 +65,12 @@ public partial class SettingsViewModel : ObservableObject
     {
         get => SelectedTheme == ThemeOption.Dark;
         set { if (value) SelectedTheme = ThemeOption.Dark; }
+    }
+    
+    [RelayCommand]
+    public void ThemeSelected(ThemeOption theme)
+    {
+        SelectedTheme = theme;
+        _themeService.SetTheme(theme);
     }
 }

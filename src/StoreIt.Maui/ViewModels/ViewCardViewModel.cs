@@ -2,15 +2,19 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using StoreIt.Maui.Models;
 using StoreIt.Maui.Services;
+using StoreIt.Navigation;
+using StoreIt.Services;
 
 namespace StoreIt.Maui.ViewModels;
 
-[QueryProperty(nameof(CardId), "cardId")]
+[QueryProperty(nameof(CardId), NavigationParams.CardId)]
 public partial class ViewCardViewModel : ObservableObject
 {
     private readonly DatabaseService _databaseService;
     private readonly IPlatformBrightnessService _brightnessService;
     private readonly IUserPreferencesService _userPreferencesService;
+    private readonly IAppNavigationService _navigationService;
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private CustomerCard? card;
@@ -23,11 +27,17 @@ public partial class ViewCardViewModel : ObservableObject
     [ObservableProperty]
     private bool showZoomHint;
 
-    public ViewCardViewModel(DatabaseService databaseService, IPlatformBrightnessService brightnessService, IUserPreferencesService userPreferencesService)
+    public ViewCardViewModel(DatabaseService databaseService,
+        IPlatformBrightnessService brightnessService,
+        IUserPreferencesService userPreferencesService,
+        IAppNavigationService appNavigationService,
+        IDialogService dialogService)
     {
         _databaseService = databaseService;
         _brightnessService = brightnessService;
         _userPreferencesService = userPreferencesService;
+        _navigationService = appNavigationService;
+        _dialogService = dialogService;
         isBrightnessControlSupported = _brightnessService.IsBrightnessControlSupported;
     }
 
@@ -57,7 +67,6 @@ public partial class ViewCardViewModel : ObservableObject
                     {
                         // For barcode cards: automatically set max brightness and hide slider
                         _brightnessService.SetSystemBrightness(1.0f);
-                        // BrightnessLevel = 1.0f;
                         
                         // Only show zoom hint if hints are enabled in settings
                         if (_userPreferencesService.GetHintsEnabled())
@@ -70,18 +79,12 @@ public partial class ViewCardViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Error", $"Unable to load card: {ex.Message}", "OK");
+            await _dialogService.DisplayAlert("Ooops...", $"Kaart kon niet geladen worden: {ex.Message}", "OK");
         }
     }
 
     [RelayCommand]
-    public async Task EditCardAsync()
-    {
-        if (Card != null)
-        {
-            await Shell.Current.GoToAsync($"addcard?cardId={Card.Id}");
-        }
-    }
+    public Task EditCardAsync() => _navigationService.NavigateToEditCardPage(Card?.Id ?? 0);
 
     [RelayCommand]
     public async Task ReloadCardAsync()
@@ -97,13 +100,13 @@ public partial class ViewCardViewModel : ObservableObject
     {
         if (Card == null) return;
 
-        bool confirm = await Shell.Current.DisplayAlert("Delete Card",
-            $"Are you sure you want to delete '{Card.Name}'?", "Yes", "No");
+        bool confirm = await _dialogService.DisplayAlert("Ben je zeker?",
+            $"Ben je zeker dat je kaart '{Card.Name}' wil verwijderen?", "Ja", "Nee");
 
         if (confirm)
         {
             await _databaseService.DeleteCardAsync(Card);
-            await Shell.Current.GoToAsync("/main");
+            await _navigationService.GoToRoot();
         }
     }
 
@@ -118,7 +121,7 @@ public partial class ViewCardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task GoBackAsync()
+    public Task GoBackAsync()
     {
         // Always restore original brightness when leaving card view
         if (isBrightnessControlSupported && (Card?.HasBarcode ?? false))
@@ -126,6 +129,6 @@ public partial class ViewCardViewModel : ObservableObject
             _brightnessService.RestoreOriginalBrightness();
         }
 
-        await Shell.Current.GoToAsync("..");
+        return _navigationService.GoBack();
     }
 }

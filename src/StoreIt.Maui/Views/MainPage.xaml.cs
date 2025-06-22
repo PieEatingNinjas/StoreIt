@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Maui.Behaviors;
-using StoreIt.Maui.ViewModels;
+﻿using StoreIt.Maui.ViewModels;
 
 namespace StoreIt.Maui.Views;
 
@@ -18,30 +17,6 @@ public partial class MainPage : ContentPage
         if (BindingContext is MainViewModel vm)
         {
             await vm.LoadCardsCommand.ExecuteAsync(null);
-        }
-    }
-
-    private async void OnMoreOptionsClicked(object sender, EventArgs e)
-    {
-        if (sender is Button button && button.BindingContext is Models.CustomerCard card)
-        {
-            string action = await DisplayActionSheet($"Opties voor {card.Name}", "Annuleren", "Verwijderen", "Bewerken", "Favoriet");
-            
-            if (BindingContext is MainViewModel vm)
-            {
-                switch (action)
-                {
-                    case "Bewerken":
-                        await Shell.Current.GoToAsync($"addcard?cardId={card.Id}");
-                        break;
-                    case "Verwijderen":
-                        await vm.DeleteCardCommand.ExecuteAsync(card);
-                        break;
-                    case "Favoriet":
-                        await vm.ToggleFavoriteCommand.ExecuteAsync(card);
-                        break;
-                }
-            }
         }
     }
 

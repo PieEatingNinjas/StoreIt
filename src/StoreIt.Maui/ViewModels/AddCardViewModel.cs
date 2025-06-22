@@ -2,16 +2,20 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using StoreIt.Maui.Models;
 using StoreIt.Maui.Services;
+using StoreIt.Navigation;
+using StoreIt.Services;
 
 namespace StoreIt.Maui.ViewModels;
 
-[QueryProperty(nameof(CardId), "cardId")]
-[QueryProperty(nameof(ReceivedBarcodeData), "barcodeData")]
-[QueryProperty(nameof(ReceivedBarcodeFormat), "barcodeFormat")]
+[QueryProperty(nameof(CardId), NavigationParams.CardId)]
+[QueryProperty(nameof(ReceivedBarcodeData), NavigationParams.BarcodeData)]
+[QueryProperty(nameof(ReceivedBarcodeFormat), NavigationParams.BarcodeFormat)]
 public partial class AddCardViewModel : ObservableObject
 {
     private readonly DatabaseService _databaseService;
     private readonly IUserPreferencesService _userPreferencesService;
+    private readonly IAppNavigationService _navigationService;
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private string name = string.Empty;
@@ -29,13 +33,7 @@ public partial class AddCardViewModel : ObservableObject
     private bool showBarcodePreview;
 
     [ObservableProperty]
-    private string barcodePreviewText = string.Empty;
-
-    [ObservableProperty]
     private string customCode = string.Empty;
-
-    [ObservableProperty]
-    private bool isCameraVisible;
 
     [ObservableProperty]
     private bool isEditing;
@@ -48,12 +46,6 @@ public partial class AddCardViewModel : ObservableObject
 
     [ObservableProperty]
     private string? receivedBarcodeFormat;
-
-    [ObservableProperty]
-    private bool showPresetSelection = false;
-
-    [ObservableProperty]
-    private bool showCardForm = true;
 
     [ObservableProperty]
     private bool showBarcodeScanning;
@@ -89,10 +81,14 @@ public partial class AddCardViewModel : ObservableObject
         new CardColor { Name = "Roze", Value = "#E91E63" }
     };
 
-    public AddCardViewModel(DatabaseService databaseService, IUserPreferencesService userPreferencesService)
+    public AddCardViewModel(DatabaseService databaseService,
+        IUserPreferencesService userPreferencesService,
+        IAppNavigationService navigationService, IDialogService dialogService)
     {
         _databaseService = databaseService;
         _userPreferencesService = userPreferencesService;
+        _navigationService = navigationService; 
+        _dialogService = dialogService;
 
         // Initialize with random color for new cards
         SelectRandomColor();
@@ -115,6 +111,7 @@ public partial class AddCardViewModel : ObservableObject
         {
             Title = "Nieuwe Kaart";
             SaveButtonText = "Opslaan";
+            IsEditing = false;
             SubTitle = "Nieuwe kaart toevoegen";
         }
     }
@@ -174,22 +171,17 @@ public partial class AddCardViewModel : ObservableObject
                     ShowBarcodeScanning = true;
                     ShowCustomCodeInput = false;
                     ShowBarcodePreview = true;
-                    BarcodePreviewText = $"{BarcodeFormat}: {BarcodeData}";
                 }
                 else if (!string.IsNullOrEmpty(card.CustomCode))
                 {
                     ShowBarcodeScanning = false;
                     ShowCustomCodeInput = true;
                 }
-                
-                // Skip preset selection when editing
-                ShowPresetSelection = false;
-                ShowCardForm = true;
             }
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Error", $"Unable to load card: {ex.Message}", "OK");
+            await _dialogService.DisplayAlert("Ooops...", $"Kaart kon niet geladen worden: {ex.Message}", "OK");
         }
     }
 
@@ -219,48 +211,22 @@ public partial class AddCardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task OpenScanBarcodePage()
-    {
-        await Shell.Current.GoToAsync("scanbarcode");
-    }
+    public Task OpenScanBarcodePage() => _navigationService.NavigateToScanBarCodePage();
 
     [RelayCommand]
-    public async Task OpenManualBarcodePage()
-    {
-        // Pass existing barcode data if available
-        var navigationParams = new Dictionary<string, object>();
-        
-        if (!string.IsNullOrEmpty(BarcodeData))
-        {
-            navigationParams.Add("barcodeData", BarcodeData);
-        }
-        
-        if (!string.IsNullOrEmpty(BarcodeFormat))
-        {
-            navigationParams.Add("barcodeFormat", BarcodeFormat);
-        }
-
-        await Shell.Current.GoToAsync("manualbarcode", navigationParams);
-    }
+    public Task OpenManualBarcodePage() => _navigationService.NavigateToAddBarCodePage(BarcodeData, BarcodeFormat);
 
     public void OnBarcodeReceived(BarcodeResult result)
     {
         BarcodeData = result.Data;
         BarcodeFormat = result.Format;
-        IsCameraVisible = false;
-        
-        // Update preview
         ShowBarcodePreview = !string.IsNullOrEmpty(BarcodeData);
-        if (ShowBarcodePreview)
-        {
-            BarcodePreviewText = $"{BarcodeFormat}: {BarcodeData}";
-        }
-        
+
         // Show save hint when barcode is received
         ShowSaveHintBriefly();
     }
     
-    private async void ShowSaveHintBriefly()
+    private void ShowSaveHintBriefly()
     {
         // Only show hint if hints are enabled in settings
         if (!_userPreferencesService.GetHintsEnabled())
@@ -289,17 +255,16 @@ public partial class AddCardViewModel : ObservableObject
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
-                await Shell.Current.DisplayAlert("Validatie", "Voer een naam in voor de kaart.", "OK");
+                await _dialogService.DisplayAlert("Validatie", "Voer een naam in voor de kaart.", "OK");
                 return;
             }
 
-            // MVP: Check that user has selected barcode OR custom code (not both)
             var hasBarcodeData = !string.IsNullOrWhiteSpace(BarcodeData);
             var hasCustomCode = !string.IsNullOrWhiteSpace(CustomCode);
             
             if (!hasBarcodeData && !hasCustomCode)
             {
-                await Shell.Current.DisplayAlert("Validatie", "Kies eerst het type kaart (barcode of code) en vul de gegevens in.", "OK");
+                await _dialogService.DisplayAlert("Validatie", "Kies eerst het type kaart (barcode of code) en vul de gegevens in.", "OK");
                 return;
             }
 
@@ -311,29 +276,22 @@ public partial class AddCardViewModel : ObservableObject
                 BarcodeData = hasBarcodeData ? BarcodeData : null,
                 BarcodeFormat = hasBarcodeData ? BarcodeFormat : null,
                 CustomCode = hasCustomCode ? CustomCode.Trim() : null,
-                Category = null, // MVP: No categories
-                Color = SelectedColor,
-                PresetId = null, // MVP: No presets
-                LogoEmoji = null // MVP: No logos for now
+                Color = SelectedColor
             };
 
             await _databaseService.SaveCardAsync(card);
             
-            await Shell.Current.DisplayAlert("Succes", 
+            await _dialogService.DisplayAlert("Succes", 
                 IsEditing ? "Kaart bijgewerkt!" : "Kaart opgeslagen!", "OK");
             
-            await Shell.Current.GoToAsync("..");
+            await _navigationService.GoBack();
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Error", $"Kan kaart niet opslaan: {ex.Message}", "OK");
+            await _dialogService.DisplayAlert("Error", $"Kan kaart niet opslaan: {ex.Message}", "OK");
         }
     }
 
     [RelayCommand]
-    public async Task CancelAsync()
-    {
-        await Shell.Current.GoToAsync("..");
-    }
-
+    public Task CancelAsync() => _navigationService.GoBack();
 }

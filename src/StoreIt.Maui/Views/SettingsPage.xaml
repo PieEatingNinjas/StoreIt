@@ -4,7 +4,10 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:StoreIt.Maui.ViewModels"
+    xmlns:services="clr-namespace:StoreIt.Maui.Services"
+    xmlns:local="clr-namespace:StoreIt.Maui.Views"
     Title="Instellingen"
+    x:Name="root"
     x:DataType="vm:SettingsViewModel">
     <ContentPage.Resources>
         <Style x:Key="SectionHeaderStyle" TargetType="Label">
@@ -71,7 +74,8 @@
                                 </VerticalStackLayout>
                             </Grid>
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnSystemThemeTapped" />
+                                <TapGestureRecognizer Command="{Binding ThemeSelectedCommand}" 
+                                     CommandParameter="{x:Static services:ThemeOption.System}"/>
                             </Border.GestureRecognizers>
                         </Border>
                         <!--  Light Theme  -->
@@ -104,7 +108,8 @@
                                 </VerticalStackLayout>
                             </Grid>
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnLightThemeTapped" />
+                                <TapGestureRecognizer Command="{Binding ThemeSelectedCommand}" 
+                                     CommandParameter="{x:Static services:ThemeOption.Light}"/>
                             </Border.GestureRecognizers>
                         </Border>
                         <!--  Dark Theme  -->
@@ -137,7 +142,8 @@
                                 </VerticalStackLayout>
                             </Grid>
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnDarkThemeTapped" />
+                                <TapGestureRecognizer Command="{Binding ThemeSelectedCommand}" 
+                                     CommandParameter="{x:Static services:ThemeOption.Dark}"/>
                             </Border.GestureRecognizers>
                         </Border>
                     </VerticalStackLayout>

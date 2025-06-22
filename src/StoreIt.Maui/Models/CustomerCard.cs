@@ -24,13 +24,7 @@ public class CustomerCard
 
     public string? Color { get; set; }
 
-    public string? Category { get; set; }
-
     public bool IsFavorite { get; set; }
-
-    public string? PresetId { get; set; }
-
-    public string? LogoEmoji { get; set; }
 
     public string? CustomCode { get; set; }
 

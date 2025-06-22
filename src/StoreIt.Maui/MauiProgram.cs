@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using StoreIt.Maui.Services;
 using StoreIt.Maui.ViewModels;
 using StoreIt.Maui.Views;
+using StoreIt.Navigation;
+using StoreIt.Services;
 using ZXing.Net.Maui.Controls;
 
 namespace StoreIt.Maui;
@@ -32,6 +34,8 @@ public static class MauiProgram
                 builder.Services.AddSingleton<IUserPreferencesService, UserPreferencesService>();
                 builder.Services.AddSingleton<IThemeService, ThemeService>();
                 builder.Services.AddSingleton<IPreferences>(Preferences.Default);
+                builder.Services.AddSingleton<IAppNavigationService, ShellNavigationService>();
+                builder.Services.AddSingleton<IDialogService, ShellDialogService>();
 
                 // Platform-specific services
 #if ANDROID

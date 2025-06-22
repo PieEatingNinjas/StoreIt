@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:StoreIt.Maui"
     xmlns:views="clr-namespace:StoreIt.Maui.Views"
+    xmlns:navigation="clr-namespace:StoreIt.Navigation;assembly=StoreIt.Maui"
     Title="StoreIt"
     FlyoutBehavior="Disabled">
 
@@ -14,12 +15,12 @@
             Title="Mijn Kaarten"
             ContentTemplate="{DataTemplate views:MainPage}"
             Icon="cards"
-            Route="main" />
+            Route="{x:Static navigation:Pages.MainPage}" />
         <ShellContent
             Title="Instellingen"
             ContentTemplate="{DataTemplate views:SettingsPage}"
             Icon="settings"
-            Route="settings" />
+            Route="{x:Static navigation:Pages.SettingsPage}" />
     </TabBar>
 
 </Shell>

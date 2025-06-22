@@ -91,7 +91,7 @@ public class DatabaseService
     {
         await Init();
         return await _database!.Table<CustomerCard>()
-            .Where(c => c.Name.Contains(searchTerm) || c.Description.Contains(searchTerm) || (c.Category != null && c.Category.Contains(searchTerm)) || (c.CustomCode != null && c.CustomCode.Contains(searchTerm)))
+            .Where(c => c.Name.Contains(searchTerm) || c.Description.Contains(searchTerm) || (c.CustomCode != null && c.CustomCode.Contains(searchTerm)))
             .OrderByDescending(c => c.IsFavorite)
             .ThenByDescending(c => c.LastUsed)
             .ToListAsync();
