@@ -97,7 +97,7 @@ jobs:
         cd src/StoreIt.Maui
         fastlane supply \
           --aab ../../src/StoreIt.Maui/bin/Release/net9.0-android/publish/*.aab \
-          --package_name ${{ secrets.ANDROID_PACKAGE_NAME }} \
+          --package_name "$ANDROID_PACKAGE_NAME" \
           --json_key_data "$GOOGLE_PLAY_JSON_KEY_DATA" \
           --track internal \
           --release_status completed
