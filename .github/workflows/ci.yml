@@ -41,6 +41,10 @@ jobs:
     # needs: build-and-test
     
     steps:
+
+    - name: 🤖 Set Xcode version 
+      run: sudo xcode-select -s /Applications/Xcode_16.4.app
+
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
 
@@ -87,6 +91,10 @@ jobs:
     # needs: build-and-test
     
     steps:
+  
+    - name: 🤖 Set Xcode version 
+      run: sudo xcode-select -s /Applications/Xcode_16.4.app
+      
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
 
