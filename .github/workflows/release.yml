@@ -93,6 +93,7 @@ jobs:
     - name: 🏪 Deploy to Google Play Store
       env:
         GOOGLE_PLAY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
       run: |
         cd src/StoreIt.Maui
         fastlane supply \
