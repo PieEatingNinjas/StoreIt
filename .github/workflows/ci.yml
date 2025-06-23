@@ -37,7 +37,7 @@ jobs:
   # 🤖 Android Build Job
   build-android:
     name: 🤖 Build Android
-    runs-on: ubuntu-latest
+    runs-on: macos-15
     needs: build-and-test
     
     steps:
@@ -83,7 +83,7 @@ jobs:
   # 🍎 iOS Build Job (macOS runner required for iOS)
   build-ios:
     name: 🍎 Build iOS
-    runs-on: macos-14
+    runs-on: macos-15
     needs: build-and-test
     
     steps:
