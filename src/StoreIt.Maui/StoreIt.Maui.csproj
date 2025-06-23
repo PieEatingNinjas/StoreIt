@@ -25,7 +25,7 @@
 		<ApplicationTitle>StoreIt</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.StoreIt</ApplicationId>
+		<ApplicationId>be.bullit.storeit</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>

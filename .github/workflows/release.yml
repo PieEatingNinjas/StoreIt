@@ -1,0 +1,217 @@
+name: 🚀 Release Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Triggers only on version tags like v1.0.0
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  PROJECT_PATH: 'src/StoreIt.Maui/StoreIt.Maui.csproj'
+
+jobs:
+  # 📋 Prepare Release Info
+  prepare-release:
+    name: 📋 Prepare Release Info
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      display-version: ${{ steps.version.outputs.display-version }}
+      build-number: ${{ steps.version.outputs.build-number }}
+      tag: ${{ steps.version.outputs.tag }}
+    
+    steps:
+    - name: 🏷️ Extract Version from Tag
+      id: version
+      run: |
+        VERSION="${GITHUB_REF#refs/tags/v}"
+        TAG="${GITHUB_REF#refs/tags/}"
+        DISPLAY_VERSION=$(echo $VERSION | cut -d'-' -f1)
+        BUILD_NUMBER=${{ github.run_number }}
+        
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "display-version=$DISPLAY_VERSION" >> $GITHUB_OUTPUT
+        echo "build-number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+        echo "tag=$TAG" >> $GITHUB_OUTPUT
+        
+        echo "📋 Version: $VERSION"
+        echo "📋 Display: $DISPLAY_VERSION"
+        echo "📋 Build: $BUILD_NUMBER"
+
+  # 🤖 Android Build & Deploy
+  android-release:
+    name: 🤖 Android Release
+    runs-on: macos-15
+    needs: prepare-release
+    
+    steps:
+    - name: 🍎 Set Xcode version 
+      run: sudo xcode-select -s /Applications/Xcode_16.4.app
+
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🔧 Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: ☕ Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'microsoft'
+        java-version: '17'
+
+    - name: 📦 Install .NET MAUI Workload
+      run: dotnet workload install maui
+
+    - name: 🔍 Restore Dependencies
+      run: dotnet restore ${{ env.PROJECT_PATH }}
+
+    - name: 🔐 Setup Android Keystore
+      run: |
+        echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > android-keystore.jks
+        echo "ANDROID_KEYSTORE_PATH=$(pwd)/android-keystore.jks" >> $GITHUB_ENV
+
+    - name: 🔨 Build & Sign Android AAB
+      run: |
+        dotnet publish ${{ env.PROJECT_PATH }} \
+          -f net9.0-android \
+          -c Release \
+          /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.display-version }}" \
+          /p:ApplicationVersion="${{ needs.prepare-release.outputs.build-number }}" \
+          /p:AndroidSigningKeyStore=${{ env.ANDROID_KEYSTORE_PATH }} \
+          /p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }} \
+          /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASSWORD }} \
+          /p:AndroidSigningStorePass=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
+          /p:AndroidPackageFormat=aab
+
+    - name: 🍎 Install Fastlane
+      run: |
+        sudo gem install fastlane
+
+    - name: 🏪 Deploy to Google Play Store
+      env:
+        GOOGLE_PLAY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+      run: |
+        cd src/StoreIt.Maui
+        fastlane supply \
+          --aab ../../src/StoreIt.Maui/bin/Release/net9.0-android/publish/*.aab \
+          --package_name ${{ secrets.ANDROID_PACKAGE_NAME }} \
+          --json_key_data "$GOOGLE_PLAY_JSON_KEY_DATA" \
+          --track internal \
+          --release_status completed
+
+  # # 🍎 iOS Build & Deploy  
+  # ios-release:
+  #   name: 🍎 iOS Release
+  #   runs-on: macos-15
+  #   needs: prepare-release
+    
+  #   steps:
+  #   - name: 🍎 Set Xcode version 
+  #     run: sudo xcode-select -s /Applications/Xcode_16.4.app
+
+  #   - name: 📥 Checkout Code
+  #     uses: actions/checkout@v4
+
+  #   - name: 🔧 Setup .NET
+  #     uses: actions/setup-dotnet@v4
+  #     with:
+  #       dotnet-version: ${{ env.DOTNET_VERSION }}
+
+  #   - name: 📦 Install .NET MAUI Workload
+  #     run: dotnet workload install maui
+
+  #   - name: 🔍 Restore Dependencies
+  #     run: dotnet restore ${{ env.PROJECT_PATH }}
+
+  #   - name: 🔐 Setup iOS Certificates & Provisioning Profiles
+  #     env:
+  #       IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+  #       IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+  #       IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+  #       KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+  #     run: |
+  #       # Create variables
+  #       CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+  #       PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+  #       KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+  #       # Import certificate and provisioning profile
+  #       echo -n "$IOS_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
+  #       echo -n "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode --output $PP_PATH
+
+  #       # Create temporary keychain
+  #       security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+  #       security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+  #       security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+  #       # Import certificate to keychain
+  #       security import $CERTIFICATE_PATH -P "$IOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+  #       security list-keychain -d user -s $KEYCHAIN_PATH
+
+  #       # Apply provisioning profile
+  #       mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+  #       cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+  #   - name: 🔨 Build & Sign iOS IPA
+  #     run: |
+  #       dotnet publish ${{ env.PROJECT_PATH }} \
+  #         -f net9.0-ios \
+  #         -c Release \
+  #         /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.display-version }}" \
+  #         /p:ApplicationVersion="${{ needs.prepare-release.outputs.build-number }}" \
+  #         /p:ArchiveOnBuild=true \
+  #         /p:CodesignProvision="${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}" \
+  #         /p:CodesignKey="${{ secrets.IOS_SIGNING_IDENTITY }}"
+
+  #   - name: 🍎 Install Fastlane
+  #     run: |
+  #       sudo gem install fastlane
+
+  #   - name: 🏪 Deploy to App Store Connect
+  #     env:
+  #       APPSTORE_CONNECT_API_KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
+  #       APPSTORE_CONNECT_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
+  #       APPSTORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
+  #     run: |
+  #       cd src/StoreIt.Maui
+  #       fastlane deliver \
+  #         --ipa ../../src/StoreIt.Maui/bin/Release/net9.0-ios/**/*.ipa \
+  #         --api_key_id "$APPSTORE_CONNECT_API_KEY_ID" \
+  #         --api_issuer_id "$APPSTORE_CONNECT_ISSUER_ID" \
+  #         --api_key_content "$APPSTORE_CONNECT_API_KEY_CONTENT" \
+  #         --skip_screenshots \
+  #         --skip_metadata \
+  #         --submit_for_review
+
+  #   - name: 🧹 Clean up keychain
+  #     if: ${{ always() }}
+  #     run: |
+  #       security delete-keychain $RUNNER_TEMP/app-signing.keychain-db || true
+  #       rm ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision || true
+
+  # 📦 Create GitHub Release
+  github-release:
+    name: 📦 GitHub Release
+    runs-on: ubuntu-latest
+    needs: [prepare-release, android-release] #, ios-release
+    
+    steps:
+    - name: 🏷️ Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ needs.prepare-release.outputs.tag }}
+        name: StoreIt ${{ needs.prepare-release.outputs.version }}
+        body: |
+          ## StoreIt ${{ needs.prepare-release.outputs.version }}
+          
+          🚀 New release automatically built and deployed to app stores.
+          
+          **Version**: ${{ needs.prepare-release.outputs.display-version }}
+          **Build**: ${{ needs.prepare-release.outputs.build-number }}
+          **Platforms**: Android (Google Play Store) + iOS (App Store)
+        draft: false
+        prerelease: ${{ contains(needs.prepare-release.outputs.version, 'beta') || contains(needs.prepare-release.outputs.version, 'alpha') || contains(needs.prepare-release.outputs.version, 'rc') }}
+        token: ${{ secrets.GITHUB_TOKEN }}
