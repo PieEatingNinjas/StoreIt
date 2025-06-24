@@ -179,7 +179,7 @@ jobs:
       run: |
         cd src/StoreIt.Maui
         fastlane deliver \
-          --ipa ../../src/StoreIt.Maui/bin/Release/net9.0-ios/**/*.ipa \
+          --ipa ../../src/StoreIt.Maui/bin/Release/net9.0-ios/publish/StoreIt.Maui.ipa \
           --api_key "$APPSTORE_CONNECT_API_KEY_CONTENT" \
           --skip_screenshots \
           --skip_metadata \
