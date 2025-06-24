@@ -103,95 +103,95 @@ jobs:
           --track internal \
           --release_status completed
 
-  # # 🍎 iOS Build & Deploy  
-  # ios-release:
-  #   name: 🍎 iOS Release
-  #   runs-on: macos-15
-  #   needs: prepare-release
+  # 🍎 iOS Build & Deploy  
+  ios-release:
+    name: 🍎 iOS Release
+    runs-on: macos-15
+    needs: prepare-release
     
-  #   steps:
-  #   - name: 🍎 Set Xcode version 
-  #     run: sudo xcode-select -s /Applications/Xcode_16.4.app
+    steps:
+    - name: 🍎 Set Xcode version 
+      run: sudo xcode-select -s /Applications/Xcode_16.4.app
 
-  #   - name: 📥 Checkout Code
-  #     uses: actions/checkout@v4
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
 
-  #   - name: 🔧 Setup .NET
-  #     uses: actions/setup-dotnet@v4
-  #     with:
-  #       dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: 🔧 Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
-  #   - name: 📦 Install .NET MAUI Workload
-  #     run: dotnet workload install maui
+    - name: 📦 Install .NET MAUI Workload
+      run: dotnet workload install maui
 
-  #   - name: 🔍 Restore Dependencies
-  #     run: dotnet restore ${{ env.PROJECT_PATH }}
+    - name: 🔍 Restore Dependencies
+      run: dotnet restore ${{ env.PROJECT_PATH }}
 
-  #   - name: 🔐 Setup iOS Certificates & Provisioning Profiles
-  #     env:
-  #       IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
-  #       IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
-  #       IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
-  #       KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-  #     run: |
-  #       # Create variables
-  #       CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-  #       PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
-  #       KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+    - name: 🔐 Setup iOS Certificates & Provisioning Profiles
+      env:
+        IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+        IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+        IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      run: |
+        # Create variables
+        CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+        PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
-  #       # Import certificate and provisioning profile
-  #       echo -n "$IOS_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
-  #       echo -n "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode --output $PP_PATH
+        # Import certificate and provisioning profile
+        echo -n "$IOS_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
+        echo -n "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode --output $PP_PATH
 
-  #       # Create temporary keychain
-  #       security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-  #       security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-  #       security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        # Create temporary keychain
+        security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
-  #       # Import certificate to keychain
-  #       security import $CERTIFICATE_PATH -P "$IOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-  #       security list-keychain -d user -s $KEYCHAIN_PATH
+        # Import certificate to keychain
+        security import $CERTIFICATE_PATH -P "$IOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+        security list-keychain -d user -s $KEYCHAIN_PATH
 
-  #       # Apply provisioning profile
-  #       mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-  #       cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+        # Apply provisioning profile
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
-  #   - name: 🔨 Build & Sign iOS IPA
-  #     run: |
-  #       dotnet publish ${{ env.PROJECT_PATH }} \
-  #         -f net9.0-ios \
-  #         -c Release \
-  #         /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.display-version }}" \
-  #         /p:ApplicationVersion="${{ needs.prepare-release.outputs.build-number }}" \
-  #         /p:ArchiveOnBuild=true \
-  #         /p:CodesignProvision="${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}" \
-  #         /p:CodesignKey="${{ secrets.IOS_SIGNING_IDENTITY }}"
+    - name: 🔨 Build & Sign iOS IPA
+      run: |
+        dotnet publish ${{ env.PROJECT_PATH }} \
+          -f net9.0-ios \
+          -c Release \
+          /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.display-version }}" \
+          /p:ApplicationVersion="${{ needs.prepare-release.outputs.build-number }}" \
+          /p:ArchiveOnBuild=true \
+          /p:CodesignProvision="${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}" \
+          /p:CodesignKey="${{ secrets.IOS_SIGNING_IDENTITY }}"
 
-  #   - name: 🍎 Install Fastlane
-  #     run: |
-  #       sudo gem install fastlane
+    - name: 🍎 Install Fastlane
+      run: |
+        sudo gem install fastlane
 
-  #   - name: 🏪 Deploy to App Store Connect
-  #     env:
-  #       APPSTORE_CONNECT_API_KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
-  #       APPSTORE_CONNECT_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
-  #       APPSTORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
-  #     run: |
-  #       cd src/StoreIt.Maui
-  #       fastlane deliver \
-  #         --ipa ../../src/StoreIt.Maui/bin/Release/net9.0-ios/**/*.ipa \
-  #         --api_key_id "$APPSTORE_CONNECT_API_KEY_ID" \
-  #         --api_issuer_id "$APPSTORE_CONNECT_ISSUER_ID" \
-  #         --api_key_content "$APPSTORE_CONNECT_API_KEY_CONTENT" \
-  #         --skip_screenshots \
-  #         --skip_metadata \
-  #         --submit_for_review
+    - name: 🏪 Deploy to App Store Connect
+      env:
+        APPSTORE_CONNECT_API_KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
+        APPSTORE_CONNECT_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
+        APPSTORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
+      run: |
+        cd src/StoreIt.Maui
+        fastlane deliver \
+          --ipa ../../src/StoreIt.Maui/bin/Release/net9.0-ios/**/*.ipa \
+          --api_key_id "$APPSTORE_CONNECT_API_KEY_ID" \
+          --api_issuer_id "$APPSTORE_CONNECT_ISSUER_ID" \
+          --api_key_content "$APPSTORE_CONNECT_API_KEY_CONTENT" \
+          --skip_screenshots \
+          --skip_metadata \
+          --submit_for_review
 
-  #   - name: 🧹 Clean up keychain
-  #     if: ${{ always() }}
-  #     run: |
-  #       security delete-keychain $RUNNER_TEMP/app-signing.keychain-db || true
-  #       rm ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision || true
+    - name: 🧹 Clean up keychain
+      if: ${{ always() }}
+      run: |
+        security delete-keychain $RUNNER_TEMP/app-signing.keychain-db || true
+        rm ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision || true
 
   # 📦 Create GitHub Release
   github-release:
