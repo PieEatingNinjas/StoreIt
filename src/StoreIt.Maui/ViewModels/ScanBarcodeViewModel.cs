@@ -40,7 +40,7 @@ public partial class ScanBarcodeViewModel : ObservableObject
 
     public void OnBarcodeDetected(BarcodeDetectionEventArgs e)
     {
-        if (e.Results?.FirstOrDefault() is { } barcode)
+        if (IsScanning && e.Results?.FirstOrDefault() is { } barcode)
         {
             IsScanning = false;
             ScannedData = barcode.Value;

@@ -9,6 +9,16 @@ public partial class ScanBarcodePage : ContentPage
     {
         InitializeComponent();
         BindingContext = viewModel;
+        cameraView.Options = new BarcodeReaderOptions
+        {
+            Formats = BarcodeFormat.Code128 | BarcodeFormat.Code39 | BarcodeFormat.Code93 |
+                      BarcodeFormat.Ean13 | BarcodeFormat.Ean8 | BarcodeFormat.UpcA |
+                      BarcodeFormat.UpcE | BarcodeFormat.Codabar | BarcodeFormat.Itf |
+                      BarcodeFormat.QrCode | BarcodeFormat.DataMatrix | BarcodeFormat.Pdf417,
+            AutoRotate = true,
+            Multiple = false,
+            TryHarder = true
+        };
     }
 
     private void OnBarcodesDetected(object sender, BarcodeDetectionEventArgs e)
