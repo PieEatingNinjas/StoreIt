@@ -176,15 +176,17 @@ jobs:
         APPSTORE_CONNECT_API_KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
         APPSTORE_CONNECT_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
         APPSTORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
+        FASTLANE_HASH: ${{ secrets.FASTLANE_HASH }}
       run: |
         cd src/StoreIt.Maui
         fastlane deliver \
           --ipa ../../src/StoreIt.Maui/bin/Release/net9.0-ios/**/publish/*.ipa \
-          --api_key "$APPSTORE_CONNECT_API_KEY_CONTENT" \
+          --api_key "$FASTLANE_HASH" \
           --skip_screenshots \
           --skip_metadata \
           --submit_for_review
           
+      #--api_key "$APPSTORE_CONNECT_API_KEY_CONTENT" \
       # --api_key_id "$APPSTORE_CONNECT_API_KEY_ID" \
       # --api_issuer_id "$APPSTORE_CONNECT_ISSUER_ID" \
 
