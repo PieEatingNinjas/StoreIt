@@ -161,7 +161,6 @@ jobs:
         dotnet publish ${{ env.PROJECT_PATH }} \
           -f net9.0-ios \
           -c Release \
-          -o output/ipa
           /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.display-version }}" \
           /p:ApplicationVersion="${{ needs.prepare-release.outputs.build-number }}" \
           /p:ArchiveOnBuild=true \
@@ -180,7 +179,7 @@ jobs:
       run: |
         cd src/StoreIt.Maui
         fastlane deliver \
-          --ipa /output/ipa/StoreIt.Maui.ipa \
+          --ipa ../../src/StoreIt.Maui/bin/Release/net9.0-ios/**/publish/*.ipa \
           --api_key "$APPSTORE_CONNECT_API_KEY_CONTENT" \
           --skip_screenshots \
           --skip_metadata \
