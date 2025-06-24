@@ -180,12 +180,13 @@ jobs:
         cd src/StoreIt.Maui
         fastlane deliver \
           --ipa ../../src/StoreIt.Maui/bin/Release/net9.0-ios/**/*.ipa \
-          --api_key_id "$APPSTORE_CONNECT_API_KEY_ID" \
-          --api_issuer_id "$APPSTORE_CONNECT_ISSUER_ID" \
-          --api_key_content "$APPSTORE_CONNECT_API_KEY_CONTENT" \
+          --api_key "$APPSTORE_CONNECT_API_KEY_CONTENT" \
           --skip_screenshots \
           --skip_metadata \
           --submit_for_review
+          
+      # --api_key_id "$APPSTORE_CONNECT_API_KEY_ID" \
+      # --api_issuer_id "$APPSTORE_CONNECT_ISSUER_ID" \
 
     - name: 🧹 Clean up keychain
       if: ${{ always() }}
