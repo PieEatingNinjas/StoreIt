@@ -45,7 +45,7 @@ public partial class ScanBarcodeViewModel : ObservableObject
             IsScanning = false;
             ScannedData = barcode.Value;
             ScannedFormat = barcode.Format.ToString();
-            _ = Accept();
+            App.Current!.Dispatcher.DispatchAsync(Accept);
         }
     }
     
