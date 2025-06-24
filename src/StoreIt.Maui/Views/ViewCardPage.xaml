@@ -137,14 +137,14 @@
                     <VerticalStackLayout
                         HorizontalOptions="Center"
                         Spacing="15"
-                        VerticalOptions="Center">
+                        VerticalOptions="Center" InputTransparent="True">
 
                         <!--  Barcode Display  -->
                         <VerticalStackLayout
                             HorizontalOptions="Center"
                             IsVisible="{Binding Card.HasBarcode}"
                             Spacing="15"
-                            VerticalOptions="Center">
+                            VerticalOptions="Center" InputTransparent="True">
 
                             <zxing:BarcodeGeneratorView
                                 x:Name="barcodeGenerator"
@@ -152,7 +152,7 @@
                                 ForegroundColor="Black"
                                 Format="{Binding Card.BarcodeFormat, Converter={StaticResource StringToBarcodeFormatConverter}}"
                                 HorizontalOptions="Center"
-                                VerticalOptions="Center"
+                                VerticalOptions="Center" InputTransparent="True"
                                 Value="{Binding Card.BarcodeData}" />
 
                             <!--  Barcode Data  -->
@@ -162,11 +162,7 @@
                                 HorizontalOptions="Center"
                                 HorizontalTextAlignment="Center"
                                 Text="{Binding Card.BarcodeData}"
-                                TextColor="#666" />
-
-                            <VerticalStackLayout.GestureRecognizers>
-                                <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="OnBarcodeTapped" />
-                            </VerticalStackLayout.GestureRecognizers>
+                                TextColor="#666" InputTransparent="true" />
                         </VerticalStackLayout>
 
                         <!--  Custom Code Display  -->
@@ -182,17 +178,43 @@
                                                         Dark=#FFF}" />
                     </VerticalStackLayout>
 
-                    <!--  Zoom Hint  -->
-                    <controls:HintControl
-                        Margin="20,0,20,0"
-                        HorizontalOptions="Center"
-                        Icon="👆"
-                        IsShowing="{Binding ShowZoomHint}"
-                        ShowDuration="1500"
-                        Text="Tik om te zoomen"
-                        VerticalOptions="End" />
+                    
+
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="OnCodeTapped" />
+                    </Grid.GestureRecognizers>
                 </Grid>
             </Border>
+            <!-- Hints -->
+            <Grid Margin="0, 5, 0, 0">
+                <!--  Zoom Hint  -->
+                <controls:HintControl
+                    Margin="20,0,20,0"
+                    HorizontalOptions="Center"
+                    Icon="👆"
+                    IsShowing="{Binding ShowZoomHint}"
+                    ShowDuration="1500"
+                    Text="Tik om te zoomen"
+                    VerticalOptions="End" />
+
+                <!--  Copy Hint  -->
+                <controls:HintControl
+                    Margin="20,0,20, 0"
+                    HorizontalOptions="Center"
+                    Icon="👆"
+                    IsShowing="{Binding ShowCopyHint}"
+                    ShowDuration="1500"
+                    Text="Tik om de code te kopiëren" />
+
+                <!--  Copied Hint  -->
+                <controls:HintControl
+                    Margin="20,0,20, 0"
+                    HorizontalOptions="Center"
+                    Icon="📋"
+                    x:Name="copyHint"
+                    ShowDuration="1500"
+                    Text="Code gekopiëerd" />
+            </Grid>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

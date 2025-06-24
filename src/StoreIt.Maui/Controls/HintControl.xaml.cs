@@ -104,6 +104,7 @@ public partial class HintControl : ContentView
         {
             await hintBorder.FadeTo(0, FadeAnimationDuration);
             hintBorder.IsVisible = false;
+            IsShowing = false; 
         }
     }
 }

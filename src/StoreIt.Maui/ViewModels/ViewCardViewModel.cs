@@ -27,6 +27,9 @@ public partial class ViewCardViewModel : ObservableObject
     [ObservableProperty]
     private bool showZoomHint;
 
+    [ObservableProperty]
+    private bool showCopyHint;
+
     public ViewCardViewModel(DatabaseService databaseService,
         IPlatformBrightnessService brightnessService,
         IUserPreferencesService userPreferencesService,
@@ -53,6 +56,8 @@ public partial class ViewCardViewModel : ObservableObject
     {
         try
         {
+            bool showHints = _userPreferencesService.GetHintsEnabled();
+
             Card = await _databaseService.GetCardAsync(id);
             if (Card != null)
             {
@@ -67,19 +72,31 @@ public partial class ViewCardViewModel : ObservableObject
                     {
                         // For barcode cards: automatically set max brightness and hide slider
                         _brightnessService.SetSystemBrightness(1.0f);
-                        
+
                         // Only show zoom hint if hints are enabled in settings
-                        if (_userPreferencesService.GetHintsEnabled())
-                        {
-                            ShowZoomHint = true;
-                        }
                     }
                 }
+
+                LoadHints();
             }
         }
         catch (Exception ex)
         {
             await _dialogService.DisplayAlert("Ooops...", $"Kaart kon niet geladen worden: {ex.Message}", "OK");
+        }
+    }
+
+    private void LoadHints()
+    {
+        if (_userPreferencesService.GetHintsEnabled())
+        {
+            ShowZoomHint = Card?.HasBarcode == true;
+            ShowCopyHint = Card?.HasCustomCode == true;
+        }
+        else
+        {
+            ShowZoomHint = false;
+            ShowCopyHint = false;
         }
     }
 

@@ -62,6 +62,7 @@
             <VerticalStackLayout Spacing="8">
                 <Label Style="{StaticResource InputLabelStyle}" Text="Barcode Nummer" />
                 <Entry
+                    MaxLength="250"
                     Placeholder="Voer het barcode nummer in..."
                     Style="{StaticResource CodeInputEntryStyle}"
                     Text="{Binding BarcodeInput}" />

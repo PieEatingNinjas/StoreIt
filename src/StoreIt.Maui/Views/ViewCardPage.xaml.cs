@@ -47,9 +47,17 @@ public partial class ViewCardPage : ContentPage
         DeviceDisplay.KeepScreenOn = false;
     }
 
-    private void OnBarcodeTapped(object sender, TappedEventArgs e)
+    private void OnCodeTapped(object sender, TappedEventArgs e)
     {
-        CycleZoom();
+        if (ViewModel.Card?.HasBarcode ?? false)
+        {
+            CycleZoom();
+        }
+        else if(ViewModel.Card?.HasCustomCode ?? false)
+        {
+            Clipboard.SetTextAsync(ViewModel.Card.CustomCode);
+            copyHint.IsShowing = true;
+        }
     }
 
     private void CycleZoom()

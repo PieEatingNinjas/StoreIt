@@ -26,6 +26,7 @@
                     <VerticalStackLayout Spacing="8">
                         <Label Style="{StaticResource InputLabelStyle}" Text="Naam van de kaart *" />
                         <Entry
+                            MaxLength="50"
                             Placeholder="Bijv. Mijn Albert Heijn kaart"
                             Style="{StaticResource InputEntryStyle}"
                             Text="{Binding Name}" />
@@ -35,6 +36,7 @@
                     <VerticalStackLayout Spacing="8">
                         <Label Style="{StaticResource InputLabelStyle}" Text="Beschrijving (optioneel)" />
                         <Entry
+                            MaxLength="75"
                             Placeholder="Bijv. Hoofdkaart gezin"
                             Style="{StaticResource InputEntryStyle}"
                             Text="{Binding Description}" />
@@ -248,6 +250,7 @@
                                 BackgroundColor="{AppThemeBinding Light=#F5F5F5,
                                                                   Dark=#2D2D2D}"
                                 Placeholder="Bijv. 123456789 of ABC-123-DEF"
+                                MaxLength="150"
                                 Style="{StaticResource CodeInputEntryStyle}"
                                 Text="{Binding CustomCode}" />
 
