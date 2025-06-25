@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Plugin.Maui.Biometric;
 using StoreIt.Maui.Services;
 using StoreIt.Maui.ViewModels;
 using StoreIt.Maui.Views;
@@ -36,6 +37,8 @@ public static class MauiProgram
                 builder.Services.AddSingleton<IPreferences>(Preferences.Default);
                 builder.Services.AddSingleton<IAppNavigationService, ShellNavigationService>();
                 builder.Services.AddSingleton<IDialogService, ShellDialogService>();
+                builder.Services.AddSingleton<IBiometric>(BiometricAuthenticationService.Default);
+                builder.Services.AddSingleton<IBiometricService, BiometricService>();
 
                 // Platform-specific services
 #if ANDROID

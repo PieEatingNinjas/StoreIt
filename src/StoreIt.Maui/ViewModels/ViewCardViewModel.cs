@@ -15,6 +15,7 @@ public partial class ViewCardViewModel : ObservableObject
     private readonly IUserPreferencesService _userPreferencesService;
     private readonly IAppNavigationService _navigationService;
     private readonly IDialogService _dialogService;
+    private readonly IBiometricService _biometricService;
 
     [ObservableProperty]
     private CustomerCard? card;
@@ -30,17 +31,22 @@ public partial class ViewCardViewModel : ObservableObject
     [ObservableProperty]
     private bool showCopyHint;
 
+    [ObservableProperty]
+    private bool isAuthenticating = true;
+
     public ViewCardViewModel(DatabaseService databaseService,
         IPlatformBrightnessService brightnessService,
         IUserPreferencesService userPreferencesService,
         IAppNavigationService appNavigationService,
-        IDialogService dialogService)
+        IDialogService dialogService,
+        IBiometricService biometricService)
     {
         _databaseService = databaseService;
         _brightnessService = brightnessService;
         _userPreferencesService = userPreferencesService;
         _navigationService = appNavigationService;
         _dialogService = dialogService;
+        _biometricService = biometricService;
         isBrightnessControlSupported = _brightnessService.IsBrightnessControlSupported;
     }
 
@@ -48,7 +54,46 @@ public partial class ViewCardViewModel : ObservableObject
     {
         if (value > 0)
         {
-            _ = LoadCardAsync(value);
+            _ = LoadCardWithBiometricAsync(value);
+        }
+    }
+
+    private async Task LoadCardWithBiometricAsync(int id)
+    {
+        try
+        {
+            // Eerst controleren of biometrische authenticatie beschikbaar is
+            var isBiometricAvailable = await _biometricService.IsAvailableAsync();
+            
+            if (isBiometricAvailable)
+            {
+                IsAuthenticating = true;
+               
+                // Biometrische authenticatie vereisen voor het bekijken van kaarten
+                var authResult = await _biometricService.AuthenticateAsync("Authenticeer om je kaart te bekijken");
+                
+                if (!authResult)
+                {
+
+                    // Authenticatie mislukt - ga terug
+                    await _dialogService.DisplayAlert("Authenticatie vereist",
+                        "Je moet je authenticeren om je kaart te kunnen bekijken.", "OK");
+                    await _navigationService.GoBack();
+
+                    IsAuthenticating = false;
+                    return;
+                }
+            }
+
+            // Authenticatie succesvol of niet beschikbaar - laad de kaart
+            await LoadCardAsync(id);
+            IsAuthenticating = false;
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.DisplayAlert("Fout", $"Er ging iets mis bij het authenticeren: {ex.Message}", "OK");
+            await _navigationService.GoBack();
+            IsAuthenticating = false;
         }
     }
 
