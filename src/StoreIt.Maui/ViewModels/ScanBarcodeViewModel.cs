@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using StoreIt.Navigation;
+using CommunityToolkit.Mvvm.Messaging;
 using StoreIt.Services;
 using ZXing.Net.Maui;
 
@@ -29,11 +29,12 @@ public partial class ScanBarcodeViewModel : ObservableObject
     {
         if (!string.IsNullOrEmpty(ScannedData) && !string.IsNullOrEmpty(ScannedFormat))
         {
-            return _navigationService.GoBack(new Dictionary<string, object>
+            WeakReferenceMessenger.Default.Send(new BarcodeResult
             {
-                [NavigationParams.BarcodeData] = ScannedData,
-                [NavigationParams.BarcodeFormat] = ScannedFormat
+                Data = ScannedData,
+                Format = ScannedFormat
             });
+            return _navigationService.GoBack();
         }
         return Task.CompletedTask;
     }

@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using StoreIt.Maui.Models;
 using StoreIt.Maui.Services;
 using StoreIt.Navigation;
@@ -8,8 +9,6 @@ using StoreIt.Services;
 namespace StoreIt.Maui.ViewModels;
 
 [QueryProperty(nameof(CardId), NavigationParams.CardId)]
-[QueryProperty(nameof(ReceivedBarcodeData), NavigationParams.BarcodeData)]
-[QueryProperty(nameof(ReceivedBarcodeFormat), NavigationParams.BarcodeFormat)]
 public partial class AddCardViewModel : ObservableObject
 {
     private readonly DatabaseService _databaseService;
@@ -40,12 +39,6 @@ public partial class AddCardViewModel : ObservableObject
 
     [ObservableProperty]
     private int cardId;
-
-    [ObservableProperty]
-    private string? receivedBarcodeData;
-
-    [ObservableProperty]
-    private string? receivedBarcodeFormat;
 
     [ObservableProperty]
     private bool showBarcodeScanning;
@@ -116,40 +109,6 @@ public partial class AddCardViewModel : ObservableObject
         }
     }
 
-    partial void OnReceivedBarcodeDataChanged(string? value)
-    {
-        if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(ReceivedBarcodeFormat))
-        {
-            var result = new BarcodeResult
-            {
-                Data = value,
-                Format = ReceivedBarcodeFormat
-            };
-            OnBarcodeReceived(result);
-            
-            // Clear the received values to prevent re-processing
-            ReceivedBarcodeData = null;
-            ReceivedBarcodeFormat = null;
-        }
-    }
-
-    partial void OnReceivedBarcodeFormatChanged(string? value)
-    {
-        if (!string.IsNullOrEmpty(value) && !string.IsNullOrEmpty(ReceivedBarcodeData))
-        {
-            var result = new BarcodeResult
-            {
-                Data = ReceivedBarcodeData,
-                Format = value
-            };
-            OnBarcodeReceived(result);
-            
-            // Clear the received values to prevent re-processing
-            ReceivedBarcodeData = null;
-            ReceivedBarcodeFormat = null;
-        }
-    }
-
     private async Task LoadCardAsync(int id)
     {
         try
@@ -211,13 +170,19 @@ public partial class AddCardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public Task OpenScanBarcodePage() => _navigationService.NavigateToScanBarCodePage();
+    public Task OpenScanBarcodePage()
+    {
+        WeakReferenceMessenger.Default.Register<BarcodeResult>(this, (r, result) => ((AddCardViewModel)r).OnBarcodeReceived(result));
+        return _navigationService.NavigateToScanBarCodePage();
+    }
 
     [RelayCommand]
     public Task OpenManualBarcodePage() => _navigationService.NavigateToAddBarCodePage(BarcodeData, BarcodeFormat);
 
     public void OnBarcodeReceived(BarcodeResult result)
     {
+        WeakReferenceMessenger.Default.Unregister<BarcodeResult>(this);
+
         BarcodeData = result.Data;
         BarcodeFormat = result.Format;
         ShowBarcodePreview = !string.IsNullOrEmpty(BarcodeData);

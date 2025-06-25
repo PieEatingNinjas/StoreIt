@@ -123,7 +123,7 @@ public partial class ViewCardViewModel : ObservableObject
         if (confirm)
         {
             await _databaseService.DeleteCardAsync(Card);
-            await _navigationService.GoToRoot();
+            await _navigationService.GoBack();
         }
     }
 
