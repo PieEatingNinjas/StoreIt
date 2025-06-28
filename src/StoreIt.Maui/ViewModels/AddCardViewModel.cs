@@ -172,12 +172,24 @@ public partial class AddCardViewModel : ObservableObject
     [RelayCommand]
     public Task OpenScanBarcodePage()
     {
-        WeakReferenceMessenger.Default.Register<BarcodeResult>(this, (r, result) => ((AddCardViewModel)r).OnBarcodeReceived(result));
+        RegisterForBarcodeResult();
         return _navigationService.NavigateToScanBarCodePage();
     }
 
     [RelayCommand]
-    public Task OpenManualBarcodePage() => _navigationService.NavigateToAddBarCodePage(BarcodeData, BarcodeFormat);
+    public Task OpenManualBarcodePage()
+    {
+        RegisterForBarcodeResult();
+        return _navigationService.NavigateToAddBarCodePage(BarcodeData, BarcodeFormat);
+    }
+
+    private void RegisterForBarcodeResult()
+    {
+        if(WeakReferenceMessenger.Default.IsRegistered<BarcodeResult>(this))
+            return;
+            
+        WeakReferenceMessenger.Default.Register<BarcodeResult>(this, (r, result) => ((AddCardViewModel)r).OnBarcodeReceived(result));
+    }
 
     public void OnBarcodeReceived(BarcodeResult result)
     {

@@ -17,7 +17,7 @@ public partial class ScanBarcodePage : ContentPage
                       BarcodeFormat.QrCode | BarcodeFormat.DataMatrix | BarcodeFormat.Pdf417,
             AutoRotate = true,
             Multiple = false,
-            TryHarder = true
+            TryHarder = false
         };
     }
 

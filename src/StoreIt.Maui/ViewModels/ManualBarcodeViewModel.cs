@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using StoreIt.Maui.Helpers;
 using StoreIt.Navigation;
 using StoreIt.Services;
@@ -92,11 +93,12 @@ public partial class ManualBarcodeViewModel : ObservableObject
     {
         if (CanAccept && !string.IsNullOrEmpty(BarcodeInput))
         {
-            return _appNavigationService.GoBack(new Dictionary<string, object>
+            WeakReferenceMessenger.Default.Send(new BarcodeResult
             {
-                [NavigationParams.BarcodeData] = BarcodeInput,
-                [NavigationParams.BarcodeFormat] = SelectedBarcodeType
+                Data = BarcodeInput,
+                Format = SelectedBarcodeType
             });
+            return _appNavigationService.GoBack();
         }
         return Task.CompletedTask; 
     }
