@@ -62,6 +62,9 @@ public partial class AddCardViewModel : ObservableObject
     [ObservableProperty]
     private string saveButtonText = "Opslaan";
 
+    [ObservableProperty]
+    private bool isPrivate;
+
     public List<CardColor> AvailableColors { get; } = new()
     {
         new CardColor { Name = "Oranje", Value = "#FF6B35" },
@@ -122,6 +125,7 @@ public partial class AddCardViewModel : ObservableObject
                 BarcodeFormat = card.BarcodeFormat;
                 CustomCode = card.CustomCode ?? string.Empty;
                 SelectedColor = card.Color ?? "#FF6B35"; // Default to orange if no color
+                IsPrivate = card.IsPrivate;
                 
                 SelectedColorObject = AvailableColors.FirstOrDefault(c => c.Value == SelectedColor) ?? AvailableColors.First();
                 
@@ -253,7 +257,8 @@ public partial class AddCardViewModel : ObservableObject
                 BarcodeData = hasBarcodeData ? BarcodeData : null,
                 BarcodeFormat = hasBarcodeData ? BarcodeFormat : null,
                 CustomCode = hasCustomCode ? CustomCode.Trim() : null,
-                Color = SelectedColor
+                Color = SelectedColor,
+                IsPrivate = IsPrivate
             };
 
             await _databaseService.SaveCardAsync(card);

@@ -258,6 +258,22 @@
                         </VerticalStackLayout>
                     </VerticalStackLayout>
 
+                    <!--  Privacy Setting  -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Style="{StaticResource InputLabelStyle}" Text="Privacy" />
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="15">
+                            <Label Grid.Column="0" Text="🔐" FontSize="20" VerticalOptions="Center" />
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0" Text="Privé kaart" Style="{StaticResource InputLabelStyle}" VerticalOptions="Center" />
+                                    <Switch Grid.Column="1" IsToggled="{Binding IsPrivate}" />
+                                </Grid>
+                                <Label Grid.ColumnSpan="2" Text="Privé kaarten vereisen biometrische authenticatie om te bekijken" 
+                                       Style="{StaticResource InputLabelSubStyle}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+
                     <!--  Action Buttons  -->
                     <Grid
                         Margin="0,30,0,0"

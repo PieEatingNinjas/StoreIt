@@ -220,6 +220,11 @@
             </Grid>
                 </VerticalStackLayout>
                 <Grid VerticalOptions="Fill" HorizontalOptions="Fill"
+                    IsVisible="{Binding IsLoading}">
+                    <ActivityIndicator HorizontalOptions="Center" VerticalOptions="Center"
+                        IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" />
+                </Grid>
+                <Grid VerticalOptions="Fill" HorizontalOptions="Fill"
                     IsVisible="{Binding IsAuthenticating}">
                     <Label Text="🔐" FontSize="65" HorizontalOptions="Center" VerticalOptions="Center" />
                 </Grid>

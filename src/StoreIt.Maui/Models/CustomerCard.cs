@@ -26,6 +26,8 @@ public class CustomerCard
 
     public bool IsFavorite { get; set; }
 
+    public bool IsPrivate { get; set; }
+
     public string? CustomCode { get; set; }
 
     public bool HasBarcode => !string.IsNullOrEmpty(BarcodeData);

@@ -34,6 +34,9 @@ public partial class ViewCardViewModel : ObservableObject
     [ObservableProperty]
     private bool isAuthenticating = true;
 
+    [ObservableProperty]
+    private bool isLoading = true;
+
     public ViewCardViewModel(DatabaseService databaseService,
         IPlatformBrightnessService brightnessService,
         IUserPreferencesService userPreferencesService,
@@ -62,38 +65,93 @@ public partial class ViewCardViewModel : ObservableObject
     {
         try
         {
-            // Eerst controleren of biometrische authenticatie beschikbaar is
-            var isBiometricAvailable = await _biometricService.IsAvailableAsync();
-            
-            if (isBiometricAvailable)
+            IsAuthenticating = false;
+            IsLoading = true;
+
+            // Eerst de kaart laden om te controleren of het een privé kaart is
+            var card = await _databaseService.GetCardAsync(id);
+
+            if (card == null)
             {
-                IsAuthenticating = true;
-               
-                // Biometrische authenticatie vereisen voor het bekijken van kaarten
-                var authResult = await _biometricService.AuthenticateAsync("Authenticeer om je kaart te bekijken");
-                
-                if (!authResult)
+                IsAuthenticating = false;
+                await _dialogService.DisplayAlert("Fout", "Kaart niet gevonden.", "OK");
+                await _navigationService.GoBack();
+                return;
+            }
+
+            // Alleen authenticatie vereisen voor privé kaarten
+            if (card.IsPrivate)
+            {
+                IsAuthenticating = false;
+
+                var isBiometricAvailable = await _biometricService.IsAvailableAsync();
+
+                if (isBiometricAvailable)
                 {
+                    IsAuthenticating = true;
+                    // Biometrische authenticatie vereisen voor privé kaarten
+                    var authResult = await _biometricService.AuthenticateAsync("Authenticeer om je privé kaart te bekijken");
 
-                    // Authenticatie mislukt - ga terug
-                    await _dialogService.DisplayAlert("Authenticatie vereist",
-                        "Je moet je authenticeren om je kaart te kunnen bekijken.", "OK");
-                    await _navigationService.GoBack();
-
+                    if (!authResult)
+                    {
+                        // Authenticatie mislukt - ga terug
+                        await _dialogService.DisplayAlert("Authenticatie vereist",
+                            "Je moet je authenticeren om je privé kaart te kunnen bekijken.", "OK");
+                        await _navigationService.GoBack();
+                        return;
+                    }
+                }
+                else
+                {
+                    // Biometrie niet beschikbaar maar kaart is privé
                     IsAuthenticating = false;
+                    await _dialogService.DisplayAlert("Beveiliging niet beschikbaar",
+                        "Deze kaart is beveiligd met biometrische authenticatie, maar je apparaat ondersteunt dit niet. Stel biometrische beveiliging in op je apparaat.", "OK");
+                    await _navigationService.GoBack();
                     return;
                 }
             }
 
-            // Authenticatie succesvol of niet beschikbaar - laad de kaart
-            await LoadCardAsync(id);
-            IsAuthenticating = false;
+            // Authenticatie succesvol of niet nodig - laad de kaart volledig
+            await SetCardAsync(card);
         }
         catch (Exception ex)
         {
             await _dialogService.DisplayAlert("Fout", $"Er ging iets mis bij het authenticeren: {ex.Message}", "OK");
             await _navigationService.GoBack();
+        }
+        finally
+        {
             IsAuthenticating = false;
+            IsLoading = false;
+        }
+    }
+
+    private async Task SetCardAsync(CustomerCard? card)
+    {
+        Card = card;
+
+        if (card is not null)
+        {
+            await _databaseService.UpdateLastUsedAsync(card.Id);
+
+            if (isBrightnessControlSupported)
+            {
+                // Save original brightness when entering card view
+                _brightnessService.SaveOriginalBrightness();
+
+                if (card.HasBarcode)
+                {
+                    // For barcode cards: automatically set max brightness and hide slider
+                    _brightnessService.SetSystemBrightness(1.0f);
+                }
+            }
+            LoadHints();
+        }
+        else
+        {
+            await _dialogService.DisplayAlert("Fout", "Kaart niet gevonden.", "OK");
+            await _navigationService.GoBack();
         }
     }
 
@@ -101,29 +159,8 @@ public partial class ViewCardViewModel : ObservableObject
     {
         try
         {
-            bool showHints = _userPreferencesService.GetHintsEnabled();
-
-            Card = await _databaseService.GetCardAsync(id);
-            if (Card != null)
-            {
-                await _databaseService.UpdateLastUsedAsync(Card.Id);
-
-                if (isBrightnessControlSupported)
-                {
-                    // Save original brightness when entering card view
-                    _brightnessService.SaveOriginalBrightness();
-
-                    if (Card.HasBarcode)
-                    {
-                        // For barcode cards: automatically set max brightness and hide slider
-                        _brightnessService.SetSystemBrightness(1.0f);
-
-                        // Only show zoom hint if hints are enabled in settings
-                    }
-                }
-
-                LoadHints();
-            }
+            var card = await _databaseService.GetCardAsync(id);
+            await SetCardAsync(card);
         }
         catch (Exception ex)
         {

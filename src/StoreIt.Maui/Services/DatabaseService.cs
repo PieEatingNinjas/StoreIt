@@ -16,6 +16,7 @@ public class DatabaseService
         _database = new SQLiteAsyncConnection(databasePath);
         await _database.CreateTableAsync<CustomerCard>();
         
+        //Is this really needed?
         // Migration: Add new columns if they don't exist
         try
         {
@@ -32,6 +33,12 @@ public class DatabaseService
         try
         {
             await _database.ExecuteAsync("ALTER TABLE CustomerCards ADD COLUMN CustomCode TEXT");
+        }
+        catch { /* Column already exists */ }
+        
+        try
+        {
+            await _database.ExecuteAsync("ALTER TABLE CustomerCards ADD COLUMN IsPrivate INTEGER DEFAULT 0");
         }
         catch { /* Column already exists */ }
     }
