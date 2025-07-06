@@ -74,7 +74,7 @@ public partial class ViewCardViewModel : ObservableObject
             if (card == null)
             {
                 IsAuthenticating = false;
-                await _dialogService.DisplayAlert("Fout", "Kaart niet gevonden.", "OK");
+                await _dialogService.DisplayAlert("Fout", "Item niet gevonden.", "OK");
                 await _navigationService.GoBack();
                 return;
             }
@@ -90,13 +90,13 @@ public partial class ViewCardViewModel : ObservableObject
                 {
                     IsAuthenticating = true;
                     // Biometrische authenticatie vereisen voor privé kaarten
-                    var authResult = await _biometricService.AuthenticateAsync("Authenticeer om je privé kaart te bekijken");
+                    var authResult = await _biometricService.AuthenticateAsync("Authenticeer om je item te bekijken");
 
                     if (!authResult)
                     {
                         // Authenticatie mislukt - ga terug
                         await _dialogService.DisplayAlert("Authenticatie vereist",
-                            "Je moet je authenticeren om je privé kaart te kunnen bekijken.", "OK");
+                            "Je moet je authenticeren om je item te kunnen bekijken.", "OK");
                         await _navigationService.GoBack();
                         return;
                     }
@@ -106,7 +106,7 @@ public partial class ViewCardViewModel : ObservableObject
                     // Biometrie niet beschikbaar maar kaart is privé
                     IsAuthenticating = false;
                     await _dialogService.DisplayAlert("Beveiliging niet beschikbaar",
-                        "Deze kaart is beveiligd met biometrische authenticatie, maar je apparaat ondersteunt dit niet. Stel biometrische beveiliging in op je apparaat.", "OK");
+                        "Dit item is beveiligd, maar je apparaat ondersteunt dit niet. Stel biometrische beveiliging in op je apparaat.", "OK");
                     await _navigationService.GoBack();
                     return;
                 }
@@ -150,7 +150,7 @@ public partial class ViewCardViewModel : ObservableObject
         }
         else
         {
-            await _dialogService.DisplayAlert("Fout", "Kaart niet gevonden.", "OK");
+            await _dialogService.DisplayAlert("Fout", "Item niet gevonden.", "OK");
             await _navigationService.GoBack();
         }
     }
@@ -164,7 +164,7 @@ public partial class ViewCardViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            await _dialogService.DisplayAlert("Ooops...", $"Kaart kon niet geladen worden: {ex.Message}", "OK");
+            await _dialogService.DisplayAlert("Ooops...", $"Item kon niet geladen worden: {ex.Message}", "OK");
         }
     }
 
@@ -200,7 +200,7 @@ public partial class ViewCardViewModel : ObservableObject
         if (Card == null) return;
 
         bool confirm = await _dialogService.DisplayAlert("Ben je zeker?",
-            $"Ben je zeker dat je kaart '{Card.Name}' wil verwijderen?", "Ja", "Nee");
+            $"Ben je zeker dat je item '{Card.Name}' wil verwijderen?", "Ja", "Nee");
 
         if (confirm)
         {

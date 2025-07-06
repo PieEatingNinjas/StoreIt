@@ -37,7 +37,7 @@
                         FontAttributes="Bold"
                         FontSize="18"
                         HorizontalOptions="Center"
-                        Text="Scan je klantenkaart"
+                        Text="Scan je barcode"
                         TextColor="White"
                         VerticalOptions="Center" />
             </Grid>

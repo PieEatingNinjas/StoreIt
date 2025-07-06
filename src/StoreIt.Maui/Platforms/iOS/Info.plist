@@ -26,6 +26,6 @@
     <string>Als je een barcode wil scannen, moet je de app toegang geven tot je camera.</string>
 
 	<key>NSFaceIDUsageDescription</key>
-	<string>We gebruiken Face ID om je kaarten veilig te beschermen.</string>
+	<string>We gebruiken Face ID om je items veilig te beschermen.</string>
 </dict>
 </plist>

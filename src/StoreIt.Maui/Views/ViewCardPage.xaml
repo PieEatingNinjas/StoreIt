@@ -220,7 +220,7 @@
             </Grid>
                 </VerticalStackLayout>
                 <Grid VerticalOptions="Fill" HorizontalOptions="Fill"
-                    IsVisible="{Binding IsLoading}">
+                    IsVisible="{Binding IsLoading}" Padding="0, 150, 0, 0">
                     <ActivityIndicator HorizontalOptions="Center" VerticalOptions="Center"
                         IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" />
                 </Grid>

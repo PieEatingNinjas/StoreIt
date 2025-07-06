@@ -8,7 +8,7 @@
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:StoreIt.Maui.ViewModels"
     x:Name="mainPage"
-    Title="Mijn Kaarten"
+    Title="Mijn Items"
     x:DataType="vm:MainViewModel">
     <ContentPage.Resources>
         <Style x:Key="MessageLabelStyle" TargetType="Label">
@@ -52,13 +52,13 @@
                         FontSize="18"
                         HorizontalOptions="Center"
                         Style="{StaticResource MessageLabelStyle}"
-                        Text="Geen klantenkaarten gevonden" />
+                        Text="Geen items gevonden" />
 
                     <Label
                         FontSize="14"
                         HorizontalOptions="Center"
                         Style="{StaticResource MessageLabelStyle}"
-                        Text="Tik op de + knop om je eerste kaart toe te voegen" />
+                        Text="Tik op de + knop om je eerste item toe te voegen" />
 
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
@@ -103,15 +103,8 @@
                                                                     Dark=LightGray}" />
                                 </VerticalStackLayout>
 
-                                <!--  Private Indicator  -->
-                                <Label
-                                    Grid.Column="2"
-                                    Padding="8"
-                                    FontSize="16"
-                                    Text="🔐"
-                                    IsVisible="{Binding IsPrivate}"
-                                    VerticalOptions="Center"
-                                    HorizontalOptions="Center" />                                <!--  Favorite Button  -->
+                                                          
+                                <!--  Favorite Button  -->
                                 <Button
                                     Grid.Column="4"
                                     Padding="8"

@@ -11,4 +11,9 @@ public partial class AddCardPage : ContentPage
         InitializeComponent();
         BindingContext = ViewModel = viewModel;
     }
+
+    private void Switch_Toggled(object sender, ToggledEventArgs e)
+    {
+        ViewModel.SetIsPrivateCardCommand(e.Value);
+    }
 }

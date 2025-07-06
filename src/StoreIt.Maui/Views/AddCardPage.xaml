@@ -24,7 +24,7 @@
 
                     <!--  Name Field  -->
                     <VerticalStackLayout Spacing="8">
-                        <Label Style="{StaticResource InputLabelStyle}" Text="Naam van de kaart *" />
+                        <Label Style="{StaticResource InputLabelStyle}" Text="Naam van het item *" />
                         <Entry
                             MaxLength="50"
                             Placeholder="Bijv. Mijn Albert Heijn kaart"
@@ -114,12 +114,12 @@
 
                     <!--  Card Type Selection  -->
                     <VerticalStackLayout Spacing="8">
-                        <Label Style="{StaticResource InputLabelStyle}" Text="Type kaart *" />
+                        <Label Style="{StaticResource InputLabelStyle}" Text="Type *" />
 
                         <Label
                             Margin="0,0,0,10"
                             Style="{StaticResource InputLabelSubStyle}"
-                            Text="Kies wel type kaart je wilt toevoegen:" />
+                            Text="Kies welk type je wilt toevoegen:" />
 
                         <!--  Option 1: Barcode  -->
                         <Border
@@ -145,7 +145,7 @@
                                     <Label
                                         FontAttributes="Bold"
                                         FontSize="16"
-                                        Text="Kaart met barcode"
+                                        Text="Barcode"
                                         TextColor="{Binding ShowBarcodeScanning, Converter={StaticResource BoolToCardTypeTextColorConverter}}" />
                                     <Label
                                         FontSize="12"
@@ -229,7 +229,7 @@
                                     <Label
                                         FontAttributes="Bold"
                                         FontSize="16"
-                                        Text="Kaart met code"
+                                        Text="Code"
                                         TextColor="{Binding ShowCustomCodeInput, Converter={StaticResource BoolToCardTypeTextColorConverter}}" />
                                     <Label Style="{StaticResource InputLabelSubStyle}" Text="Voer een nummer of code in" />
                                 </VerticalStackLayout>
@@ -265,10 +265,11 @@
                             <Label Grid.Column="0" Text="🔐" FontSize="20" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" Spacing="4">
                                 <Grid ColumnDefinitions="*,Auto">
-                                    <Label Grid.Column="0" Text="Privé kaart" Style="{StaticResource InputLabelStyle}" VerticalOptions="Center" />
-                                    <Switch Grid.Column="1" IsToggled="{Binding IsPrivate}" />
+                                    <Label Grid.Column="0" Text="Privé item" Style="{StaticResource InputLabelStyle}" VerticalOptions="Center" />
+                                    <Switch Grid.Column="1" IsToggled="{Binding IsPrivate, Mode=OneWay}" 
+                                        Toggled="Switch_Toggled" />
                                 </Grid>
-                                <Label Grid.ColumnSpan="2" Text="Privé kaarten vereisen biometrische authenticatie om te bekijken" 
+                                <Label Grid.ColumnSpan="2" Text="Privé items vereisen biometrische authenticatie om te bekijken" 
                                        Style="{StaticResource InputLabelSubStyle}" />
                             </VerticalStackLayout>
                         </Grid>
