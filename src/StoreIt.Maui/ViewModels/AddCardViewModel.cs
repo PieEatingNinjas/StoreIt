@@ -66,6 +66,9 @@ public partial class AddCardViewModel : ObservableObject
     [ObservableProperty]
     private bool isPrivate;
 
+    [ObservableProperty]
+    private bool isPrivateOptionAvailable;
+
     public List<CardColor> AvailableColors { get; } = new()
     {
         new CardColor { Name = "Oranje", Value = "#FF6B35" },
@@ -81,19 +84,26 @@ public partial class AddCardViewModel : ObservableObject
     public AddCardViewModel(DatabaseService databaseService,
         IUserPreferencesService userPreferencesService,
         IAppNavigationService navigationService,
-        IDialogService dialogService, IBiometricService biometricService)
+        IDialogService dialogService,
+        IBiometricService biometricService)
     {
         _databaseService = databaseService;
         _userPreferencesService = userPreferencesService;
-        _navigationService = navigationService; 
+        _navigationService = navigationService;
         _dialogService = dialogService;
         _biometricService = biometricService;
 
         // Initialize with random color for new cards
         SelectRandomColor();
-        
+
         ShowBarcodeScanning = false;
         ShowCustomCodeInput = false;
+        _ = Init();
+    }
+
+    private async Task Init()
+    {
+        IsPrivateOptionAvailable = await _biometricService.IsAvailableAsync();
     }
 
     partial void OnCardIdChanged(int value)

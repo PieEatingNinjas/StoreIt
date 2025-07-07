@@ -82,13 +82,12 @@ public partial class ViewCardViewModel : ObservableObject
             // Alleen authenticatie vereisen voor privé kaarten
             if (card.IsPrivate)
             {
-                IsAuthenticating = false;
+                IsAuthenticating = true;
 
                 var isBiometricAvailable = await _biometricService.IsAvailableAsync();
 
                 if (isBiometricAvailable)
                 {
-                    IsAuthenticating = true;
                     // Biometrische authenticatie vereisen voor privé kaarten
                     var authResult = await _biometricService.AuthenticateAsync("Authenticeer om je item te bekijken");
 
@@ -104,9 +103,8 @@ public partial class ViewCardViewModel : ObservableObject
                 else
                 {
                     // Biometrie niet beschikbaar maar kaart is privé
-                    IsAuthenticating = false;
                     await _dialogService.DisplayAlert("Beveiliging niet beschikbaar",
-                        "Dit item is beveiligd, maar je apparaat ondersteunt dit niet. Stel biometrische beveiliging in op je apparaat.", "OK");
+                        "Dit item is beveiligd, maar je apparaat ondersteunt dit niet. Stel biometrische beveiliging (opnieuw) in op je apparaat.", "OK");
                     await _navigationService.GoBack();
                     return;
                 }

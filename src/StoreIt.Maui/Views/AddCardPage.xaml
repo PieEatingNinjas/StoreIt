@@ -259,7 +259,7 @@
                     </VerticalStackLayout>
 
                     <!--  Privacy Setting  -->
-                    <VerticalStackLayout Spacing="8">
+                    <VerticalStackLayout Spacing="8" IsVisible="{Binding IsPrivateOptionAvailable}">
                         <Label Style="{StaticResource InputLabelStyle}" Text="Privacy" />
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="15">
                             <Label Grid.Column="0" Text="🔐" FontSize="20" VerticalOptions="Center" />
