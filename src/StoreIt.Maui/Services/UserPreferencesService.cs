@@ -4,6 +4,7 @@ public class UserPreferencesService : IUserPreferencesService
 {
     private const string ThemePreferenceKey = "SelectedTheme";
     private const string HintsEnabledKey = "HintsEnabled";
+    private const string WhatsNewVersionKey = "WhatsNewVersion";
     private readonly IPreferences _preferences;
 
     public UserPreferencesService(IPreferences preferences)
@@ -14,12 +15,12 @@ public class UserPreferencesService : IUserPreferencesService
     public ThemeOption GetSelectedTheme()
     {
         var savedTheme = GetString(ThemePreferenceKey, ThemeOption.System.ToString());
-        
+
         if (Enum.TryParse<ThemeOption>(savedTheme, out var theme))
         {
             return theme;
         }
-        
+
         return ThemeOption.System;
     }
 
@@ -72,14 +73,25 @@ public class UserPreferencesService : IUserPreferencesService
     {
         _preferences.Clear();
     }
-    
+
     public bool GetHintsEnabled()
     {
         return GetBool(HintsEnabledKey, true); // Default to true (hints enabled)
     }
-    
+
     public void SetHintsEnabled(bool enabled)
     {
         SetBool(HintsEnabledKey, enabled);
+    }
+
+    public int? GetLastViewedWhatsNewId()
+    {
+        var value = Preferences.Get(WhatsNewVersionKey, int.MinValue);
+        return value == int.MinValue ? null : value;
+    }
+
+    public void SetLastViewedWhatsNewId(int id)
+    {
+        Preferences.Set(WhatsNewVersionKey, id);
     }
 }

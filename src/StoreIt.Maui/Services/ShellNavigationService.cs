@@ -56,4 +56,11 @@ public class ShellNavigationService : IAppNavigationService
     });
 
     public Task GoToRoot() => NavigateTo($"/{Pages.MainPage}");
+
+    public async Task Show(Type pageType)
+    {
+        Routing.RegisterRoute("temp", pageType);
+		await Shell.Current.GoToAsync("temp");
+		Routing.UnRegisterRoute("temp");
+    }
 }

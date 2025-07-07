@@ -11,6 +11,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly IAppNavigationService _navigationService;
     private readonly IThemeService _themeService;
     private readonly IUserPreferencesService _userPreferencesService;
+    private readonly IWhatsNewService _whatsNewService;
 
     [ObservableProperty]
     private ThemeOption selectedTheme;
@@ -19,11 +20,13 @@ public partial class SettingsViewModel : ObservableObject
     private bool hintsEnabled;
 
     public SettingsViewModel(IThemeService themeService,
-        IUserPreferencesService userPreferencesService, IAppNavigationService appNavigationService)
+        IUserPreferencesService userPreferencesService,
+        IAppNavigationService appNavigationService, IWhatsNewService whatsNewService)
     {
         _navigationService = appNavigationService;
         _themeService = themeService;
         _userPreferencesService = userPreferencesService;
+        _whatsNewService = whatsNewService;
 
         // Load current theme
         SelectedTheme = _themeService.GetCurrentTheme();
@@ -66,11 +69,17 @@ public partial class SettingsViewModel : ObservableObject
         get => SelectedTheme == ThemeOption.Dark;
         set { if (value) SelectedTheme = ThemeOption.Dark; }
     }
-    
+
     [RelayCommand]
     public void ThemeSelected(ThemeOption theme)
     {
         SelectedTheme = theme;
         _themeService.SetTheme(theme);
+    }
+    
+    [RelayCommand]
+    public async Task OpenWhatsNew()
+    {
+       await _whatsNewService.ShowLatestWhatsNewAsync(bypassCheck: true);
     }
 }

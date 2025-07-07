@@ -8,7 +8,7 @@
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     xmlns:vm="clr-namespace:StoreIt.Maui.ViewModels"
     x:Name="mainPage"
-    Title="Mijn Items"
+    Title="Mijn Kaarten"
     x:DataType="vm:MainViewModel">
     <ContentPage.Resources>
         <Style x:Key="MessageLabelStyle" TargetType="Label">
@@ -52,13 +52,13 @@
                         FontSize="18"
                         HorizontalOptions="Center"
                         Style="{StaticResource MessageLabelStyle}"
-                        Text="Geen items gevonden" />
+                        Text="Geen klantenkaarten gevonden" />
 
                     <Label
                         FontSize="14"
                         HorizontalOptions="Center"
                         Style="{StaticResource MessageLabelStyle}"
-                        Text="Tik op de + knop om je eerste item toe te voegen" />
+                        Text="Tik op de + knop om je eerste kaart toe te voegen" />
 
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
@@ -70,9 +70,10 @@
                         Margin="10,5"
                         Padding="0"
                         BackgroundColor="transparent">
-                        <Border Margin="10,5" Style="{StaticResource CardBorderWithShadowStyle}">                            <Grid
+                        <Border Margin="10,5" Style="{StaticResource CardBorderWithShadowStyle}">
+                            <Grid
                                 Padding="0"
-                                ColumnDefinitions="8,*,Auto,Auto,Auto"
+                                ColumnDefinitions="8,*,Auto,Auto"
                                 RowDefinitions="Auto, Auto">
 
                                 <!--  Color Strip  -->
@@ -103,10 +104,9 @@
                                                                     Dark=LightGray}" />
                                 </VerticalStackLayout>
 
-                                                          
                                 <!--  Favorite Button  -->
                                 <Button
-                                    Grid.Column="4"
+                                    Grid.Column="3"
                                     Padding="8"
                                     BackgroundColor="Transparent"
                                     Command="{Binding ViewModel.ToggleFavoriteCommand, Source={x:Reference mainPage}, x:DataType=local:MainPage}"

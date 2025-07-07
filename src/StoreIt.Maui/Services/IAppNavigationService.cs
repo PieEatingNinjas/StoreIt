@@ -10,4 +10,5 @@ public interface IAppNavigationService : INavigationService
     Task SwitchToManualBarCodePage();
     Task NavigateToEditCardPage(int id);
     Task GoToRoot();
+    Task Show(Type pageType);
 }

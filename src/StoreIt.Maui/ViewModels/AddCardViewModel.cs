@@ -240,7 +240,7 @@ public partial class AddCardViewModel : ObservableObject
         {
             if (await _biometricService.IsAvailableAsync())
             {
-                if (await _biometricService.AuthenticateAsync("Bevestig"))
+                if (await _biometricService.AuthenticateAsync("Authenticeer om de privacy-instelling te wijzigen."))
                 {
                     //All good!
                     IsPrivate = isPrivate;

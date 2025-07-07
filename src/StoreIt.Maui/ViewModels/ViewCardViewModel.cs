@@ -89,7 +89,7 @@ public partial class ViewCardViewModel : ObservableObject
                 if (isBiometricAvailable)
                 {
                     // Biometrische authenticatie vereisen voor privé kaarten
-                    var authResult = await _biometricService.AuthenticateAsync("Authenticeer om je item te bekijken");
+                    var authResult = await _biometricService.AuthenticateAsync("Authenticeer om dit item te bekijken");
 
                     if (!authResult)
                     {
