@@ -249,8 +249,8 @@
                             <Entry
                                 BackgroundColor="{AppThemeBinding Light=#F5F5F5,
                                                                   Dark=#2D2D2D}"
-                                Placeholder="Bijv. 123456789 of ABC-123-DEF"
                                 MaxLength="150"
+                                Placeholder="Bijv. 123456789 of ABC-123-DEF"
                                 Style="{StaticResource CodeInputEntryStyle}"
                                 Text="{Binding CustomCode}" />
 
@@ -259,20 +259,24 @@
                     </VerticalStackLayout>
 
                     <!--  Privacy Setting  -->
-                    <VerticalStackLayout Spacing="8" IsVisible="{Binding IsPrivateOptionAvailable}">
-                        <Label Style="{StaticResource InputLabelStyle}" Text="Privacy" />
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="15">
-                            <Label Grid.Column="0" Text="🔐" FontSize="20" VerticalOptions="Center" />
-                            <VerticalStackLayout Grid.Column="1" Spacing="4">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <Label Grid.Column="0" Text="Privé item" Style="{StaticResource InputLabelStyle}" VerticalOptions="Center" />
-                                    <Switch Grid.Column="1" IsToggled="{Binding IsPrivate, Mode=OneWay}" 
-                                        Toggled="Switch_Toggled" />
-                                </Grid>
-                                <Label Grid.ColumnSpan="2" Text="Privé items vereisen biometrische authenticatie om te bekijken" 
-                                       Style="{StaticResource InputLabelSubStyle}" />
-                            </VerticalStackLayout>
-                        </Grid>
+                    <VerticalStackLayout IsVisible="{Binding IsPrivateOptionAvailable}" Spacing="8">
+                        <VerticalStackLayout Spacing="4">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label
+                                    Grid.Column="0"
+                                    Style="{StaticResource InputLabelStyle}"
+                                    Text="Privé item"
+                                    VerticalOptions="Center" />
+                                <Switch
+                                    Grid.Column="1"
+                                    IsToggled="{Binding IsPrivate, Mode=OneWay}"
+                                    Toggled="Switch_Toggled" />
+                            </Grid>
+                            <Label
+                                Grid.ColumnSpan="2"
+                                Style="{StaticResource InputLabelSubStyle}"
+                                Text="Privé items vereisen biometrische authenticatie om te bekijken" />
+                        </VerticalStackLayout>
                     </VerticalStackLayout>
 
                     <!--  Action Buttons  -->
