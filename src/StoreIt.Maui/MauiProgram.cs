@@ -1,10 +1,12 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Plugin.Maui.Biometric;
 using StoreIt.Maui.Services;
 using StoreIt.Maui.ViewModels;
 using StoreIt.Maui.Views;
 using StoreIt.Navigation;
 using StoreIt.Services;
+using StoreIt.WhatsNew;
 using ZXing.Net.Maui.Controls;
 
 namespace StoreIt.Maui;
@@ -36,6 +38,9 @@ public static class MauiProgram
                 builder.Services.AddSingleton<IPreferences>(Preferences.Default);
                 builder.Services.AddSingleton<IAppNavigationService, ShellNavigationService>();
                 builder.Services.AddSingleton<IDialogService, ShellDialogService>();
+                builder.Services.AddSingleton<IBiometric>(BiometricAuthenticationService.Default);
+                builder.Services.AddSingleton<IBiometricService, BiometricService>();
+                builder.Services.AddSingleton<IWhatsNewService, WhatsNewService>();
 
                 // Platform-specific services
 #if ANDROID
@@ -54,6 +59,7 @@ public static class MauiProgram
                 builder.Services.AddTransient<ScanBarcodeViewModel>();
                 builder.Services.AddTransient<ManualBarcodeViewModel>();
                 builder.Services.AddTransient<SettingsViewModel>();
+                builder.Services.AddTransient<WhatsNewViewModel>();
 
                 // Pages
                 builder.Services.AddTransient<MainPage>();

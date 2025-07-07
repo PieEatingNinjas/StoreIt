@@ -21,6 +21,7 @@
             <local:BoolToThemeBackgroundConverter x:Key="BoolToThemeBackgroundConverter" />
             <local:BoolToThemeBorderConverter x:Key="BoolToThemeBorderConverter" />
             <local:BoolToThemeTextColorConverter x:Key="BoolToThemeTextColorConverter" />
+            <local:InverseBoolConverter x:Key="InverseBoolConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

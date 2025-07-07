@@ -4,18 +4,25 @@ namespace StoreIt.Maui;
 
 public partial class App : Application
 {
-	public App()
+	readonly IWhatsNewService _whatsNewService;
+	public App(IWhatsNewService whatsNewService)
 	{
 		InitializeComponent();
+		_whatsNewService = whatsNewService;
+	}
+
+	protected override async void OnStart()
+	{
+		await _whatsNewService.ShowLatestWhatsNewAsync();
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
 		var window = new Window(new AppShell());
-		
+
 		// Initialize theme after the window is created
 		window.Created += (s, e) => InitializeTheme();
-		
+
 		return window;
 	}
 

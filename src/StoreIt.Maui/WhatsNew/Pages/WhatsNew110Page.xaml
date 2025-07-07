@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="StoreIt.WhatsNew.Pages.WhatsNew110Page"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:StoreIt.WhatsNew"
+    x:DataType="vm:WhatsNewViewModel"
+    Shell.PresentationMode="ModalAnimated">
+    <VerticalStackLayout Padding="32,48,32,32" Spacing="28" VerticalOptions="Center">
+        <Label Text="{Binding Title}" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center"/>
+        <Label Text="🔐 Biometrische beveiliging voor privé items *" HorizontalTextAlignment="Center" FontSize="22" HorizontalOptions="Fill"/>
+        <VerticalStackLayout Padding="20, 0" Spacing="10">
+            <Label Text="✅ Je kunt nu kaarten als privé markeren."
+                FontSize="16" TextColor="Gray" HorizontalTextAlignment="Start"/>
+            <Label Text="✅ Alleen jij kunt deze kaarten openen met gezicht of vingerafdruk." 
+                FontSize="16" TextColor="Gray" HorizontalTextAlignment="Start"/>
+            <Label Text="✅ Toggle de privacy bij het aanmaken of bewerken van een kaart." 
+                FontSize="16" TextColor="Gray" HorizontalTextAlignment="Start"/>
+
+            <Label Text="* Enkel beschikbaar wanneer jouw toestel dit ondersteunt"  Margin="0,10,0,0"
+                FontSize="14" TextColor="Gray" HorizontalTextAlignment="Start"/>
+        </VerticalStackLayout>
+        <!-- <Image Source="biometric_demo.png" HeightRequest="180" Aspect="AspectFit" HorizontalOptions="Center"/> -->
+        <HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
+            <Button Text="Sluiten" Command="{Binding CloseCommand}" 
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray600},
+                                                      Dark={StaticResource Gray300}}" />
+            <Button Text="Niet meer tonen" Command="{Binding HideForFutureCommand}"  
+                BackgroundColor="{StaticResource Secondary}" IsVisible="{Binding IsHideForFutureVisible}"/>
+        </HorizontalStackLayout>
+    </VerticalStackLayout>
+</ContentPage>

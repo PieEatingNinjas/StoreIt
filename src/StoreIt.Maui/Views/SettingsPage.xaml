@@ -181,7 +181,7 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
+                <VerticalStackLayout Spacing="10" InputTransparent="True">
                     <Label Style="{StaticResource SectionHeaderStyle}" Text="ℹ️ Over de app" />
                     <HorizontalStackLayout Spacing="0">
                         <Label Style="{StaticResource SectionTextStyle}" Text="{x:Static appmodel:AppInfo.Name}" />
@@ -201,6 +201,9 @@
                         TextColor="{AppThemeBinding Light=#999,
                                                     Dark=#777}" />
                 </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding OpenWhatsNewCommand}" />
+                </Border.GestureRecognizers>
             </Border>
 
         </VerticalStackLayout>

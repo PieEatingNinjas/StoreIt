@@ -39,7 +39,7 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            await _dialogService.DisplayAlert("Ooops...", $"Jouw kaarten konden niet geladen worden: {ex.Message}", "OK");
+            await _dialogService.DisplayAlert("Ooops...", $"Jouw items konden niet geladen worden: {ex.Message}", "OK");
         }
         finally
         {

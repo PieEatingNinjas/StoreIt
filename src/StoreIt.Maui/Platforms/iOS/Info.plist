@@ -22,8 +22,10 @@
 	<string>Splash</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
-
 	<key>NSCameraUsageDescription</key>
     <string>Als je een barcode wil scannen, moet je de app toegang geven tot je camera.</string>
+
+	<key>NSFaceIDUsageDescription</key>
+	<string>We gebruiken Face ID om je items veilig te beschermen.</string>
 </dict>
 </plist>

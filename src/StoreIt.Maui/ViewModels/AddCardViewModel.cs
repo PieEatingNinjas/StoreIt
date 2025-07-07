@@ -15,6 +15,7 @@ public partial class AddCardViewModel : ObservableObject
     private readonly IUserPreferencesService _userPreferencesService;
     private readonly IAppNavigationService _navigationService;
     private readonly IDialogService _dialogService;
+    private readonly IBiometricService _biometricService;
 
     [ObservableProperty]
     private string name = string.Empty;
@@ -56,11 +57,17 @@ public partial class AddCardViewModel : ObservableObject
     private bool showSaveHint;
 
     [ObservableProperty]
-    private string title = "Nieuwe Kaart";
+    private string title = "Nieuw Item";
     [ObservableProperty]
-    private string subTitle = "Nieuwe kaart toevoegen";
+    private string subTitle = "Nieuw item toevoegen";
     [ObservableProperty]
     private string saveButtonText = "Opslaan";
+
+    [ObservableProperty]
+    private bool isPrivate;
+
+    [ObservableProperty]
+    private bool isPrivateOptionAvailable;
 
     public List<CardColor> AvailableColors { get; } = new()
     {
@@ -76,62 +83,73 @@ public partial class AddCardViewModel : ObservableObject
 
     public AddCardViewModel(DatabaseService databaseService,
         IUserPreferencesService userPreferencesService,
-        IAppNavigationService navigationService, IDialogService dialogService)
+        IAppNavigationService navigationService,
+        IDialogService dialogService,
+        IBiometricService biometricService)
     {
         _databaseService = databaseService;
         _userPreferencesService = userPreferencesService;
-        _navigationService = navigationService; 
+        _navigationService = navigationService;
         _dialogService = dialogService;
+        _biometricService = biometricService;
 
         // Initialize with random color for new cards
         SelectRandomColor();
-        
+
         ShowBarcodeScanning = false;
         ShowCustomCodeInput = false;
+        _ = Init();
+    }
+
+    private async Task Init()
+    {
+        IsPrivateOptionAvailable = await _biometricService.IsAvailableAsync();
     }
 
     partial void OnCardIdChanged(int value)
     {
         if (value > 0)
         {
-            Title = "Kaart bewerken";
-            SubTitle = "Kaart bewerken";
+            Title = "Item bewerken";
+            SubTitle = "Item bewerken";
             SaveButtonText = "Bijwerken";
             IsEditing = true;
             _ = LoadCardAsync(value);
         }
         else
         {
-            Title = "Nieuwe Kaart";
+            Title = "Nieuw Item";
             SaveButtonText = "Opslaan";
             IsEditing = false;
-            SubTitle = "Nieuwe kaart toevoegen";
+            SubTitle = "Nieuw item toevoegen";
         }
     }
 
+    CustomerCard? _originalCard;
     private async Task LoadCardAsync(int id)
     {
         try
         {
-            var card = await _databaseService.GetCardAsync(id);
-            if (card != null)
+            _originalCard = await _databaseService.GetCardAsync(id);
+            if (_originalCard != null)
             {
-                Name = card.Name;
-                Description = card.Description ?? string.Empty;
-                BarcodeData = card.BarcodeData;
-                BarcodeFormat = card.BarcodeFormat;
-                CustomCode = card.CustomCode ?? string.Empty;
-                SelectedColor = card.Color ?? "#FF6B35"; // Default to orange if no color
-                
+                Name = _originalCard.Name;
+                Description = _originalCard.Description ?? string.Empty;
+                BarcodeData = _originalCard.BarcodeData;
+                BarcodeFormat = _originalCard.BarcodeFormat;
+                CustomCode = _originalCard.CustomCode ?? string.Empty;
+                SelectedColor = _originalCard.Color ?? "#FF6B35"; // Default to orange if no color
+                IsPrivate = _originalCard.IsPrivate;
+
                 SelectedColorObject = AvailableColors.FirstOrDefault(c => c.Value == SelectedColor) ?? AvailableColors.First();
-                
-                if (!string.IsNullOrEmpty(card.BarcodeData))
+
+                if (!string.IsNullOrEmpty(_originalCard.BarcodeData))
                 {
                     ShowBarcodeScanning = true;
                     ShowCustomCodeInput = false;
                     ShowBarcodePreview = true;
                 }
-                else if (!string.IsNullOrEmpty(card.CustomCode))
+                else if (!string.IsNullOrEmpty(_originalCard.CustomCode))
                 {
                     ShowBarcodeScanning = false;
                     ShowCustomCodeInput = true;
@@ -140,7 +158,7 @@ public partial class AddCardViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            await _dialogService.DisplayAlert("Ooops...", $"Kaart kon niet geladen worden: {ex.Message}", "OK");
+            await _dialogService.DisplayAlert("Ooops...", $"Item kon niet geladen worden: {ex.Message}", "OK");
         }
     }
 
@@ -191,6 +209,62 @@ public partial class AddCardViewModel : ObservableObject
         WeakReferenceMessenger.Default.Register<BarcodeResult>(this, (r, result) => ((AddCardViewModel)r).OnBarcodeReceived(result));
     }
 
+    bool cannotChangeIsPrivate = false;
+    
+    [RelayCommand]
+    public async Task SetIsPrivateCardCommand(bool isPrivate)
+    {
+        bool reset = false;
+        if (cannotChangeIsPrivate)
+        {
+            //Force back to the original value
+            OnPropertyChanged(nameof(IsPrivate));
+            return;
+        }
+
+        cannotChangeIsPrivate = true;
+
+        bool shouldAuthenticate;
+        if (_originalCard is not null && _originalCard.IsPrivate)
+        {
+            // If the original card is private, we need to authenticate if the new value is different
+            shouldAuthenticate = _originalCard.IsPrivate != isPrivate;
+        }
+        else
+        {
+            // If the original card is not private, we only need to authenticate if the new value is true
+            shouldAuthenticate = isPrivate;
+        } 
+        
+        if (shouldAuthenticate)
+        {
+            if (await _biometricService.IsAvailableAsync())
+            {
+                if (await _biometricService.AuthenticateAsync("Authenticeer om de privacy-instelling te wijzigen."))
+                {
+                    //All good!
+                    IsPrivate = isPrivate;
+                }
+                else
+                {
+                    reset = true;
+                }
+            }
+            else
+            {
+                reset = true;
+            }
+        }
+
+        if (reset)
+        {
+            //Force back to the original value
+            OnPropertyChanged(nameof(IsPrivate));
+        }
+
+        cannotChangeIsPrivate = false;
+    }
+
     public void OnBarcodeReceived(BarcodeResult result)
     {
         WeakReferenceMessenger.Default.Unregister<BarcodeResult>(this);
@@ -232,7 +306,7 @@ public partial class AddCardViewModel : ObservableObject
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
-                await _dialogService.DisplayAlert("Validatie", "Voer een naam in voor de kaart.", "OK");
+                await _dialogService.DisplayAlert("Validatie", "Voer een naam in.", "OK");
                 return;
             }
 
@@ -241,7 +315,7 @@ public partial class AddCardViewModel : ObservableObject
             
             if (!hasBarcodeData && !hasCustomCode)
             {
-                await _dialogService.DisplayAlert("Validatie", "Kies eerst het type kaart (barcode of code) en vul de gegevens in.", "OK");
+                await _dialogService.DisplayAlert("Validatie", "Kies eerst het type (barcode of code) en vul de gegevens in.", "OK");
                 return;
             }
 
@@ -253,19 +327,20 @@ public partial class AddCardViewModel : ObservableObject
                 BarcodeData = hasBarcodeData ? BarcodeData : null,
                 BarcodeFormat = hasBarcodeData ? BarcodeFormat : null,
                 CustomCode = hasCustomCode ? CustomCode.Trim() : null,
-                Color = SelectedColor
+                Color = SelectedColor,
+                IsPrivate = IsPrivate
             };
 
             await _databaseService.SaveCardAsync(card);
             
             await _dialogService.DisplayAlert("Succes", 
-                IsEditing ? "Kaart bijgewerkt!" : "Kaart opgeslagen!", "OK");
+                IsEditing ? "Item bijgewerkt!" : "Item opgeslagen!", "OK");
             
             await _navigationService.GoBack();
         }
         catch (Exception ex)
         {
-            await _dialogService.DisplayAlert("Error", $"Kan kaart niet opslaan: {ex.Message}", "OK");
+            await _dialogService.DisplayAlert("Error", $"Kan Item niet opslaan: {ex.Message}", "OK");
         }
     }
 
