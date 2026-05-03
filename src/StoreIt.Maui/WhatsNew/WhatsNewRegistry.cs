@@ -7,7 +7,6 @@ public static class WhatsNewRegistry
     public static List<WhatsNewEntry> Items => new()
     {
         new WhatsNewEntry { Id = 2, Version = "1.1.0", PageType = typeof(WhatsNew110Page) },
-        // new WhatsNewEntry { Id = 2, Version = "1.1.0", PageType = typeof(WhatsNew110Page) },
     };
 }
 

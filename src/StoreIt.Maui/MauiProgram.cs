@@ -25,13 +25,9 @@ public static class MauiProgram
                             fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                             fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     })
-.ConfigureMauiHandlers((handlers) =>
-            {
-#if  IOS
-                // handlers.AddHandler<Microsoft.Maui.Controls.CollectionView, Microsoft.Maui.Controls.Handlers.Items2.CollectionViewHandler2>();
-#endif
-            })
-                    ;                // Services
+                    ;
+
+                // Services
                 builder.Services.AddSingleton<DatabaseService>();
                 builder.Services.AddSingleton<IUserPreferencesService, UserPreferencesService>();
                 builder.Services.AddSingleton<IThemeService, ThemeService>();

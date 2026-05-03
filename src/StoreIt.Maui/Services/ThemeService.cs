@@ -6,8 +6,6 @@ public class ThemeService : IThemeService
 {
     private readonly IUserPreferencesService _userPreferencesService;
 
-    // public event EventHandler<ThemeOption>? ThemeChanged;
-
     public ThemeService(IUserPreferencesService userPreferencesService)
     {
         _userPreferencesService = userPreferencesService;

@@ -20,7 +20,6 @@
             <Label Text="* Enkel beschikbaar wanneer jouw toestel dit ondersteunt"  Margin="0,10,0,0"
                 FontSize="14" TextColor="Gray" HorizontalTextAlignment="Start"/>
         </VerticalStackLayout>
-        <!-- <Image Source="biometric_demo.png" HeightRequest="180" Aspect="AspectFit" HorizontalOptions="Center"/> -->
         <HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
             <Button Text="Sluiten" Command="{Binding CloseCommand}" 
                 BackgroundColor="{AppThemeBinding Light={StaticResource Gray600},

@@ -68,7 +68,7 @@ public partial class ViewCardViewModel : ObservableObject
             IsAuthenticating = false;
             IsLoading = true;
 
-            // Eerst de kaart laden om te controleren of het een privé kaart is
+            // Load the card first to check whether it is a private card
             var card = await _databaseService.GetCardAsync(id);
 
             if (card == null)
@@ -79,7 +79,7 @@ public partial class ViewCardViewModel : ObservableObject
                 return;
             }
 
-            // Alleen authenticatie vereisen voor privé kaarten
+            // Only require authentication for private cards
             if (card.IsPrivate)
             {
                 IsAuthenticating = true;
@@ -88,12 +88,12 @@ public partial class ViewCardViewModel : ObservableObject
 
                 if (isBiometricAvailable)
                 {
-                    // Biometrische authenticatie vereisen voor privé kaarten
+                    // Require biometric authentication for private cards
                     var authResult = await _biometricService.AuthenticateAsync("Authenticeer om dit item te bekijken");
 
                     if (!authResult)
                     {
-                        // Authenticatie mislukt - ga terug
+                        // Authentication failed — navigate back
                         await _dialogService.DisplayAlert("Authenticatie vereist",
                             "Je moet je authenticeren om je item te kunnen bekijken.", "OK");
                         await _navigationService.GoBack();
@@ -102,7 +102,7 @@ public partial class ViewCardViewModel : ObservableObject
                 }
                 else
                 {
-                    // Biometrie niet beschikbaar maar kaart is privé
+                    // Biometrics unavailable but card is private
                     await _dialogService.DisplayAlert("Beveiliging niet beschikbaar",
                         "Dit item is beveiligd, maar je apparaat ondersteunt dit niet. Stel biometrische beveiliging (opnieuw) in op je apparaat.", "OK");
                     await _navigationService.GoBack();
@@ -110,7 +110,7 @@ public partial class ViewCardViewModel : ObservableObject
                 }
             }
 
-            // Authenticatie succesvol of niet nodig - laad de kaart volledig
+            // Authentication succeeded or not required — load the card
             await SetCardAsync(card);
         }
         catch (Exception ex)
