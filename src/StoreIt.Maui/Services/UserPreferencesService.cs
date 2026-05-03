@@ -86,12 +86,12 @@ public class UserPreferencesService : IUserPreferencesService
 
     public int? GetLastViewedWhatsNewId()
     {
-        var value = Preferences.Get(WhatsNewVersionKey, int.MinValue);
+        var value = _preferences.Get(WhatsNewVersionKey, int.MinValue);
         return value == int.MinValue ? null : value;
     }
 
     public void SetLastViewedWhatsNewId(int id)
     {
-        Preferences.Set(WhatsNewVersionKey, id);
+        _preferences.Set(WhatsNewVersionKey, id);
     }
 }

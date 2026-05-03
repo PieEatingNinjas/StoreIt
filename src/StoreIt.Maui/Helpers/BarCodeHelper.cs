@@ -1,5 +1,3 @@
-using System;
-
 namespace StoreIt.Maui.Helpers;
 
 public static class BarCodeHelper

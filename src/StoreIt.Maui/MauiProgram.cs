@@ -42,11 +42,11 @@ public static class MauiProgram
 #if ANDROID
                 builder.Services.AddSingleton<IPlatformBrightnessService, Platforms.Android.AndroidBrightnessService>();
 #elif IOS
-        builder.Services.AddSingleton<IPlatformBrightnessService, Platforms.iOS.iOSBrightnessService>();
+                builder.Services.AddSingleton<IPlatformBrightnessService, Platforms.iOS.iOSBrightnessService>();
 #elif MACCATALYST
-        builder.Services.AddSingleton<IPlatformBrightnessService, Platforms.MacCatalyst.MacCatalystBrightnessService>();
+                builder.Services.AddSingleton<IPlatformBrightnessService, Platforms.MacCatalyst.MacCatalystBrightnessService>();
 #else
-        builder.Services.AddSingleton<IPlatformBrightnessService, Services.FallbackBrightnessService>();
+                builder.Services.AddSingleton<IPlatformBrightnessService, Services.FallbackBrightnessService>();
 #endif
                 // ViewModels
                 builder.Services.AddTransient<MainViewModel>();

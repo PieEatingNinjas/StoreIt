@@ -6,7 +6,7 @@ namespace StoreIt.Maui.Services;
 public class WhatsNewService : IWhatsNewService
 {
 	private readonly IUserPreferencesService _userPreferencesService;
-private readonly IAppNavigationService _appNavigationService;
+	private readonly IAppNavigationService _appNavigationService;
 
 	public WhatsNewService(IUserPreferencesService userPreferencesService,
 		IAppNavigationService appNavigationService)

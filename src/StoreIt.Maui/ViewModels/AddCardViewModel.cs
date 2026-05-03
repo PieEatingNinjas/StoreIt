@@ -17,6 +17,9 @@ public partial class AddCardViewModel : ObservableObject
     private readonly IDialogService _dialogService;
     private readonly IBiometricService _biometricService;
 
+    private CustomerCard? _originalCard;
+    private bool _cannotChangeIsPrivate;
+
     [ObservableProperty]
     private string name = string.Empty;
 
@@ -125,7 +128,6 @@ public partial class AddCardViewModel : ObservableObject
         }
     }
 
-    CustomerCard? _originalCard;
     private async Task LoadCardAsync(int id)
     {
         try
@@ -209,20 +211,18 @@ public partial class AddCardViewModel : ObservableObject
         WeakReferenceMessenger.Default.Register<BarcodeResult>(this, (r, result) => ((AddCardViewModel)r).OnBarcodeReceived(result));
     }
 
-    bool cannotChangeIsPrivate = false;
-    
     [RelayCommand]
     public async Task SetIsPrivateCardCommand(bool isPrivate)
     {
         bool reset = false;
-        if (cannotChangeIsPrivate)
+        if (_cannotChangeIsPrivate)
         {
             //Force back to the original value
             OnPropertyChanged(nameof(IsPrivate));
             return;
         }
 
-        cannotChangeIsPrivate = true;
+        _cannotChangeIsPrivate = true;
 
         bool shouldAuthenticate;
         if (_originalCard is not null && _originalCard.IsPrivate)
@@ -262,7 +262,7 @@ public partial class AddCardViewModel : ObservableObject
             OnPropertyChanged(nameof(IsPrivate));
         }
 
-        cannotChangeIsPrivate = false;
+        _cannotChangeIsPrivate = false;
     }
 
     public void OnBarcodeReceived(BarcodeResult result)
