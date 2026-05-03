@@ -30,7 +30,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task LoadCardsAsync()
+    private async Task LoadCardsAsync()
     {
         try
         {
@@ -48,21 +48,21 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public Task AddCardAsync() => _appNavigationService.NavigateToAddCardPage();
+    private Task AddCardAsync() => _appNavigationService.NavigateToAddCardPage();
 
     [RelayCommand]
-    public async Task ViewCardAsync(CustomerCard card)
+    private async Task ViewCardAsync(CustomerCard card)
     {
-        if (card == null) return;
-        
+        if (card is null) return;
+
         await _databaseService.UpdateLastUsedAsync(card.Id);
         await _appNavigationService.NavigateToViewCardPage(card.Id);
     }
 
     [RelayCommand]
-    public async Task ToggleFavoriteAsync(CustomerCard card)
+    private async Task ToggleFavoriteAsync(CustomerCard card)
     {
-        if (card == null) return;
+        if (card is null) return;
 
         card.IsFavorite = !card.IsFavorite;
         await _databaseService.SaveCardAsync(card);

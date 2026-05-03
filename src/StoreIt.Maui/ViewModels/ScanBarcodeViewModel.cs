@@ -20,12 +20,12 @@ public partial class ScanBarcodeViewModel : ObservableObject
     private string? scannedFormat;
 
     [RelayCommand]
-    public Task Cancel() => _navigationService.GoBack();
+    private Task Cancel() => _navigationService.GoBack();
 
     [RelayCommand]
-    public Task SwitchToManual() => _navigationService.SwitchToManualBarCodePage();
+    private Task SwitchToManual() => _navigationService.SwitchToManualBarCodePage();
 
-    public Task Accept()
+    private Task Accept()
     {
         if (!string.IsNullOrEmpty(ScannedData) && !string.IsNullOrEmpty(ScannedFormat))
         {
@@ -36,6 +36,7 @@ public partial class ScanBarcodeViewModel : ObservableObject
             });
             return _navigationService.GoBack();
         }
+
         return Task.CompletedTask;
     }
 
@@ -49,10 +50,10 @@ public partial class ScanBarcodeViewModel : ObservableObject
             App.Current!.Dispatcher.DispatchAsync(Accept);
         }
     }
-    
+
     public ScanBarcodeViewModel(IAppNavigationService appNavigationService)
     {
-       _navigationService = appNavigationService;
+        _navigationService = appNavigationService;
     }
 }
 

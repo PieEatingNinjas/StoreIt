@@ -17,24 +17,24 @@ public partial class ViewCardViewModel : ObservableObject
     private readonly IDialogService _dialogService;
     private readonly IBiometricService _biometricService;
 
-    [ObservableProperty]
+    [ObservableProperty] 
     private CustomerCard? card;
 
-    [ObservableProperty]
+    [ObservableProperty] 
     private int cardId;
 
     private bool isBrightnessControlSupported;
 
-    [ObservableProperty]
+    [ObservableProperty] 
     private bool showZoomHint;
 
-    [ObservableProperty]
+    [ObservableProperty] 
     private bool showCopyHint;
 
-    [ObservableProperty]
+    [ObservableProperty] 
     private bool isAuthenticating = true;
 
-    [ObservableProperty]
+    [ObservableProperty] 
     private bool isLoading = true;
 
     public ViewCardViewModel(DatabaseService databaseService,
@@ -104,7 +104,8 @@ public partial class ViewCardViewModel : ObservableObject
                 {
                     // Biometrie niet beschikbaar maar kaart is privé
                     await _dialogService.DisplayAlert("Beveiliging niet beschikbaar",
-                        "Dit item is beveiligd, maar je apparaat ondersteunt dit niet. Stel biometrische beveiliging (opnieuw) in op je apparaat.", "OK");
+                        "Dit item is beveiligd, maar je apparaat ondersteunt dit niet. Stel biometrische beveiliging (opnieuw) in op je apparaat.",
+                        "OK");
                     await _navigationService.GoBack();
                     return;
                 }
@@ -144,6 +145,7 @@ public partial class ViewCardViewModel : ObservableObject
                     _brightnessService.SetSystemBrightness(1.0f);
                 }
             }
+
             LoadHints();
         }
         else
@@ -181,10 +183,10 @@ public partial class ViewCardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public Task EditCardAsync() => _navigationService.NavigateToEditCardPage(Card?.Id ?? 0);
+    private Task EditCardAsync() => _navigationService.NavigateToEditCardPage(Card?.Id ?? 0);
 
     [RelayCommand]
-    public async Task ReloadCardAsync()
+    private async Task ReloadCardAsync()
     {
         if (Card != null)
         {
@@ -193,7 +195,7 @@ public partial class ViewCardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task DeleteCardAsync()
+    private async Task DeleteCardAsync()
     {
         if (Card == null) return;
 
@@ -208,7 +210,7 @@ public partial class ViewCardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task ToggleFavoriteAsync()
+    private async Task ToggleFavoriteAsync()
     {
         if (Card == null) return;
 
@@ -218,7 +220,7 @@ public partial class ViewCardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public Task GoBackAsync()
+    private Task GoBackAsync()
     {
         // Always restore original brightness when leaving card view
         if (isBrightnessControlSupported && (Card?.HasBarcode ?? false))

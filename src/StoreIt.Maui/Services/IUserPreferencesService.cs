@@ -88,7 +88,7 @@ public interface IUserPreferencesService
     /// </summary>
     /// <param name="enabled">True to enable hints, false to disable</param>
     void SetHintsEnabled(bool enabled);
-    
+
     /// <summary>
     /// Gets the last viewed WhatsNew ID
     /// </summary>

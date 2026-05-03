@@ -6,17 +6,13 @@ public class ThemeService : IThemeService
 {
     private readonly IUserPreferencesService _userPreferencesService;
 
-    // public event EventHandler<ThemeOption>? ThemeChanged;
-
     public ThemeService(IUserPreferencesService userPreferencesService)
     {
         _userPreferencesService = userPreferencesService;
     }
 
     public ThemeOption GetCurrentTheme()
-    {
-        return _userPreferencesService.GetSelectedTheme();
-    }
+        => _userPreferencesService.GetSelectedTheme();
 
     public void SetTheme(ThemeOption theme)
     {

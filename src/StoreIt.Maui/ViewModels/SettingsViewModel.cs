@@ -55,31 +55,40 @@ public partial class SettingsViewModel : ObservableObject
     public bool IsSystemTheme
     {
         get => SelectedTheme == ThemeOption.System;
-        set { if (value) SelectedTheme = ThemeOption.System; }
+        set
+        {
+            if (value) SelectedTheme = ThemeOption.System;
+        }
     }
 
     public bool IsLightTheme
     {
         get => SelectedTheme == ThemeOption.Light;
-        set { if (value) SelectedTheme = ThemeOption.Light; }
+        set
+        {
+            if (value) SelectedTheme = ThemeOption.Light;
+        }
     }
 
     public bool IsDarkTheme
     {
         get => SelectedTheme == ThemeOption.Dark;
-        set { if (value) SelectedTheme = ThemeOption.Dark; }
+        set
+        {
+            if (value) SelectedTheme = ThemeOption.Dark;
+        }
     }
 
     [RelayCommand]
-    public void ThemeSelected(ThemeOption theme)
+    private void ThemeSelected(ThemeOption theme)
     {
         SelectedTheme = theme;
         _themeService.SetTheme(theme);
     }
-    
+
     [RelayCommand]
-    public async Task OpenWhatsNew()
+    private async Task OpenWhatsNew()
     {
-       await _whatsNewService.ShowLatestWhatsNewAsync(bypassCheck: true);
+        await _whatsNewService.ShowLatestWhatsNewAsync(bypassCheck: true);
     }
 }

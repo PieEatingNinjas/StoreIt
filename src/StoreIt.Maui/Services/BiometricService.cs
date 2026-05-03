@@ -19,7 +19,6 @@ public class BiometricService : IBiometricService
                 return false;
 
             var status = await _biometric.GetAuthenticationStatusAsync();
-            var x = await _biometric.GetEnrolledBiometricTypesAsync();
             return status == BiometricHwStatus.Success;
         }
         catch

@@ -13,7 +13,7 @@ public static class WhatsNewRegistry
 
 public class WhatsNewEntry
 {
-    public int Id { get; set; }
-    public string? Version { get; set; } = string.Empty;
-    public Type PageType { get; set; } = null!;
+    public int Id { get; init; }
+    public string? Version { get; init; } = string.Empty;
+    public Type PageType { get; init; } = null!;
 }

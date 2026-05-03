@@ -25,64 +25,41 @@ public class UserPreferencesService : IUserPreferencesService
     }
 
     public void SetSelectedTheme(ThemeOption theme)
-    {
-        SetString(ThemePreferenceKey, theme.ToString());
-    }
+        => SetString(ThemePreferenceKey, theme.ToString());
 
     public string GetString(string key, string defaultValue = "")
-    {
-        return _preferences.Get(key, defaultValue);
-    }
+        => _preferences.Get(key, defaultValue);
 
     public void SetString(string key, string value)
-    {
-        _preferences.Set(key, value);
-    }
+        => _preferences.Set(key, value);
 
     public bool GetBool(string key, bool defaultValue = false)
-    {
-        return _preferences.Get(key, defaultValue);
-    }
+        => _preferences.Get(key, defaultValue);
 
     public void SetBool(string key, bool value)
-    {
-        _preferences.Set(key, value);
-    }
+        => _preferences.Set(key, value);
 
     public int GetInt(string key, int defaultValue = 0)
-    {
-        return _preferences.Get(key, defaultValue);
-    }
+        => _preferences.Get(key, defaultValue);
 
     public void SetInt(string key, int value)
-    {
-        _preferences.Set(key, value);
-    }
+        => _preferences.Set(key, value);
 
     public void Remove(string key)
-    {
-        _preferences.Remove(key);
-    }
+        => _preferences.Remove(key);
 
     public bool ContainsKey(string key)
-    {
-        return _preferences.ContainsKey(key);
-    }
+        => _preferences.ContainsKey(key);
+
 
     public void Clear()
-    {
-        _preferences.Clear();
-    }
+        => _preferences.Clear();
 
     public bool GetHintsEnabled()
-    {
-        return GetBool(HintsEnabledKey, true); // Default to true (hints enabled)
-    }
+        => GetBool(HintsEnabledKey, true); // Default to true (hints enabled)
 
     public void SetHintsEnabled(bool enabled)
-    {
-        SetBool(HintsEnabledKey, enabled);
-    }
+        => SetBool(HintsEnabledKey, enabled);
 
     public int? GetLastViewedWhatsNewId()
     {
@@ -91,7 +68,5 @@ public class UserPreferencesService : IUserPreferencesService
     }
 
     public void SetLastViewedWhatsNewId(int id)
-    {
-        Preferences.Set(WhatsNewVersionKey, id);
-    }
+        => Preferences.Set(WhatsNewVersionKey, id);
 }

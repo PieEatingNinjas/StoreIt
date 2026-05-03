@@ -68,4 +68,16 @@
 	  <InterfaceDefinition Include="Resources\Splash.storyboard" />
 	</ItemGroup>
 
+
+	<PropertyGroup Condition="$(TargetFramework.Contains('-ios'))">
+		<!--DEBUG ON DEVICE-->
+<!--		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>-->
+		<!--DEBUG ON SIMULATOR-->
+		<RuntimeIdentifier>iossimulator-x64</RuntimeIdentifier>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-android'">
+        <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+    </PropertyGroup>
+
 </Project>
