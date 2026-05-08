@@ -68,7 +68,7 @@ dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net9.0-ios
 
 ### Run
 
-Use Visual Studio, Visual Studio for Mac, or the [.NET MAUI VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.dotnet-maui) to deploy to a physical device or emulator.
+Use Visual Studio on Windows (with a Mac build host for iOS), the [.NET MAUI VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.dotnet-maui), or the `dotnet` CLI to deploy to a physical device or emulator.
 
 ---
 
