@@ -2,9 +2,9 @@ namespace StoreIt.Maui.Services;
 
 public enum ThemeOption
 {
-    System,  
-    Light,   
-    Dark     
+    System,
+    Light,
+    Dark
 }
 
 public interface IThemeService
@@ -13,5 +13,4 @@ public interface IThemeService
     void SetTheme(ThemeOption theme);
     AppTheme GetAppTheme();
     void InitializeTheme();
-    // event EventHandler<ThemeOption> ThemeChanged;
 }

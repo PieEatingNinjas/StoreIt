@@ -8,8 +8,8 @@ public partial class ViewCardPage : ContentPage
     private readonly (double width, double height)[] _zoomSizes = new[]
     {
         (250.0, 125.0),
-        (350.0, 175.0), 
-        (150.0, 75.0)   
+        (350.0, 175.0),
+        (150.0, 75.0)
     };
 
     private int _currentZoomIndex = 0;
@@ -53,7 +53,7 @@ public partial class ViewCardPage : ContentPage
         {
             CycleZoom();
         }
-        else if(ViewModel.Card?.HasCustomCode ?? false)
+        else if (ViewModel.Card?.HasCustomCode ?? false)
         {
             Clipboard.SetTextAsync(ViewModel.Card.CustomCode);
             copyHint.IsShowing = true;

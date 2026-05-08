@@ -10,14 +10,11 @@ public partial class WhatsNewViewModel : ObservableObject
     private readonly IUserPreferencesService _prefs;
     private readonly IAppNavigationService _navigationService;
 
-    [ObservableProperty]
-    private string version;
+    [ObservableProperty] private string version;
 
-    [ObservableProperty]
-    private string title;
+    [ObservableProperty] private string title;
 
-    [ObservableProperty]
-    private bool isHideForFutureVisible;
+    [ObservableProperty] private bool isHideForFutureVisible;
 
     public WhatsNewViewModel(IUserPreferencesService prefs, IAppNavigationService navigationService)
     {

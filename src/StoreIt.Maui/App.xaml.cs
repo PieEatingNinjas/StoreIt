@@ -4,42 +4,50 @@ namespace StoreIt.Maui;
 
 public partial class App : Application
 {
-	readonly IWhatsNewService _whatsNewService;
-	public App(IWhatsNewService whatsNewService)
-	{
-		InitializeComponent();
-		_whatsNewService = whatsNewService;
-	}
+    readonly IWhatsNewService _whatsNewService;
 
-	protected override async void OnStart()
-	{
-		await _whatsNewService.ShowLatestWhatsNewAsync();
-	}
+    public App(IWhatsNewService whatsNewService)
+    {
+        InitializeComponent();
+        _whatsNewService = whatsNewService;
+    }
 
-	protected override Window CreateWindow(IActivationState? activationState)
-	{
-		var window = new Window(new AppShell());
+    protected override async void OnStart()
+    {
+        try
+        {
+            await _whatsNewService.ShowLatestWhatsNewAsync();
+        }
+        catch
+        {
+            //
+        }
+    }
 
-		// Initialize theme after the window is created
-		window.Created += (s, e) => InitializeTheme();
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        var window = new Window(new AppShell());
 
-		return window;
-	}
+        // Initialize theme after the window is created
+        window.Created += (s, e) => InitializeTheme();
 
-	private void InitializeTheme()
-	{
-		try
-		{
-			// Try to get theme service and initialize theme
-			var handler = Windows.FirstOrDefault()?.Handler;
-			var themeService = handler?.MauiContext?.Services?.GetService<IThemeService>();
-			themeService?.InitializeTheme();
-		}
-		catch (Exception ex)
-		{
-			// Fallback - if service not available yet, use system theme
-			System.Diagnostics.Debug.WriteLine($"Theme initialization failed: {ex.Message}");
-			UserAppTheme = AppTheme.Unspecified;
-		}
-	}
+        return window;
+    }
+
+    private void InitializeTheme()
+    {
+        try
+        {
+            // Try to get theme service and initialize theme
+            var handler = Windows.FirstOrDefault()?.Handler;
+            var themeService = handler?.MauiContext?.Services?.GetService<IThemeService>();
+            themeService?.InitializeTheme();
+        }
+        catch (Exception ex)
+        {
+            // Fallback - if service not available yet, use system theme
+            System.Diagnostics.Debug.WriteLine($"Theme initialization failed: {ex.Message}");
+            UserAppTheme = AppTheme.Unspecified;
+        }
+    }
 }

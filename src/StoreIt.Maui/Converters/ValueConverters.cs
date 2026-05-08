@@ -79,6 +79,7 @@ public class StringToBarcodeFormatConverter : IValueConverter
         {
             return format;
         }
+
         return BarcodeFormat.QrCode; // Default fallback
     }
 
@@ -93,7 +94,7 @@ public class BoolToCardTypeBackgroundConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         bool isSelected = (bool)(value ?? false);
-        
+
         if (Application.Current?.Resources is not null)
         {
             var resources = Application.Current.Resources;
@@ -106,7 +107,7 @@ public class BoolToCardTypeBackgroundConverter : IValueConverter
                 return isSelected ? resources["SelectionBackgroundLight"] : resources["UnselectedBackgroundLight"];
             }
         }
-        
+
         // Fallback
         return Colors.Gray;
     }
@@ -122,7 +123,7 @@ public class BoolToCardTypeBorderConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         bool isSelected = (bool)(value ?? false);
-        
+
         if (Application.Current?.Resources is not null)
         {
             var resources = Application.Current.Resources;
@@ -135,7 +136,7 @@ public class BoolToCardTypeBorderConverter : IValueConverter
                 return isSelected ? resources["SelectionBorderLight"] : resources["UnselectedBorderLight"];
             }
         }
-        
+
         // Fallback
         return Colors.Gray;
     }
@@ -151,7 +152,7 @@ public class BoolToCardTypeTextColorConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         bool isSelected = (bool)(value ?? false);
-        
+
         if (Application.Current?.Resources is not null)
         {
             var resources = Application.Current.Resources;
@@ -180,7 +181,7 @@ public class BoolToThemeBackgroundConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         bool isSelected = (bool)(value ?? false);
-        
+
         if (Application.Current?.Resources is not null)
         {
             var resources = Application.Current.Resources;
@@ -193,7 +194,7 @@ public class BoolToThemeBackgroundConverter : IValueConverter
                 return isSelected ? resources["SelectionBackgroundLight"] : resources["UnselectedBackgroundLight"];
             }
         }
-        
+
         // Fallback
         return Colors.Gray;
     }
@@ -209,7 +210,7 @@ public class BoolToThemeBorderConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         bool isSelected = (bool)(value ?? false);
-        
+
         if (Application.Current?.Resources is not null)
         {
             var resources = Application.Current.Resources;
@@ -222,7 +223,7 @@ public class BoolToThemeBorderConverter : IValueConverter
                 return isSelected ? resources["SelectionBorderLight"] : resources["UnselectedBorderLight"];
             }
         }
-        
+
         // Fallback
         return Colors.Gray;
     }
@@ -238,7 +239,7 @@ public class BoolToThemeTextColorConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         bool isSelected = (bool)(value ?? false);
-        
+
         if (Application.Current?.Resources is not null)
         {
             var resources = Application.Current.Resources;
@@ -251,7 +252,7 @@ public class BoolToThemeTextColorConverter : IValueConverter
                 return isSelected ? resources["SelectionTextLight"] : resources["UnselectedTextLight"];
             }
         }
-        
+
         // Fallback
         return Colors.Gray;
     }

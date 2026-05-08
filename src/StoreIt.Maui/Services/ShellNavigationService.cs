@@ -4,9 +4,11 @@ namespace StoreIt.Services;
 
 public class ShellNavigationService : IAppNavigationService
 {
-    public Task GoBack() => Shell.Current.GoToAsync("..");
+    public Task GoBack()
+        => Shell.Current.GoToAsync("..");
 
-    public Task NavigateToScanBarCodePage() => NavigateTo(Pages.ScanBarCodePage);
+    public Task NavigateToScanBarCodePage()
+        => NavigateTo(Pages.ScanBarCodePage);
 
     public Task NavigateToAddBarCodePage(string? barcode = null, string? barcodeFormat = null)
     {
@@ -21,6 +23,7 @@ public class ShellNavigationService : IAppNavigationService
         {
             navigationParams.Add(NavigationParams.BarcodeFormat, barcodeFormat);
         }
+
         return NavigateTo(Pages.AddBarCodePage, navigationParams);
     }
 
@@ -37,30 +40,37 @@ public class ShellNavigationService : IAppNavigationService
         }
     }
 
-    public Task NavigateToAddCardPage() => NavigateTo(Pages.AddCardPage);
+    public Task NavigateToAddCardPage()
+        => NavigateTo(Pages.AddCardPage);
 
-    public Task NavigateToViewCardPage(int id) => NavigateTo(Pages.ViewCardPage, new Dictionary<string, object>
-    {
-        { NavigationParams.CardId, id }
-    });
+    public Task NavigateToViewCardPage(int id)
+        => NavigateTo(Pages.ViewCardPage, new Dictionary<string, object>
+        {
+            { NavigationParams.CardId, id }
+        });
 
-    public Task SwitchToScanBarCodePage() => NavigateTo($"../{Pages.ScanBarCodePage}");
+    public Task SwitchToScanBarCodePage()
+        => NavigateTo($"../{Pages.ScanBarCodePage}");
 
-    public Task GoBack(Dictionary<string, object> parameters) => Shell.Current.GoToAsync("..", parameters);
+    public Task GoBack(Dictionary<string, object> parameters)
+        => Shell.Current.GoToAsync("..", parameters);
 
-    public Task SwitchToManualBarCodePage() => NavigateTo($"../{Pages.AddBarCodePage}");
+    public Task SwitchToManualBarCodePage()
+        => NavigateTo($"../{Pages.AddBarCodePage}");
 
-    public Task NavigateToEditCardPage(int id) => NavigateTo(Pages.AddCardPage, new Dictionary<string, object>
-    {
-        { NavigationParams.CardId, id }
-    });
+    public Task NavigateToEditCardPage(int id)
+        => NavigateTo(Pages.AddCardPage, new Dictionary<string, object>
+        {
+            { NavigationParams.CardId, id }
+        });
 
-    public Task GoToRoot() => NavigateTo($"/{Pages.MainPage}");
+    public Task GoToRoot()
+        => NavigateTo($"/{Pages.MainPage}");
 
     public async Task Show(Type pageType)
     {
         Routing.RegisterRoute("temp", pageType);
-		await Shell.Current.GoToAsync("temp");
-		Routing.UnRegisterRoute("temp");
+        await Shell.Current.GoToAsync("temp");
+        Routing.UnRegisterRoute("temp");
     }
 }

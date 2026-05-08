@@ -65,7 +65,7 @@ public partial class ManualBarcodeViewModel : ObservableObject
         if (string.IsNullOrWhiteSpace(BarcodeInput))
         {
             ShowBarcodePreview = false;
-           
+
             CanAccept = false;
             return;
         }
@@ -83,13 +83,13 @@ public partial class ManualBarcodeViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public Task Cancel() => _appNavigationService.GoBack();
+    private Task Cancel() => _appNavigationService.GoBack();
 
     [RelayCommand]
-    public Task SwitchToScan() => _appNavigationService.SwitchToScanBarCodePage();
+    private Task SwitchToScan() => _appNavigationService.SwitchToScanBarCodePage();
 
     [RelayCommand]
-    public Task Accept()
+    private Task Accept()
     {
         if (CanAccept && !string.IsNullOrEmpty(BarcodeInput))
         {
@@ -100,6 +100,7 @@ public partial class ManualBarcodeViewModel : ObservableObject
             });
             return _appNavigationService.GoBack();
         }
-        return Task.CompletedTask; 
+
+        return Task.CompletedTask;
     }
 }

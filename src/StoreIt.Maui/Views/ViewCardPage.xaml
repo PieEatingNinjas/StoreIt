@@ -12,7 +12,7 @@
     <ContentPage.Style>
         <Style TargetType="ContentPage">
             <Style.Triggers>
-                <!--  Barcode Page Style - Zwarte achtergrond voor optimaal scannen  -->
+                <!--  Black background for barcode cards — optimises scanner readability  -->
                 <DataTrigger
                     Binding="{Binding Card.HasBarcode}"
                     TargetType="ContentPage"

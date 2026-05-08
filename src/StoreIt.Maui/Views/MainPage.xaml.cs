@@ -4,7 +4,8 @@ namespace StoreIt.Maui.Views;
 
 public partial class MainPage : ContentPage
 {
-    public MainViewModel ViewModel{ get; }
+    public MainViewModel ViewModel { get; }
+
     public MainPage(MainViewModel viewModel)
     {
         InitializeComponent();
@@ -25,7 +26,8 @@ public partial class MainPage : ContentPage
         if (sender is VisualElement element)
         {
             element.Animate("OpacityAnimation",
-                (d) => element.Opacity = d, start: 1, end: 0.75, length: 250, easing: Easing.CubicInOut, finished: (v, c) =>
+                (d) => element.Opacity = d, start: 1, end: 0.75, length: 250, easing: Easing.CubicInOut,
+                finished: (v, c) =>
                 {
                     element.Opacity = 1; // Reset opacity after animation
                 });

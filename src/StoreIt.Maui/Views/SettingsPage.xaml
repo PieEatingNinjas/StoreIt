@@ -157,7 +157,6 @@
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
 
-                <!-- <VerticalStackLayout Spacing="15"> -->
                 <VerticalStackLayout Spacing="5">
                     <Label Style="{StaticResource SectionHeaderStyle}" Text="💡 Hints" />
 
@@ -173,7 +172,6 @@
                             VerticalOptions="Center" />
                     </Grid>
                 </VerticalStackLayout>
-                <!-- </VerticalStackLayout> -->
             </Border>
 
             <!--  Future Settings Sections  -->

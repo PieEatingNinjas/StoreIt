@@ -17,6 +17,9 @@ public partial class AddCardViewModel : ObservableObject
     private readonly IDialogService _dialogService;
     private readonly IBiometricService _biometricService;
 
+    private CustomerCard? _originalCard;
+    private bool _cannotChangeIsPrivate;
+
     [ObservableProperty]
     private string name = string.Empty;
 
@@ -58,8 +61,10 @@ public partial class AddCardViewModel : ObservableObject
 
     [ObservableProperty]
     private string title = "Nieuw Item";
+
     [ObservableProperty]
     private string subTitle = "Nieuw item toevoegen";
+
     [ObservableProperty]
     private string saveButtonText = "Opslaan";
 
@@ -125,7 +130,6 @@ public partial class AddCardViewModel : ObservableObject
         }
     }
 
-    CustomerCard? _originalCard;
     private async Task LoadCardAsync(int id)
     {
         try
@@ -141,7 +145,8 @@ public partial class AddCardViewModel : ObservableObject
                 SelectedColor = _originalCard.Color ?? "#FF6B35"; // Default to orange if no color
                 IsPrivate = _originalCard.IsPrivate;
 
-                SelectedColorObject = AvailableColors.FirstOrDefault(c => c.Value == SelectedColor) ?? AvailableColors.First();
+                SelectedColorObject = AvailableColors.FirstOrDefault(c => c.Value == SelectedColor) ??
+                                      AvailableColors.First();
 
                 if (!string.IsNullOrEmpty(_originalCard.BarcodeData))
                 {
@@ -163,14 +168,14 @@ public partial class AddCardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void SelectColor(CardColor color)
+    private void SelectColor(CardColor color)
     {
         SelectedColorObject = color;
         SelectedColor = color.Value;
     }
 
     [RelayCommand]
-    public void SelectBarcodeOption()
+    private void SelectBarcodeOption()
     {
         ShowBarcodeScanning = true;
         ShowCustomCodeInput = false;
@@ -178,7 +183,7 @@ public partial class AddCardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void SelectCustomCodeOption()
+    private void SelectCustomCodeOption()
     {
         ShowBarcodeScanning = false;
         ShowCustomCodeInput = true;
@@ -188,14 +193,14 @@ public partial class AddCardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public Task OpenScanBarcodePage()
+    private Task OpenScanBarcodePage()
     {
         RegisterForBarcodeResult();
         return _navigationService.NavigateToScanBarCodePage();
     }
 
     [RelayCommand]
-    public Task OpenManualBarcodePage()
+    private Task OpenManualBarcodePage()
     {
         RegisterForBarcodeResult();
         return _navigationService.NavigateToAddBarCodePage(BarcodeData, BarcodeFormat);
@@ -203,26 +208,25 @@ public partial class AddCardViewModel : ObservableObject
 
     private void RegisterForBarcodeResult()
     {
-        if(WeakReferenceMessenger.Default.IsRegistered<BarcodeResult>(this))
+        if (WeakReferenceMessenger.Default.IsRegistered<BarcodeResult>(this))
             return;
-            
-        WeakReferenceMessenger.Default.Register<BarcodeResult>(this, (r, result) => ((AddCardViewModel)r).OnBarcodeReceived(result));
+
+        WeakReferenceMessenger.Default.Register<BarcodeResult>(this,
+            (r, result) => ((AddCardViewModel)r).OnBarcodeReceived(result));
     }
 
-    bool cannotChangeIsPrivate = false;
-    
     [RelayCommand]
     public async Task SetIsPrivateCardCommand(bool isPrivate)
     {
         bool reset = false;
-        if (cannotChangeIsPrivate)
+        if (_cannotChangeIsPrivate)
         {
             //Force back to the original value
             OnPropertyChanged(nameof(IsPrivate));
             return;
         }
 
-        cannotChangeIsPrivate = true;
+        _cannotChangeIsPrivate = true;
 
         bool shouldAuthenticate;
         if (_originalCard is not null && _originalCard.IsPrivate)
@@ -234,8 +238,8 @@ public partial class AddCardViewModel : ObservableObject
         {
             // If the original card is not private, we only need to authenticate if the new value is true
             shouldAuthenticate = isPrivate;
-        } 
-        
+        }
+
         if (shouldAuthenticate)
         {
             if (await _biometricService.IsAvailableAsync())
@@ -262,7 +266,7 @@ public partial class AddCardViewModel : ObservableObject
             OnPropertyChanged(nameof(IsPrivate));
         }
 
-        cannotChangeIsPrivate = false;
+        _cannotChangeIsPrivate = false;
     }
 
     public void OnBarcodeReceived(BarcodeResult result)
@@ -276,13 +280,13 @@ public partial class AddCardViewModel : ObservableObject
         // Show save hint when barcode is received
         ShowSaveHintBriefly();
     }
-    
+
     private void ShowSaveHintBriefly()
     {
         // Only show hint if hints are enabled in settings
         if (!_userPreferencesService.GetHintsEnabled())
             return;
-            
+
         ShowSaveHint = true;
     }
 
@@ -293,14 +297,14 @@ public partial class AddCardViewModel : ObservableObject
             var random = new Random();
             var randomIndex = random.Next(AvailableColors.Count);
             var randomColor = AvailableColors[randomIndex];
-            
+
             SelectedColor = randomColor.Value;
             SelectedColorObject = randomColor;
         }
     }
 
     [RelayCommand]
-    public async Task SaveCardAsync()
+    private async Task SaveCardAsync()
     {
         try
         {
@@ -312,10 +316,11 @@ public partial class AddCardViewModel : ObservableObject
 
             var hasBarcodeData = !string.IsNullOrWhiteSpace(BarcodeData);
             var hasCustomCode = !string.IsNullOrWhiteSpace(CustomCode);
-            
+
             if (!hasBarcodeData && !hasCustomCode)
             {
-                await _dialogService.DisplayAlert("Validatie", "Kies eerst het type (barcode of code) en vul de gegevens in.", "OK");
+                await _dialogService.DisplayAlert("Validatie",
+                    "Kies eerst het type (barcode of code) en vul de gegevens in.", "OK");
                 return;
             }
 
@@ -332,10 +337,10 @@ public partial class AddCardViewModel : ObservableObject
             };
 
             await _databaseService.SaveCardAsync(card);
-            
-            await _dialogService.DisplayAlert("Succes", 
+
+            await _dialogService.DisplayAlert("Succes",
                 IsEditing ? "Item bijgewerkt!" : "Item opgeslagen!", "OK");
-            
+
             await _navigationService.GoBack();
         }
         catch (Exception ex)
@@ -345,5 +350,5 @@ public partial class AddCardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public Task CancelAsync() => _navigationService.GoBack();
+    private Task CancelAsync() => _navigationService.GoBack();
 }

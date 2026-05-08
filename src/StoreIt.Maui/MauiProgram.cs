@@ -25,13 +25,9 @@ public static class MauiProgram
                             fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                             fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     })
-.ConfigureMauiHandlers((handlers) =>
-            {
-#if  IOS
-                // handlers.AddHandler<Microsoft.Maui.Controls.CollectionView, Microsoft.Maui.Controls.Handlers.Items2.CollectionViewHandler2>();
-#endif
-            })
-                    ;                // Services
+                    ;
+
+                // Services
                 builder.Services.AddSingleton<DatabaseService>();
                 builder.Services.AddSingleton<IUserPreferencesService, UserPreferencesService>();
                 builder.Services.AddSingleton<IThemeService, ThemeService>();
@@ -46,11 +42,11 @@ public static class MauiProgram
 #if ANDROID
                 builder.Services.AddSingleton<IPlatformBrightnessService, Platforms.Android.AndroidBrightnessService>();
 #elif IOS
-        builder.Services.AddSingleton<IPlatformBrightnessService, Platforms.iOS.iOSBrightnessService>();
+                builder.Services.AddSingleton<IPlatformBrightnessService, Platforms.iOS.iOSBrightnessService>();
 #elif MACCATALYST
-        builder.Services.AddSingleton<IPlatformBrightnessService, Platforms.MacCatalyst.MacCatalystBrightnessService>();
+                builder.Services.AddSingleton<IPlatformBrightnessService, Platforms.MacCatalyst.MacCatalystBrightnessService>();
 #else
-        builder.Services.AddSingleton<IPlatformBrightnessService, Services.FallbackBrightnessService>();
+                builder.Services.AddSingleton<IPlatformBrightnessService, Services.FallbackBrightnessService>();
 #endif
                 // ViewModels
                 builder.Services.AddTransient<MainViewModel>();

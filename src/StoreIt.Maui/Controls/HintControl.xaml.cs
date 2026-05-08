@@ -100,7 +100,7 @@ public partial class HintControl : ContentView
 
     private async Task HideWithAnimationAsync()
     {
-        if (hintBorder != null && hintBorder.IsVisible)
+        if (hintBorder is not null && hintBorder.IsVisible)
         {
             await hintBorder.FadeTo(0, FadeAnimationDuration);
             hintBorder.IsVisible = false;

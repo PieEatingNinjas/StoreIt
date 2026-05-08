@@ -14,6 +14,13 @@ public partial class AddCardPage : ContentPage
 
     private async void Switch_Toggled(object sender, ToggledEventArgs e)
     {
-        await ViewModel.SetIsPrivateCardCommand(e.Value);
+        try
+        {
+            await ViewModel.SetIsPrivateCardCommand(e.Value);
+        }
+        catch
+        {
+            
+        }
     }
 }

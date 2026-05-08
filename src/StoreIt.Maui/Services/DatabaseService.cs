@@ -15,32 +15,10 @@ public class DatabaseService
         var databasePath = Path.Combine(FileSystem.AppDataDirectory, "CustomerCards.db3");
         _database = new SQLiteAsyncConnection(databasePath);
         await _database.CreateTableAsync<CustomerCard>();
-        
-        //Is this really needed?
-        // Migration: Add new columns if they don't exist
-        try
-        {
-            await _database.ExecuteAsync("ALTER TABLE CustomerCards ADD COLUMN PresetId TEXT");
-        }
-        catch { /* Column already exists */ }
-        
-        try
-        {
-            await _database.ExecuteAsync("ALTER TABLE CustomerCards ADD COLUMN LogoEmoji TEXT");
-        }
-        catch { /* Column already exists */ }
-        
-        try
-        {
-            await _database.ExecuteAsync("ALTER TABLE CustomerCards ADD COLUMN CustomCode TEXT");
-        }
-        catch { /* Column already exists */ }
-        
-        try
-        {
-            await _database.ExecuteAsync("ALTER TABLE CustomerCards ADD COLUMN IsPrivate INTEGER DEFAULT 0");
-        }
-        catch { /* Column already exists */ }
+
+        // Migrations: safely add columns introduced in later versions
+        await TryAlterTableAsync("ALTER TABLE CustomerCards ADD COLUMN CustomCode TEXT");
+        await TryAlterTableAsync("ALTER TABLE CustomerCards ADD COLUMN IsPrivate INTEGER DEFAULT 0");
     }
 
     public async Task<List<CustomerCard>> GetCardsAsync()
@@ -102,5 +80,14 @@ public class DatabaseService
             .OrderByDescending(c => c.IsFavorite)
             .ThenByDescending(c => c.LastUsed)
             .ToListAsync();
+    }
+
+    private async Task TryAlterTableAsync(string sql)
+    {
+        try
+        {
+            await _database!.ExecuteAsync(sql);
+        }
+        catch { /* Column already exists — safe to ignore */ }
     }
 }

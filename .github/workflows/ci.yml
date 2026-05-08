@@ -11,35 +11,11 @@ env:
   PROJECT_PATH: 'src/StoreIt.Maui/StoreIt.Maui.csproj'
 
 jobs:
-  # # ✅ Build and Test Job
-  # build-and-test:
-  #   name: 🔨 Build & Test
-  #   runs-on: macos-15
-    
-  #   steps:
-  #   - name: 📥 Checkout Code
-  #     uses: actions/checkout@v4
-
-  #   - name: 🔧 Setup .NET
-  #     uses: actions/setup-dotnet@v4
-  #     with:
-  #       dotnet-version: ${{ env.DOTNET_VERSION }}
-
-  #   - name: 📦 Install .NET MAUI Workload
-  #     run: dotnet workload install maui
-
-  #   - name: 🔍 Restore Dependencies
-  #     run: dotnet restore ${{ env.PROJECT_PATH }}
-
-  #   - name: 🔨 Build Project
-  #     run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
-
   # 🤖 Android Build Job
   build-android:
     name: 🤖 Build Android
     runs-on: macos-15
-    # needs: build-and-test
-    
+
     steps:
 
     - name: 🤖 Set Xcode version 
@@ -71,25 +47,11 @@ jobs:
     - name: 🔨 Build Android APK
       run: dotnet build ${{ env.PROJECT_PATH }} -f net9.0-android -c Release
 
-    # - name: 📦 Publish Android APK
-    #   run: dotnet publish ${{ env.PROJECT_PATH }} -f net9.0-android -c Release --no-build
-      
-    # - name: 📤 Upload Android Artifacts
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: android-artifacts
-    #     path: |
-    #       src/StoreIt.Maui/bin/Release/net9.0-android/
-    #       !src/StoreIt.Maui/bin/Release/net9.0-android/ref/
-    #       !src/StoreIt.Maui/bin/Release/net9.0-android/*.pdb
-    #     retention-days: 7
-
   # 🍎 iOS Build Job (macOS runner required for iOS)
   build-ios:
     name: 🍎 Build iOS
     runs-on: macos-15
-    # needs: build-and-test
-    
+
     steps:
   
     - name: 🤖 Set Xcode version 
@@ -112,16 +74,6 @@ jobs:
     - name: 🔨 Build iOS
       run: dotnet build ${{ env.PROJECT_PATH }} -f net9.0-ios -c Release
 
-    # - name: 📤 Upload iOS Artifacts
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: ios-artifacts
-    #     path: |
-    #       src/StoreIt.Maui/bin/Release/net9.0-ios/
-    #       !src/StoreIt.Maui/bin/Release/net9.0-ios/ref/
-    #       !src/StoreIt.Maui/bin/Release/net9.0-ios/*.pdb
-    #     retention-days: 7
-    
   # 🎯 Summary Job
   ci-success:
     name: ✅ CI Success
