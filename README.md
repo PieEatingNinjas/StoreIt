@@ -28,7 +28,7 @@ Built with .NET MAUI, targeting **Android** and **iOS**.
 
 | Dependency | Purpose |
 |---|---|
-| [.NET 9 MAUI](https://learn.microsoft.com/en-us/dotnet/maui/) | Cross-platform UI framework |
+| [.NET 10 MAUI](https://learn.microsoft.com/en-us/dotnet/maui/) | Cross-platform UI framework |
 | [CommunityToolkit.Maui](https://github.com/CommunityToolkit/Maui) | MAUI helpers and converters |
 | [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) | MVVM source generators |
 | [sqlite-net-pcl](https://github.com/praeclarum/sqlite-net) | Local SQLite database |
@@ -41,37 +41,12 @@ Built with .NET MAUI, targeting **Android** and **iOS**.
 
 ### Prerequisites
 
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - .NET MAUI workload:
   ```bash
   dotnet workload install maui
   ```
-- **Android**: Android SDK (API level 21+)
-- **iOS**: macOS with Xcode 16+
-
-### Build
-
-```bash
-# Clone the repository
-git clone https://github.com/PieEatingNinjas/StoreIt.git
-cd StoreIt
-
-# Restore dependencies
-dotnet restore src/StoreIt.Maui/StoreIt.Maui.csproj
-
-# Build for Android
-dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net9.0-android
-
-# Build for iOS (macOS only)
-dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net9.0-ios
-```
-
-### Run
-
-Use Visual Studio on Windows (with a Mac build host for iOS), the [.NET MAUI VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.dotnet-maui), or the `dotnet` CLI to deploy to a physical device or emulator.
-
----
-
+  
 ## Project Structure
 
 ```
@@ -101,7 +76,3 @@ Contributions are welcome! Please read the [Contributing Guide](CONTRIBUTING.md)
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
----
-
-_Built with ❤️ in Belgium_
