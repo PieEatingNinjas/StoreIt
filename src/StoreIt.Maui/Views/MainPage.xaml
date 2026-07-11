@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="StoreIt.Maui.Views.MainPage"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:StoreIt.Maui.Views"
     xmlns:models="clr-namespace:StoreIt.Maui.Models"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -105,17 +103,24 @@
                                 </VerticalStackLayout>
 
                                 <!--  Favorite Button  -->
-                                <Button
+                                <Label
                                     Grid.Column="3"
                                     Padding="8"
-                                    BackgroundColor="Transparent"
-                                    Command="{Binding ViewModel.ToggleFavoriteCommand, Source={x:Reference mainPage}, x:DataType=local:MainPage}"
-                                    CommandParameter="{Binding .}"
+                                    BackgroundColor="transparent"
                                     FontSize="18"
                                     HeightRequest="40"
                                     Text="{Binding IsFavorite, Converter={StaticResource BoolToStarConverter}}"
                                     TextColor="{Binding IsFavorite, Converter={StaticResource BoolToColorConverter}}"
-                                    WidthRequest="40" />
+                                    WidthRequest="40">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding ViewModel.ToggleFavoriteCommand, Source={x:Reference mainPage}, x:DataType=local:MainPage}"
+                                                CommandParameter="{Binding .}"
+                                                Tapped="TapGestureRecognizer_Tapped" />
+                                        </Label.GestureRecognizers>
+                                </Label>
+
+                            
 
                                 <!--  Last Used  -->
                                 <Label
@@ -126,7 +131,6 @@
                                     Text="{Binding LastUsed, StringFormat='Laatst gebruikt: {0:dd MMM yyyy}'}"
                                     TextColor="{AppThemeBinding Light=#999,
                                                                 Dark=#777}" />
-
                                 <!--  Tap Gesture  -->
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer

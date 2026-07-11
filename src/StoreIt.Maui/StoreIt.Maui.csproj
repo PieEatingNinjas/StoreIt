@@ -1,18 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0-android;net9.0-ios</TargetFrameworks>
-		<!-- <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks> -->
-		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-		<!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
-
-		<!-- Note for MacCatalyst:
-		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
-		When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
-		The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
-		either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
-		<!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
-
+		<TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>StoreIt</RootNamespace>
 		<UseMaui>true</UseMaui>
@@ -40,6 +29,11 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
+	<PropertyGroup>
+    	<DefineConstants>$(DefineConstants);MauiAllowImplicitXmlnsDeclaration</DefineConstants>
+    	<EnablePreviewFeatures>true</EnablePreviewFeatures>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
@@ -53,15 +47,14 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>	
 	<ItemGroup>		
-		<PackageReference Include="CommunityToolkit.Maui" Version="12.0.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.70" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-		<PackageReference Include="ZXing.Net.Maui" Version="0.4.0" />
-		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.4.0" />
-		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
-		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.8" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-		<PackageReference Include="Plugin.Maui.Biometric" Version="0.0.6" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="14.2.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.80" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.9" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.11.284-beta" />
+		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+		<PackageReference Include="Plugin.Maui.Biometric" Version="0.1.0" />
+		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.10.3" />
 	</ItemGroup>
 
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
@@ -76,8 +69,9 @@
 		<RuntimeIdentifier>iossimulator-x64</RuntimeIdentifier>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-android'">
+	<PropertyGroup Condition="'$(TargetFramework)'=='net10.0-android'">
         <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     </PropertyGroup>
 
 </Project>
