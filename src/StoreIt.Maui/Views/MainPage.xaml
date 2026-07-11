@@ -109,8 +109,8 @@
                                     BackgroundColor="transparent"
                                     FontSize="18"
                                     HeightRequest="40"
-                                    SemanticProperties.Description="Toggle favorite"
-                                    SemanticProperties.Hint="Double tap to toggle favorite status"
+                                    SemanticProperties.Description="Toggle favoriet"
+                                    SemanticProperties.Hint="Tap om favoriet te maken of te verwijderen"
                                     Text="{Binding IsFavorite, Converter={StaticResource BoolToStarConverter}}"
                                     TextColor="{Binding IsFavorite, Converter={StaticResource BoolToColorConverter}}"
                                     WidthRequest="40">
