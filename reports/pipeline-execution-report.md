@@ -30,8 +30,8 @@ No phase required a retry. No gate failed.
 | Agent | Invocations | Files created | Files modified | Issues |
 |-------|-------------|---------------|----------------|--------|
 | Orchestrator | — | INDEX/report/memory | `.github/spec/INDEX.md` | none |
-| DeveloperAgent | 1 | `Models/CardSortMode.cs`, `Sorting/CardSorter.cs`, `WhatsNew/Pages/WhatsNew120Page.xaml(.cs)` | `MainViewModel.cs`, `IDialogService.cs`, `ShellDialogService.cs`, `MainPage.xaml`, `WhatsNewRegistry.cs` | none |
-| TesterAgent | 1 | `tests/StoreIt.Maui.Tests/*` (csproj + `CardSorterTests.cs`) | none | none |
+| DeveloperAgent | 1 | `Models/CardSortMode.cs`, `WhatsNew/Pages/WhatsNew120Page.xaml(.cs)` | `MainViewModel.cs`, `IDialogService.cs`, `ShellDialogService.cs`, `MainPage.xaml`, `WhatsNewRegistry.cs`, `Services/DatabaseService.cs` | none |
+| TesterAgent | 1 | `tests/StoreIt.Maui.Tests/StoreIt.Maui.Tests.csproj` | none | none |
 | SecurityAgent | 1 | `security-reports/security-report.md` | none (read-only) | 0 CRITICAL/HIGH |
 | ArchitectureAgent | 1 | `reviews/architecture-review.md` | none (read-only) | 0 PROBLEM |
 | DevOpsAgent | 1 | none | `.github/workflows/ci.yml` | none |
