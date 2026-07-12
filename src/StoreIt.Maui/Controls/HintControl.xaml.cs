@@ -94,7 +94,7 @@ public partial class HintControl : ContentView
         {
             hintBorder.Opacity = 0;
             hintBorder.IsVisible = true;
-            await hintBorder.FadeTo(1, FadeAnimationDuration);
+            await hintBorder.FadeToAsync(1, FadeAnimationDuration);
         }
     }
 
@@ -102,7 +102,7 @@ public partial class HintControl : ContentView
     {
         if (hintBorder is not null && hintBorder.IsVisible)
         {
-            await hintBorder.FadeTo(0, FadeAnimationDuration);
+            await hintBorder.FadeToAsync(0, FadeAnimationDuration);
             hintBorder.IsVisible = false;
             IsShowing = false; 
         }
