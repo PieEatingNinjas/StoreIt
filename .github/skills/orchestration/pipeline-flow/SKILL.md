@@ -1,0 +1,38 @@
+---
+name: pipeline-flow
+description: Full execution flow for the .NET SDLC pipeline — phases, gates, and parallel execution. Use at the start of every new feature implementation or when planning the order of work.
+---
+
+# Pipeline Flow
+
+> **Related skills:** `orchestration/spec-ingest`, `orchestration/sub-agent-dispatch`, `orchestration/reporting`
+>
+> Specs are authored **upstream by Spec Kit** (constitution → specify → clarify → plan). This
+> pipeline begins at implementation: Phase 1 **ingests** the active feature's spec, it does not author it.
+
+## Principle
+
+Strictly phased with **gates**: each phase must pass its gate before the next starts. Parallel tasks only if they write to separate paths and read the same immutable input.
+
+## Phases
+
+| # | Phase | Who | Output | Gate |
+|---|-------|-----|--------|------|
+| 1 | Ingest & validate specs | Orchestrator | updated `.github/spec/INDEX.md` | Spec present, unambiguous, constitution-compatible, indexed |
+| 2 | Implementation + Tests | Developer ∥ Tester | `src/**`, `tests/**` | `dotnet build` + `dotnet test` green |
+| 3 | Review | Security ∥ Architecture | `security-reports/security-report.md`, `reviews/architecture-review.md` | Both reports exist |
+| 4 | Remediation | Developer | fixed `src/**` | CRITICAL/HIGH + architecture problems fixed (or flagged), build green |
+| 5 | DevOps (optional) | DevOps | `.github/workflows/**`, IaC | Pipeline validates |
+| 6 | Final report | Orchestrator | `reports/pipeline-execution-report.md` | Report complete |
+
+## Parallel execution — conditions
+
+- **No write conflicts:** Developer writes `src/`, Tester writes `tests/`.
+- **Shared input is immutable:** specs do not change during phase 2.
+- **Independent completion:** each agent's success is independent of the others.
+- **Reviewers run in parallel too:** Security writes `security-reports/`, Architecture writes `reviews/`; both only read `src/` and never write code.
+
+## Gate discipline
+
+- Gate not met → **do not proceed**. Debug or re-dispatch (max 1 retry, then flag in the final report).
+- Track per phase: status, changed files, open issues.
