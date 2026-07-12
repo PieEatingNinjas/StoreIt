@@ -40,15 +40,14 @@ No phase required a retry. No gate failed.
 
 **Production (`src/`)**
 - `Models/CardSortMode.cs` *(new)* — `enum CardSortMode { LastAccessed, NameAscending, NameDescending }`.
-- `Sorting/CardSorter.cs` *(new)* — pure, MAUI-free `static CardSorter.Sort(IEnumerable<CustomerCard>, CardSortMode) : IReadOnlyList<CustomerCard>`; favorites-first, mode-based secondary key, `OrdinalIgnoreCase`, stable, null-safe, unknown-mode → `LastAccessed`.
-- `ViewModels/MainViewModel.cs` — injects `IUserPreferencesService`; `CardSortModePreferenceKey` const; `[ObservableProperty] SortMode` initialized from prefs (`Enum.TryParse` fallback); `OnSortModeChanged` persists + re-sorts in memory (no DB round-trip); `LoadCardsAsync` applies `CardSorter.Sort`; `OpenSortPickerCommand`.
+- `Services/DatabaseService.cs` — `GetCardsAsync`/`SearchCardsAsync` now accept `CardSortMode` and apply favorites-first, mode-based ordering via SQLite `ORDER BY` (including `COLLATE NOCASE` for name sorts and `Id` as a tie-breaker).
+- `ViewModels/MainViewModel.cs` — persists/restores `CardSortMode` via `IUserPreferencesService`, passes it to `DatabaseService`, and exposes `OpenSortPickerCommand`.
 - `Services/IDialogService.cs` + `Navigation/ShellDialogService.cs` — new `DisplayActionSheet` overload over `Shell.Current.DisplayActionSheetAsync`.
 - `Views/MainPage.xaml` — `ToolbarItem` "Sorteren" bound to `OpenSortPickerCommand`, with accessibility description.
 - `WhatsNew/WhatsNewRegistry.cs` + `WhatsNew/Pages/WhatsNew120Page.xaml(.cs)` *(new)* — v1.2.0 slide introducing the sort control (mirrors existing 110 page pattern).
 
 **Tests (`tests/`)**
-- `tests/StoreIt.Maui.Tests/StoreIt.Maui.Tests.csproj` *(new)* — `net10.0` xUnit project; links `CardSortMode.cs`, `CustomerCard.cs`, `CardSorter.cs` (the multi-targeted MAUI head cannot be `ProjectReference`d); refs xunit, FluentAssertions, sqlite-net-pcl.
-- `tests/StoreIt.Maui.Tests/CardSorterTests.cs` *(new)* — 26 tests: favorites-first (all modes), each sort mode, case-insensitive names, tie stability, empty/null/single/all-fav/no-fav/default-LastUsed edge cases.
+- `tests/StoreIt.Maui.Tests/StoreIt.Maui.Tests.csproj` *(new)* — `net10.0` xUnit project (currently contains no test source files in this branch).
 
 **CI / docs**
 - `.github/workflows/ci.yml` — new `unit-tests` job (ubuntu, .NET 10, runs the test project) added to `ci-success` needs.

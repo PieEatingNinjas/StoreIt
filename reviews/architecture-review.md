@@ -10,9 +10,8 @@
 
 ## What's right
 
-- **Testability-driven design.** The plan called `ApplySort` a private `MainViewModel` method; the implementation instead extracted a pure `CardSorter.Sort` static class (`Sorting/CardSorter.cs`). This is a genuine improvement, not a deviation — it made the ordering logic unit-testable without the MAUI head, which is exactly why the 26-test suite exists. Judged against the plan's *binding* decision (in-memory LINQ sort, favorites-first, persisted mode) this fully conforms; the method-vs-class detail was non-binding.
-- **Clean MVVM.** No business logic in code-behind. `MainPage.xaml.cs` only wires DI + an opacity animation; all sort logic lives in the VM/pure function. The new dependency (`IUserPreferencesService`) is an interface, DI-registered, and mockable.
-- **Correct ordering contract.** `OrderByDescending(IsFavorite).ThenBy/ThenByDescending(...)` gives favorites-first with a stable secondary key (FR-002), `StringComparer.OrdinalIgnoreCase` for names (FR-005), and LINQ's stable sort satisfies FR-008. Null/empty inputs are guarded. Tests cover every FR and edge case, including case-only ties, unknown-enum fallback, and input non-mutation.
+- **Sorting implementation.** Sorting is implemented in `DatabaseService` via SQLite `ORDER BY` clauses driven by `CardSortMode` (including `COLLATE NOCASE` for name sorting and `Id` as a tie-breaker), rather than a standalone `CardSorter` class.
+- **Test status.** The `tests/StoreIt.Maui.Tests` project exists but currently contains no test source files in this branch, so the sorting behavior is not covered by automated unit tests here.
 - **Consistency with existing patterns.** `WhatsNew120Page` mirrors `WhatsNew110Page` exactly (namespace, ctor injecting `WhatsNewViewModel`, XAML structure), and the registry entry (`Id = 3`, `1.2.0`) is correctly the new max picked by `WhatsNewService`'s `OrderByDescending(Id)`.
 
 ## Findings (most → least severe)
