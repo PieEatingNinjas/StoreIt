@@ -2,7 +2,7 @@
 
 **Feature**: Card Sorting (`specs/001-card-sorting/`, branch `features/sorting`)
 **Reviewer**: ArchitectureAgent (read-only) · **Date**: 2026-07-12
-**State reviewed**: working tree vs. merge-base; unit tests green (26/26 passed, `dotnet test tests/StoreIt.Maui.Tests`)
+**State reviewed**: working tree vs. merge-base; test project added, but no test sources are present in this branch (so `dotnet test` runs 0 tests).
 
 ## Verdict
 
