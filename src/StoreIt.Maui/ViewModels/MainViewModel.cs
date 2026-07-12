@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using StoreIt.Maui.Models;
 using StoreIt.Maui.Services;
-using StoreIt.Maui.Sorting;
 using StoreIt.Services;
 
 namespace StoreIt.Maui.ViewModels;
@@ -21,7 +20,7 @@ public partial class MainViewModel : ObservableObject
     private readonly IUserPreferencesService _userPreferences;
 
     [ObservableProperty]
-    private List<CustomerCard> cards = new();
+    private List<CustomerCard> cards = [];
 
     [ObservableProperty]
     private string searchText = string.Empty;
@@ -29,8 +28,7 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool isLoading = true;
 
-    [ObservableProperty]
-    private CardSortMode sortMode;
+    private CardSortMode _sortMode;
 
     public MainViewModel(DatabaseService databaseService,
         IAppNavigationService appNavigationService, IDialogService dialogService,
@@ -42,15 +40,13 @@ public partial class MainViewModel : ObservableObject
         _userPreferences = userPreferences;
 
         var storedMode = _userPreferences.GetString(CardSortModePreferenceKey, nameof(CardSortMode.LastAccessed));
-        SortMode = Enum.TryParse(storedMode, out CardSortMode parsedMode)
-            ? parsedMode
-            : CardSortMode.LastAccessed;
-    }
+        if (!Enum.TryParse(storedMode, ignoreCase: true, out CardSortMode parsedMode) ||
+            !Enum.IsDefined(typeof(CardSortMode), parsedMode))
+        {
+            parsedMode = CardSortMode.LastAccessed;
+        }
 
-    partial void OnSortModeChanged(CardSortMode value)
-    {
-        _userPreferences.SetString(CardSortModePreferenceKey, value.ToString());
-        Cards = [.. CardSorter.Sort(Cards, value)];
+        _sortMode = parsedMode;
     }
 
     [RelayCommand]
@@ -58,8 +54,7 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
-            var cards = await _databaseService.GetCardsAsync();
-            Cards = [.. CardSorter.Sort(cards, SortMode)];
+            Cards = await _databaseService.GetCardsAsync(_sortMode);
         }
         catch (Exception ex)
         {
@@ -93,6 +88,18 @@ public partial class MainViewModel : ObservableObject
         await LoadCardsAsync();
     }
 
+    private async Task SortListAsync(CardSortMode selectedMode)
+    {
+        if (_sortMode == selectedMode)
+        {
+            return;
+        }
+
+        _sortMode = selectedMode;
+        _userPreferences.SetString(CardSortModePreferenceKey, selectedMode.ToString());
+        await LoadCardsAsync();
+    }
+
     [RelayCommand]
     private async Task OpenSortPickerAsync()
     {
@@ -106,13 +113,13 @@ public partial class MainViewModel : ObservableObject
         switch (selection)
         {
             case SortLastAccessedLabel:
-                SortMode = CardSortMode.LastAccessed;
+                await SortListAsync(CardSortMode.LastAccessed);
                 break;
             case SortNameAscendingLabel:
-                SortMode = CardSortMode.NameAscending;
+                await SortListAsync(CardSortMode.NameAscending);
                 break;
             case SortNameDescendingLabel:
-                SortMode = CardSortMode.NameDescending;
+                await SortListAsync(CardSortMode.NameDescending);
                 break;
         }
     }

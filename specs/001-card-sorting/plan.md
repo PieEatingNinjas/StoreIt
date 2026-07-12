@@ -6,7 +6,7 @@
 
 ## Summary
 
-Allow the user to choose how cards are ordered on the main page (last accessed, name A→Z, name Z→A), with favorites always pinned first within the chosen order. The selected sort mode persists across sessions via MAUI Preferences. Sort logic lives in `MainViewModel`; a new `CardSortMode` enum drives the ordering; `IDialogService` is extended to support an action sheet for mode selection; a toolbar button in `MainPage.xaml` exposes the control.
+Allow the user to choose how cards are ordered on the main page (last accessed, name A→Z, name Z→A), with favorites always pinned first within the chosen order. The selected sort mode persists across sessions via MAUI Preferences. Sort logic is implemented at the **database level** in `DatabaseService` via SQLite `ORDER BY` clauses; a new `CardSortMode` enum drives the query construction; `MainViewModel` passes the sort mode to `DatabaseService`; `IDialogService` is extended to support an action sheet for mode selection; a toolbar button in `MainPage.xaml` exposes the control.
 
 ## Technical Context
 
@@ -61,11 +61,12 @@ src/StoreIt.Maui/
 ├── Models/
 │   └── CardSortMode.cs                  [NEW — enum: LastAccessed, NameAscending, NameDescending]
 ├── Services/
-│   └── IDialogService.cs                [MODIFIED — add DisplayActionSheet overload]
-├── Navigation/
+│   ├── IDialogService.cs                [MODIFIED — add DisplayActionSheet overload]
+│   ├── DatabaseService.cs               [MODIFIED — add CardSortMode parameter to GetCardsAsync, SearchCardsAsync; add BuildSortOrderClause helper]
 │   └── ShellDialogService.cs            [MODIFIED — implement DisplayActionSheet]
+├── Navigation/
 ├── ViewModels/
-│   └── MainViewModel.cs                 [MODIFIED — add SortMode property, sort logic, OpenSortPickerCommand]
+│   └── MainViewModel.cs                 [MODIFIED — add SortMode property, OpenSortPickerCommand; pass sort mode to DatabaseService]
 ├── Views/
 │   └── MainPage.xaml                    [MODIFIED — add ToolbarItem bound to OpenSortPickerCommand]
 └── WhatsNew/

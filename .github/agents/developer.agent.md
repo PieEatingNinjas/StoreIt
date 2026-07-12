@@ -1,6 +1,7 @@
 ---
 name: DeveloperAgent
 description: "Sub-agent — implements .NET code from the active feature spec (specs/<NNN-feature>/). Invoked by OrchestratorAgent. Writes no tests, does no security fixes unless explicitly provided."
+model: MAI-Code-1-Flash (copilot)
 ---
 
 ## Purpose

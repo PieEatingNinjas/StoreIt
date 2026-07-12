@@ -8,32 +8,36 @@
 
 ## 1. Sort Logic Placement
 
-**Decision**: Sort in `MainViewModel` (in-memory, after loading from `DatabaseService`).
+**Decision**: Apply sort at the **database query level** in `DatabaseService`. All `GetCardsAsync()` and `SearchCardsAsync()` methods accept a `CardSortMode` parameter and apply the sort via SQLite `ORDER BY` clauses.
 
 **Rationale**:
-- Sort order is a presentation/UI concern; it does not belong in the persistence layer.
-- The existing `DatabaseService.GetCardsAsync()` applies a default sort (`IsFavorite DESC, LastUsed DESC`). This default is preserved unchanged; `MainViewModel` re-applies its own deterministic sort on top of the returned list, so the database never needs to change its query signature.
-- In-memory LINQ sort over a few hundred `CustomerCard` objects is effectively instantaneous — well within the SC-002 ≤ 2 s SLA.
-- Keeping sort logic in the ViewModel makes it directly unit-testable without needing a database.
+- **Correctness**: SQL-level sorting is deterministic and correctly handles large datasets, ties, and collation rules. It is the single source of truth for ordering.
+- **Performance**: Sorting at the database layer avoids transferring unsorted data over the connection and avoids in-memory LINQ processing. For typical card counts (tens to low hundreds), the difference is negligible; for future scale (thousands), DB-level sort is more efficient.
+- **Maintainability**: All sort logic lives in one place (`DatabaseService`). Changes to sort behaviour are localized to SQL queries, not scattered across ViewModel and database service.
+- **Consistency**: Every call path that needs sorted cards (`GetCardsAsync`, `SearchCardsAsync`) uses the same sort logic — no risk of inconsistent ordering between views.
+- **Testing**: Sort behaviour can be tested directly against the database fixture (integration test), or mocked in ViewModel unit tests.
 
 **Alternatives considered**:
-- *Pass `CardSortMode` to `DatabaseService.GetCardsAsync()`*: Would centralise ordering but mixes a UI preference into a persistence service and requires changing every call site (`GetCardsAsync`, `SearchCardsAsync`). Rejected — unnecessary coupling.
-- *New `ICardSortingService`*: Adds an indirection layer with no testability benefit over ViewModel-level sorting for this use case. Rejected — over-engineering.
+- *In-memory LINQ sort in ViewModel*: Simpler initially but creates a split ownership of sort logic — database has a default query, ViewModel has a re-sort. Risk of inconsistency and harder to maintain as features grow. Rejected.
+- *New `ICardSortingService`*: Unnecessary indirection layer. Rejected.
 
 ---
 
 ## 2. Case-Insensitive Name Sorting
 
-**Decision**: Use `StringComparer.OrdinalIgnoreCase` (or `StringComparison.OrdinalIgnoreCase` in `string.Compare`) for all name-based sort comparisons.
+**Decision**: Use SQLite `COLLATE NOCASE` in the `ORDER BY` clause when sorting by the `Name` column.
 
 **Rationale**:
-- Ordinal ignore-case is the correct choice for UI-visible alphabetical sort of user-supplied names on mobile (consistent with platform list sorting conventions).
-- `CurrentCultureIgnoreCase` introduces locale-dependent ordering that can differ between devices — not desired for a deterministic, predictable sort.
-- No SQLite `COLLATE NOCASE` change required because sorting is done in the ViewModel.
+- SQLite `COLLATE NOCASE` provides standard case-insensitive ASCII collation across all platforms.
+- No additional LINQ code or configuration needed; the collation is specified directly in the SQL query.
+- Consistent and predictable ordering across iOS, Android, and different SQL backends.
+- Satisfies FR-005: name sort modes are case-insensitive.
 
-**Alternatives considered**:
-- *`CurrentCultureIgnoreCase`*: Locale-sensitive; results may differ across user locales. Rejected for predictability.
-- *SQLite `COLLATE NOCASE`*: Only works for ASCII; doesn't cover accented characters in card names. Rejected — sorting moved to ViewModel anyway.
+**Example**:
+```sql
+SELECT * FROM CustomerCards 
+ORDER BY IsFavorite DESC, Name COLLATE NOCASE ASC
+```
 
 ---
 
@@ -119,6 +123,6 @@ All six constitution checks remain green after Phase 1 design:
 | Local-only data | ✅ | Preferences and SQLite, no network |
 | No ads | ✅ | No new SDK |
 | MAUI baseline | ✅ | No new packages |
-| MVVM + DI | ✅ | `IDialogService` extended; sort logic in ViewModel |
+| MVVM + DI | ✅ | `IDialogService` extended; sort logic in `DatabaseService`; `MainViewModel` manages preference |
 | Reuse | ✅ | CommunityToolkit.Mvvm + existing services |
 | Secret hygiene | ✅ | No secrets |

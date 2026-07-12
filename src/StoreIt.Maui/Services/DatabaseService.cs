@@ -21,13 +21,11 @@ public class DatabaseService
         await TryAlterTableAsync("ALTER TABLE CustomerCards ADD COLUMN IsPrivate INTEGER DEFAULT 0");
     }
 
-    public async Task<List<CustomerCard>> GetCardsAsync()
+    public async Task<List<CustomerCard>> GetCardsAsync(CardSortMode sortMode = CardSortMode.LastAccessed)
     {
         await Init();
-        return await _database!.Table<CustomerCard>()
-            .OrderByDescending(c => c.IsFavorite)
-            .ThenByDescending(c => c.LastUsed)
-            .ToListAsync();
+        var orderByClause = BuildSortOrderClause(sortMode);
+        return await _database!.QueryAsync<CustomerCard>($"SELECT * FROM CustomerCards ORDER BY {orderByClause}");
     }
 
     public async Task<CustomerCard?> GetCardAsync(int id)
@@ -41,7 +39,7 @@ public class DatabaseService
     public async Task<int> SaveCardAsync(CustomerCard card)
     {
         await Init();
-        
+
         if (card.Id != 0)
         {
             return await _database!.UpdateAsync(card);
@@ -72,15 +70,24 @@ public class DatabaseService
         return 0;
     }
 
-    public async Task<List<CustomerCard>> SearchCardsAsync(string searchTerm)
+    public async Task<List<CustomerCard>> SearchCardsAsync(string searchTerm, CardSortMode sortMode = CardSortMode.LastAccessed)
     {
         await Init();
-        return await _database!.Table<CustomerCard>()
-            .Where(c => c.Name.Contains(searchTerm) || c.Description.Contains(searchTerm) || (c.CustomCode != null && c.CustomCode.Contains(searchTerm)))
-            .OrderByDescending(c => c.IsFavorite)
-            .ThenByDescending(c => c.LastUsed)
-            .ToListAsync();
+        var orderByClause = BuildSortOrderClause(sortMode);
+        return await _database!.QueryAsync<CustomerCard>(
+            $"SELECT * FROM CustomerCards WHERE {nameof(CustomerCard.Name)} LIKE ? OR {nameof(CustomerCard.Description)} LIKE ? OR ({nameof(CustomerCard.CustomCode)} IS NOT NULL AND {nameof(CustomerCard.CustomCode)} LIKE ?) ORDER BY {orderByClause}",
+            $"%{searchTerm}%",
+            $"%{searchTerm}%",
+            $"%{searchTerm}%");
     }
+
+    private static string BuildSortOrderClause(CardSortMode sortMode) =>
+        sortMode switch
+        {
+            CardSortMode.NameAscending => $"{nameof(CustomerCard.IsFavorite)} DESC, {nameof(CustomerCard.Name)} COLLATE NOCASE ASC, {nameof(CustomerCard.Id)} ASC",
+            CardSortMode.NameDescending => $"{nameof(CustomerCard.IsFavorite)} DESC, {nameof(CustomerCard.Name)} COLLATE NOCASE DESC, {nameof(CustomerCard.Id)} ASC",
+            _ => $"{nameof(CustomerCard.IsFavorite)} DESC, {nameof(CustomerCard.LastUsed)} DESC, {nameof(CustomerCard.Id)} ASC",
+        };
 
     private async Task TryAlterTableAsync(string sql)
     {

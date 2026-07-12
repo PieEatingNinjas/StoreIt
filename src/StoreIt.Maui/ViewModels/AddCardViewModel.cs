@@ -74,8 +74,8 @@ public partial class AddCardViewModel : ObservableObject
     [ObservableProperty]
     private bool isPrivateOptionAvailable;
 
-    public List<CardColor> AvailableColors { get; } = new()
-    {
+    public List<CardColor> AvailableColors { get; } =
+    [
         new CardColor { Name = "Oranje", Value = "#FF6B35" },
         new CardColor { Name = "Blauw", Value = "#2196F3" },
         new CardColor { Name = "Groen", Value = "#4CAF50" },
@@ -84,7 +84,7 @@ public partial class AddCardViewModel : ObservableObject
         new CardColor { Name = "Teal", Value = "#009688" },
         new CardColor { Name = "Indigo", Value = "#3F51B5" },
         new CardColor { Name = "Roze", Value = "#E91E63" }
-    };
+    ];
 
     public AddCardViewModel(DatabaseService databaseService,
         IUserPreferencesService userPreferencesService,

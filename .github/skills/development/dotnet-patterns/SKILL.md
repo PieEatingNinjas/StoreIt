@@ -78,6 +78,20 @@ public static List<WhatsNewEntry> Items =>
 ];
 ```
 
+## Pattern 10 — Member names in strings
+- When referring to a property or field name inside strings (for example SQL or mapping expressions), use `nameof(...)` instead of hardcoded literals.
+
+## Pattern 11 — Defensive enum parsing
+- When parsing enums from external input (preferences/config/storage), use `Enum.TryParse(..., ignoreCase: true, out ...)` and also validate with `Enum.IsDefined(...)`; fallback to a safe default if invalid.
+
+```csharp
+if (!Enum.TryParse(storedMode, ignoreCase: true, out CardSortMode parsedMode) ||
+    !Enum.IsDefined(typeof(CardSortMode), parsedMode))
+{
+    parsedMode = CardSortMode.LastAccessed;
+}
+```
+
 ## Anti-patterns (avoid)
 - `async void` (except event handlers).
 - Swallowed exceptions (`catch {}`).
