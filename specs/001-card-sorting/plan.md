@@ -73,10 +73,7 @@ src/StoreIt.Maui/
     ├── WhatsNewRegistry.cs              [MODIFIED — add new entry for this version]
     └── Pages/
         └── WhatsNew[ver]Page.xaml[.cs]  [NEW — optional WhatsNew slide for the sort feature]
-```
-
-**Structure Decision**: Single-project mobile app. All changes are contained within `src/StoreIt.Maui`. No new projects or packages are added.
-
+**Structure Decision**: Single-project mobile app (production code in `src/StoreIt.Maui`), plus a separate `net10.0` xUnit test project under `tests/StoreIt.Maui.Tests` for non-MAUI logic/testing.
 ## Complexity Tracking
 
 No constitution violations. Section not applicable.
