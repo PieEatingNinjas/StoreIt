@@ -30,12 +30,15 @@
             </Setter>
         </Style>
     </ContentPage.Resources>
-    <Grid>
+    <Grid Margin="0, 0, 0, -100" VerticalOptions="Fill" HorizontalOptions="Fill">
         <CollectionView
             BackgroundColor="transparent"
             ItemSizingStrategy="MeasureAllItems"
             ItemsSource="{Binding Cards}"
             VerticalOptions="Fill">
+            <CollectionView.Footer>
+                <Grid HeightRequest="150" BackgroundColor="transparent" />
+            </CollectionView.Footer>
             <CollectionView.EmptyView>
                 <VerticalStackLayout
                     HorizontalOptions="Center"
@@ -65,7 +68,7 @@
                 <DataTemplate x:DataType="models:CustomerCard">
                     <ContentView
                         x:Name="element"
-                        Margin="10,5"
+                        Margin="10, 5"
                         Padding="0"
                         BackgroundColor="transparent">
                         <Border Margin="10,5" Style="{StaticResource CardBorderWithShadowStyle}">
@@ -148,7 +151,8 @@
         </CollectionView>
 
         <!--  Floating Action Button  -->
-        <Button
+        <Button 
+            Margin="0, 0, 25, 110"
             Command="{Binding AddCardCommand}"
             HorizontalOptions="End"
             Style="{StaticResource RoundFloatingActionButton}"
@@ -156,7 +160,7 @@
             VerticalOptions="End" />
 
         <!--  Loading Indicator  -->
-        <Grid
+        <Grid Margin="0, 0, 0, 100"
             BackgroundColor="{Binding BackgroundColor, Source={x:Reference mainPage}, x:DataType=local:MainPage}"
             HorizontalOptions="Fill"
             IsVisible="{Binding IsLoading}"

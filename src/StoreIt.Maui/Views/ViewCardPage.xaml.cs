@@ -77,7 +77,7 @@ public partial class ViewCardPage : ContentPage
 
     private async void OnMoreOptionsClicked(object sender, EventArgs e)
     {
-        string action = await DisplayActionSheet($"Opties", "Annuleren", "Verwijderen", "Bewerken");
+        string action = await DisplayActionSheetAsync($"Opties", "Annuleren", "Verwijderen", "Bewerken");
         switch (action)
         {
             case "Bewerken":
