@@ -24,7 +24,9 @@ public static class BarCodeHelper
     public static bool IsValidBarcodeFormat(string input, string type)
     {
         if (string.IsNullOrWhiteSpace(input))
+        {
             return false;
+        }
 
         if (Enum.TryParse<ZXing.Net.Maui.BarcodeFormat>(type, out var format))
         {

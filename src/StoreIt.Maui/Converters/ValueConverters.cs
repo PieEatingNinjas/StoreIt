@@ -21,7 +21,9 @@ public class BoolToStarConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is bool b)
+        {
             return b ? "★" : "☆";
+        }
 
         return string.Empty;
     }
@@ -37,7 +39,9 @@ public class InverseBoolConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is bool b)
+        {
             return !b;
+        }
 
         return false;
     }
@@ -56,9 +60,13 @@ public class BoolToColorConverter : IValueConverter
         {
             var resources = Application.Current.Resources;
             if (b)
+            {
                 return resources["FavoriteColor"];
+            }
             else
+            {
                 return resources["UnfavoriteColor"];
+            }
         }
 
         // Fallback

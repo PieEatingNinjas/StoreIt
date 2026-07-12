@@ -5,12 +5,12 @@ namespace StoreIt.Maui.Views;
 public partial class ViewCardPage : ContentPage
 {
     // Zoom sizes - cycle through these on tap
-    private readonly (double width, double height)[] _zoomSizes = new[]
-    {
+    private readonly (double width, double height)[] _zoomSizes =
+    [
         (250.0, 125.0),
         (350.0, 175.0),
         (150.0, 75.0)
-    };
+    ];
 
     private int _currentZoomIndex = 0;
     private bool _shouldReloadCard = false;
