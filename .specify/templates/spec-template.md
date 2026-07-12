@@ -98,6 +98,16 @@
 - **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
 - **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
+### Constitutional Constraints *(mandatory)*
+
+- **CC-001 Local Data**: Feature MUST keep card payload data on-device and MUST NOT require cloud
+  storage for primary usage.
+- **CC-002 No Ads**: Feature MUST NOT introduce ad networks or ad-serving SDKs.
+- **CC-003 MAUI Compatibility**: Feature MUST run on the repository MAUI baseline for iOS and Android.
+- **CC-004 MVVM + DI**: New UI behavior MUST follow MVVM and route non-UI logic through DI services or
+  ViewModels, not code-behind.
+- **CC-005 Secret Safety**: Feature implementation and docs MUST NOT include live secrets or publish keys.
+
 ### Key Entities *(include if feature involves data)*
 
 - **[Entity 1]**: [What it represents, key attributes without implementation]

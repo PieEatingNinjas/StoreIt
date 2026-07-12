@@ -53,6 +53,13 @@ description: "Task list template for feature implementation"
 - [ ] T002 Initialize [language] project with [framework] dependencies
 - [ ] T003 [P] Configure linting and formatting tools
 
+### Constitution Alignment (Mandatory)
+
+- [ ] T00A Confirm local-only data handling (no cloud dependency for core feature paths)
+- [ ] T00B Confirm no ad SDK or ad-serving integration is introduced
+- [ ] T00C Confirm MVVM + DI boundaries for new UI and business logic
+- [ ] T00D Confirm no secrets/keys are committed and secret scanning checks pass
+
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)

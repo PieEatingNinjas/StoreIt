@@ -40,7 +40,16 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- Local-only data: design stores sensitive card data on-device only; no cloud dependency for
+  core flows.
+- No ads and no hidden trackers: feature introduces no ad SDK and no undeclared telemetry.
+- MAUI baseline: implementation is compatible with current repository baseline (.NET MAUI on
+  .NET 10) for iOS and Android.
+- MVVM + DI boundaries: business logic stays out of code-behind; new ViewModels/Services are
+  dependency-injected and testable.
+- Reuse check: established libraries are preferred over custom infrastructure, with explicit
+  rationale when custom code is selected.
+- Secret hygiene: no keys, certificates, tokens, or publish credentials are committed.
 
 ## Project Structure
 
