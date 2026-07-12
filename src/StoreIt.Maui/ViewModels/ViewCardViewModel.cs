@@ -197,7 +197,10 @@ public partial class ViewCardViewModel : ObservableObject
     [RelayCommand]
     private async Task DeleteCardAsync()
     {
-        if (Card == null) return;
+        if (Card == null)
+        {
+            return;
+        }
 
         bool confirm = await _dialogService.DisplayAlert("Ben je zeker?",
             $"Ben je zeker dat je item '{Card.Name}' wil verwijderen?", "Ja", "Nee");
@@ -212,7 +215,10 @@ public partial class ViewCardViewModel : ObservableObject
     [RelayCommand]
     private async Task ToggleFavoriteAsync()
     {
-        if (Card == null) return;
+        if (Card == null)
+        {
+            return;
+        }
 
         Card.IsFavorite = !Card.IsFavorite;
         await _databaseService.SaveCardAsync(Card);

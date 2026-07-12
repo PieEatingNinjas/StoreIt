@@ -57,7 +57,10 @@ public partial class SettingsViewModel : ObservableObject
         get => SelectedTheme == ThemeOption.System;
         set
         {
-            if (value) SelectedTheme = ThemeOption.System;
+            if (value)
+            {
+                SelectedTheme = ThemeOption.System;
+            }
         }
     }
 
@@ -66,7 +69,10 @@ public partial class SettingsViewModel : ObservableObject
         get => SelectedTheme == ThemeOption.Light;
         set
         {
-            if (value) SelectedTheme = ThemeOption.Light;
+            if (value)
+            {
+                SelectedTheme = ThemeOption.Light;
+            }
         }
     }
 
@@ -75,7 +81,10 @@ public partial class SettingsViewModel : ObservableObject
         get => SelectedTheme == ThemeOption.Dark;
         set
         {
-            if (value) SelectedTheme = ThemeOption.Dark;
+            if (value) 
+            {
+                SelectedTheme = ThemeOption.Dark;
+            }
         }
     }
 

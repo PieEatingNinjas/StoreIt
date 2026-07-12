@@ -71,7 +71,10 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task ViewCardAsync(CustomerCard card)
     {
-        if (card is null) return;
+        if (card is null)
+        {
+            return;
+        }
 
         await _databaseService.UpdateLastUsedAsync(card.Id);
         await _appNavigationService.NavigateToViewCardPage(card.Id);
@@ -80,7 +83,10 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task ToggleFavoriteAsync(CustomerCard card)
     {
-        if (card is null) return;
+        if (card is null)
+        {    
+            return;
+        } 
 
         card.IsFavorite = !card.IsFavorite;
         await _databaseService.SaveCardAsync(card);

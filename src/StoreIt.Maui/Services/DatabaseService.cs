@@ -10,7 +10,9 @@ public class DatabaseService
     private async Task Init()
     {
         if (_database is not null)
+        {   
             return;
+        }
 
         var databasePath = Path.Combine(FileSystem.AppDataDirectory, "CustomerCards.db3");
         _database = new SQLiteAsyncConnection(databasePath);

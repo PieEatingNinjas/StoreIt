@@ -24,8 +24,8 @@ dotnet_style_qualification_for_property = false:suggestion
 dotnet_diagnostic.CA1507.severity = warning   # use nameof instead of string literal
 dotnet_diagnostic.IDE0028.severity = warning   # use collection initializers
 dotnet_diagnostic.IDE0090.severity = warning   # use target-typed 'new(...)'
-dotnet_diagnostic.IDE0300.severity = silent
-dotnet_diagnostic.IDE0011.severity = silent
+dotnet_diagnostic.IDE0300.severity = warning
+dotnet_diagnostic.IDE0011.severity = warning
 
 [*.{json,yml,yaml,csproj,props,targets}]
 indent_size = 2

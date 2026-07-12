@@ -209,7 +209,9 @@ public partial class AddCardViewModel : ObservableObject
     private void RegisterForBarcodeResult()
     {
         if (WeakReferenceMessenger.Default.IsRegistered<BarcodeResult>(this))
+        {
             return;
+        }
 
         WeakReferenceMessenger.Default.Register<BarcodeResult>(this,
             (r, result) => ((AddCardViewModel)r).OnBarcodeReceived(result));
@@ -285,7 +287,9 @@ public partial class AddCardViewModel : ObservableObject
     {
         // Only show hint if hints are enabled in settings
         if (!_userPreferencesService.GetHintsEnabled())
+        {
             return;
+        }
 
         ShowSaveHint = true;
     }

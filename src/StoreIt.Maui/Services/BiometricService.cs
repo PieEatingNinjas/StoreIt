@@ -16,7 +16,9 @@ public class BiometricService : IBiometricService
         try
         {
             if (!_biometric.IsPlatformSupported)
+            {
                 return false;
+            }
 
             var status = await _biometric.GetAuthenticationStatusAsync();
             return status == BiometricHwStatus.Success;
@@ -33,7 +35,9 @@ public class BiometricService : IBiometricService
         {
             var isAvailable = await IsAvailableAsync();
             if (!isAvailable)
+            {
                 return false;
+            }
 
             var request = new AuthenticationRequest
             {
