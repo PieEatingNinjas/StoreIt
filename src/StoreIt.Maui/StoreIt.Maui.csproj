@@ -57,21 +57,25 @@
 		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.10.3" />
 	</ItemGroup>
 
-	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
-	  <InterfaceDefinition Include="Resources\Splash.storyboard" />
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0-ios'">
+		<InterfaceDefinition Include="Resources\Splash.storyboard" />
 	</ItemGroup>
 
-
-	<PropertyGroup Condition="$(TargetFramework.Contains('-ios'))">
-		<!--DEBUG ON DEVICE-->
-<!--		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>-->
-		<!--DEBUG ON SIMULATOR-->
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-ios'">
 		<RuntimeIdentifier>iossimulator-x64</RuntimeIdentifier>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)'=='net10.0-android'">
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-ios' and '$(Configuration)' == 'Release'">
+		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
         <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+    </PropertyGroup>
+	
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-android' and '$(Configuration)' == 'Release'">
 		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     </PropertyGroup>
+
 
 </Project>
