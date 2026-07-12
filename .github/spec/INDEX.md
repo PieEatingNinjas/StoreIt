@@ -21,8 +21,8 @@
 ## Active feature
 
 **001 — Card Sorting** (`specs/001-card-sorting/`, branch `features/sorting`). Sort logic in
-`MainViewModel`, new `CardSortMode` enum, `IDialogService` action-sheet overload, toolbar button on
-`MainPage`, and preference persistence. The pipeline is building this feature.
+`DatabaseService` (SQLite `ORDER BY`), new `CardSortMode` enum, `IDialogService` action-sheet
+overload, toolbar button on `MainPage`, and preference persistence. The pipeline is building this feature.
 
 ## Open bugs / attention points
 
