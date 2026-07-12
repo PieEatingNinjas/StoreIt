@@ -22,6 +22,7 @@ Privacy-first: data remains on-device, with local persistence via SQLite.
 - Current baseline: there are no unit tests yet, and parts of MVVM are still naïve.
 - For new implementations, follow surrounding code patterns, but build ViewModels/Services testable from the start.
 - Bindable state and commands use the repo’s MVVM toolkit pattern used by existing screens.
+- Prefer concise collection initialization (`[]` and target-typed `new()`) over verbose typed collection construction when the target type is already clear.
 - `async`/`await` end-to-end for I/O, with `CancellationToken`; no `.Result`/`.Wait()`.
 - DI registrations belong in `MauiProgram.cs`.
 - One public type per file.

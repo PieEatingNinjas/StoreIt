@@ -4,11 +4,11 @@ namespace StoreIt.WhatsNew;
 
 public static class WhatsNewRegistry
 {
-    public static List<WhatsNewEntry> Items => new()
-    {
-        new WhatsNewEntry { Id = 2, Version = "1.1.0", PageType = typeof(WhatsNew110Page) },
-        new WhatsNewEntry { Id = 3, Version = "1.2.0", PageType = typeof(WhatsNew120Page) },
-    };
+    public static List<WhatsNewEntry> Items =>
+    [
+        new() { Id = 2, Version = "1.1.0", PageType = typeof(WhatsNew110Page) },
+        new() { Id = 3, Version = "1.2.0", PageType = typeof(WhatsNew120Page) },
+    ];
 }
 
 public class WhatsNewEntry

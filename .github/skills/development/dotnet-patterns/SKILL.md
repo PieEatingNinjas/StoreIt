@@ -67,6 +67,17 @@ using (logger.BeginScope("Checkout {CartId}", cart.Id)) { /* ... */ }
 ## Pattern 8 — Disposal
 Own an `IDisposable`/`IAsyncDisposable`? Dispose it — `using`/`await using`, or implement the pattern and let DI manage the lifetime. **Unsubscribe from events you subscribe to** (a common leak).
 
+## Pattern 9 — Collection initialization
+When the target type is obvious, prefer concise collection initialization (`[]`) and target-typed `new()` for elements instead of repeating full type names.
+
+```csharp
+public static List<WhatsNewEntry> Items =>
+[
+    new() { Id = 2, Version = "1.1.0", PageType = typeof(WhatsNew110Page) },
+    new() { Id = 3, Version = "1.2.0", PageType = typeof(WhatsNew120Page) },
+];
+```
+
 ## Anti-patterns (avoid)
 - `async void` (except event handlers).
 - Swallowed exceptions (`catch {}`).
