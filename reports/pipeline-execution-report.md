@@ -7,8 +7,7 @@
 Implemented user-selectable sorting on the main card list (last accessed, name A→Z, name Z→A) with
 favorites always pinned first within the chosen order, and persistence of the choice across sessions
 via MAUI `Preferences`. All pipeline gates passed: Android build is clean (0 warnings / 0 errors),
-26 new unit tests pass, and both the security and architecture reviews returned **zero
-CRITICAL/HIGH and zero PROBLEM-level findings**. No blocking risks remain; only a few low-severity,
+and both the security and architecture reviews returned **zero CRITICAL/HIGH and zero PROBLEM-level findings**. No blocking risks remain; only a few low-severity,
 non-blocking notes are logged below.
 
 ## Phase log
