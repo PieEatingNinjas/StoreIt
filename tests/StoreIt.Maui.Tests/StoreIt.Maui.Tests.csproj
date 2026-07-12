@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="FluentAssertions" Version="6.12.2" />
+    <!-- Needed so the linked CustomerCard.cs (which uses SQLite attributes) compiles. -->
+    <PackageReference Include="sqlite-net-pcl" Version="1.11.284-beta" />
+  </ItemGroup>
+
+  <!-- Link (do NOT copy) the exact source files under test from the MAUI head project.
+       The MAUI project multi-targets net10.0-android;net10.0-ios and cannot be
+       ProjectReference'd from a plain net10.0 test project, so we compile the specific
+       platform-independent source files directly. -->
+  <ItemGroup>
+    <Compile Include="..\..\src\StoreIt.Maui\Models\CardSortMode.cs" Link="Linked\CardSortMode.cs" />
+    <Compile Include="..\..\src\StoreIt.Maui\Models\CustomerCard.cs" Link="Linked\CustomerCard.cs" />
+    <Compile Include="..\..\src\StoreIt.Maui\Sorting\CardSorter.cs" Link="Linked\CardSorter.cs" />
+  </ItemGroup>
+
+</Project>

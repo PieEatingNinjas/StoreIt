@@ -9,4 +9,7 @@ public class ShellDialogService : IDialogService
 
     public Task<bool> DisplayAlert(string title, string message, string accept, string cancel)
         => Shell.Current.DisplayAlertAsync(title, message, accept, cancel);
+
+    public Task<string?> DisplayActionSheet(string title, string cancel, params string[] buttons)
+        => Shell.Current.DisplayActionSheetAsync(title, cancel, null, buttons);
 }

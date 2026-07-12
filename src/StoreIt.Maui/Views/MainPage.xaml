@@ -30,6 +30,12 @@
             </Setter>
         </Style>
     </ContentPage.Resources>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Command="{Binding OpenSortPickerCommand}"
+            SemanticProperties.Description="Sorteervolgorde kiezen"
+            Text="Sorteren" />
+    </ContentPage.ToolbarItems>
     <Grid Margin="0, 0, 0, -100" VerticalOptions="Fill" HorizontalOptions="Fill">
         <CollectionView
             BackgroundColor="transparent"

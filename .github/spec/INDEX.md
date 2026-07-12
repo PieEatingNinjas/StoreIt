@@ -12,7 +12,7 @@
 
 | # | Feature | Folder | Status | Summary |
 |---|---------|--------|--------|---------|
-| _(none yet)_ | — | `specs/…` | — | Run `/speckit.specify` to create the first feature |
+| 001 | Card Sorting | `specs/001-card-sorting/` | active | User-selectable main-list sort (last accessed, name A→Z / Z→A) with favorites always pinned first; choice persisted via MAUI Preferences. |
 
 <!-- Example row once you have a feature:
 | 001 | User login | `specs/001-user-login/` | active | Email + password auth with JWT |
@@ -20,8 +20,9 @@
 
 ## Active feature
 
-_None yet._ The active feature is whichever `NNN-feature` branch is checked out; that is the one
-the pipeline builds when you hand off to the OrchestratorAgent.
+**001 — Card Sorting** (`specs/001-card-sorting/`, branch `features/sorting`). Sort logic in
+`MainViewModel`, new `CardSortMode` enum, `IDialogService` action-sheet overload, toolbar button on
+`MainPage`, and preference persistence. The pipeline is building this feature.
 
 ## Open bugs / attention points
 
