@@ -24,8 +24,7 @@ public class DatabaseService
     public async Task<List<CustomerCard>> GetCardsAsync(CardSortMode sortMode = CardSortMode.LastAccessed)
     {
         await Init();
-        var orderByClause = BuildSortOrderClause(sortMode);
-        return await _database!.QueryAsync<CustomerCard>($"SELECT * FROM CustomerCards ORDER BY {orderByClause}");
+        return await _database!.Table<CustomerCard>().OrderByMode(sortMode).ToListAsync();
     }
 
     public async Task<CustomerCard?> GetCardAsync(int id)
@@ -70,23 +69,21 @@ public class DatabaseService
         return 0;
     }
 
-    public async Task<List<CustomerCard>> SearchCardsAsync(string searchTerm, CardSortMode sortMode = CardSortMode.LastAccessed)
-    {
-        await Init();
-        var orderByClause = BuildSortOrderClause(sortMode);
-        return await _database!.QueryAsync<CustomerCard>(
-            $"SELECT * FROM CustomerCards WHERE {nameof(CustomerCard.Name)} LIKE ? OR {nameof(CustomerCard.Description)} LIKE ? OR ({nameof(CustomerCard.CustomCode)} IS NOT NULL AND {nameof(CustomerCard.CustomCode)} LIKE ?) ORDER BY {orderByClause}",
-            $"%{searchTerm}%",
-            $"%{searchTerm}%",
-            $"%{searchTerm}%");
-    }
-
-    private static string BuildSortOrderClause(CardSortMode sortMode) =>
+    private static IEnumerable<CustomerCard> SortCards(IEnumerable<CustomerCard> cards, CardSortMode sortMode) =>
         sortMode switch
         {
-            CardSortMode.NameAscending => $"{nameof(CustomerCard.IsFavorite)} DESC, {nameof(CustomerCard.Name)} COLLATE NOCASE ASC, {nameof(CustomerCard.Id)} ASC",
-            CardSortMode.NameDescending => $"{nameof(CustomerCard.IsFavorite)} DESC, {nameof(CustomerCard.Name)} COLLATE NOCASE DESC, {nameof(CustomerCard.Id)} ASC",
-            _ => $"{nameof(CustomerCard.IsFavorite)} DESC, {nameof(CustomerCard.LastUsed)} DESC, {nameof(CustomerCard.Id)} ASC",
+            CardSortMode.NameAscending => cards
+                .OrderByDescending(c => c.IsFavorite)
+                .ThenBy(c => c.Name, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(c => c.Id),
+            CardSortMode.NameDescending => cards
+                .OrderByDescending(c => c.IsFavorite)
+                .ThenByDescending(c => c.Name, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(c => c.Id),
+            _ => cards
+                .OrderByDescending(c => c.IsFavorite)
+                .ThenByDescending(c => c.LastUsed)
+                .ThenBy(c => c.Id),
         };
 
     private async Task TryAlterTableAsync(string sql)
