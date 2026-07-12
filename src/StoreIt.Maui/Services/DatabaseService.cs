@@ -21,13 +21,10 @@ public class DatabaseService
         await TryAlterTableAsync("ALTER TABLE CustomerCards ADD COLUMN IsPrivate INTEGER DEFAULT 0");
     }
 
-    public async Task<List<CustomerCard>> GetCardsAsync()
+    public async Task<List<CustomerCard>> GetCardsAsync(CardSortMode sortMode = CardSortMode.LastAccessed)
     {
         await Init();
-        return await _database!.Table<CustomerCard>()
-            .OrderByDescending(c => c.IsFavorite)
-            .ThenByDescending(c => c.LastUsed)
-            .ToListAsync();
+        return await _database!.Table<CustomerCard>().OrderByMode(sortMode).ToListAsync();
     }
 
     public async Task<CustomerCard?> GetCardAsync(int id)
@@ -41,7 +38,7 @@ public class DatabaseService
     public async Task<int> SaveCardAsync(CustomerCard card)
     {
         await Init();
-        
+
         if (card.Id != 0)
         {
             return await _database!.UpdateAsync(card);
@@ -72,15 +69,22 @@ public class DatabaseService
         return 0;
     }
 
-    public async Task<List<CustomerCard>> SearchCardsAsync(string searchTerm)
-    {
-        await Init();
-        return await _database!.Table<CustomerCard>()
-            .Where(c => c.Name.Contains(searchTerm) || c.Description.Contains(searchTerm) || (c.CustomCode != null && c.CustomCode.Contains(searchTerm)))
-            .OrderByDescending(c => c.IsFavorite)
-            .ThenByDescending(c => c.LastUsed)
-            .ToListAsync();
-    }
+    private static IEnumerable<CustomerCard> SortCards(IEnumerable<CustomerCard> cards, CardSortMode sortMode) =>
+        sortMode switch
+        {
+            CardSortMode.NameAscending => cards
+                .OrderByDescending(c => c.IsFavorite)
+                .ThenBy(c => c.Name, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(c => c.Id),
+            CardSortMode.NameDescending => cards
+                .OrderByDescending(c => c.IsFavorite)
+                .ThenByDescending(c => c.Name, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(c => c.Id),
+            _ => cards
+                .OrderByDescending(c => c.IsFavorite)
+                .ThenByDescending(c => c.LastUsed)
+                .ThenBy(c => c.Id),
+        };
 
     private async Task TryAlterTableAsync(string sql)
     {

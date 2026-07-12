@@ -1,0 +1,34 @@
+# EditorConfig — shared conventions so every model is held to the same bar.
+root = true
+
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+[*.{cs,csx}]
+indent_size = 4
+# Modern C#
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_prefer_braces = true:warning
+csharp_style_var_for_built_in_types = false:silent   # preference, leave IDE-only
+# Usings
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+# Qualification
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_style_qualification_for_property = false:suggestion
+
+# --- Build-enforced analyzer rules ---
+dotnet_diagnostic.CA1507.severity = warning   # use nameof instead of string literal
+dotnet_diagnostic.IDE0028.severity = warning   # use collection initializers
+dotnet_diagnostic.IDE0090.severity = warning   # use target-typed 'new(...)'
+dotnet_diagnostic.IDE0300.severity = silent
+dotnet_diagnostic.IDE0011.severity = silent
+
+[*.{json,yml,yaml,csproj,props,targets}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

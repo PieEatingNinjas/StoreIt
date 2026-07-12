@@ -67,6 +67,31 @@ using (logger.BeginScope("Checkout {CartId}", cart.Id)) { /* ... */ }
 ## Pattern 8 — Disposal
 Own an `IDisposable`/`IAsyncDisposable`? Dispose it — `using`/`await using`, or implement the pattern and let DI manage the lifetime. **Unsubscribe from events you subscribe to** (a common leak).
 
+## Pattern 9 — Collection initialization
+When the target type is obvious, prefer concise collection initialization (`[]`) and target-typed `new()` for elements instead of repeating full type names.
+
+```csharp
+public static List<WhatsNewEntry> Items =>
+[
+    new() { Id = 2, Version = "1.1.0", PageType = typeof(WhatsNew110Page) },
+    new() { Id = 3, Version = "1.2.0", PageType = typeof(WhatsNew120Page) },
+];
+```
+
+## Pattern 10 — Member names in strings
+- When referring to a property or field name inside strings (for example SQL or mapping expressions), use `nameof(...)` instead of hardcoded literals.
+
+## Pattern 11 — Defensive enum parsing
+- When parsing enums from external input (preferences/config/storage), use `Enum.TryParse(..., ignoreCase: true, out ...)` and also validate with `Enum.IsDefined(...)`; fallback to a safe default if invalid.
+
+```csharp
+if (!Enum.TryParse(storedMode, ignoreCase: true, out CardSortMode parsedMode) ||
+    !Enum.IsDefined(typeof(CardSortMode), parsedMode))
+{
+    parsedMode = CardSortMode.LastAccessed;
+}
+```
+
 ## Anti-patterns (avoid)
 - `async void` (except event handlers).
 - Swallowed exceptions (`catch {}`).

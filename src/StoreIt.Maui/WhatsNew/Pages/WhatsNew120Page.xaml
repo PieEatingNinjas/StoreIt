@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="StoreIt.WhatsNew.Pages.WhatsNew120Page"
+    xmlns:vm="clr-namespace:StoreIt.WhatsNew"
+    x:DataType="vm:WhatsNewViewModel"
+    Shell.PresentationMode="ModalAnimated">
+    <VerticalStackLayout Padding="32,48,32,32" Spacing="28" VerticalOptions="Center">
+        <Label Text="{Binding Title}" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center"/>
+        <Label Text="↕️ Sorteer je items" HorizontalTextAlignment="Center" FontSize="22" HorizontalOptions="Fill"/>
+        <VerticalStackLayout Padding="20, 0" Spacing="10">
+            <Label Text="✅ Kies hoe je items geordend worden: laatst gebruikt of op naam."
+                FontSize="16" TextColor="Gray" HorizontalTextAlignment="Start"/>
+            <Label Text="✅ Favorieten blijven altijd bovenaan."
+                FontSize="16" TextColor="Gray" HorizontalTextAlignment="Start"/>
+            <Label Text="✅ Open het via de knop 'Sorteren' bovenaan."
+                FontSize="16" TextColor="Gray" HorizontalTextAlignment="Start"/>
+        </VerticalStackLayout>
+        <HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
+            <Button Text="Sluiten" Command="{Binding CloseCommand}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource Gray600},
+                                                      Dark={StaticResource Gray300}}" />
+            <Button Text="Niet meer tonen" Command="{Binding HideForFutureCommand}"
+                BackgroundColor="{StaticResource Secondary}" IsVisible="{Binding IsHideForFutureVisible}"/>
+        </HorizontalStackLayout>
+    </VerticalStackLayout>
+</ContentPage>
