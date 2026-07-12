@@ -11,9 +11,8 @@
   MAUI head. Solution: keep the pure logic in a **MAUI-free static class** (`Sorting/CardSorter.cs`, depends only on
   `Models` + SQLite attributes) and have the test project **link the source files** (`<Compile Include="..\..\src\...\*.cs" Link="..." />`)
   plus add `sqlite-net-pcl` so `CustomerCard.cs` compiles. 26 tests, green. Use this pattern for all future ViewModel/service logic tests.
-- **Contract-first parallel dispatch:** Developer and Tester ran in parallel successfully by agreeing on an exact public
-  signature up front (`CardSorter.Sort(IEnumerable<CustomerCard>, CardSortMode) : IReadOnlyList<CustomerCard>`). Always
-  pin the API contract in both prompts when dispatching Dev ∥ Test.
+- **Contract-first parallel dispatch:** When dispatching Dev ∥ Test work, agree on exact public signatures up front
+  (interfaces/classes that actually exist in the branch) and pin that contract in both prompts to avoid drift.
 - **`IDialogService` lives in namespace `StoreIt.Services`** (not `StoreIt.Maui.Services`); `ShellDialogService` in
   `StoreIt.Navigation`. `IUserPreferencesService` already exposes generic `GetString`/`SetString` — reuse, don't add typed methods.
 - **WhatsNew pages are NOT DI-registered** — they resolve via Shell routing + `ActivatorUtilities` (which injects the
