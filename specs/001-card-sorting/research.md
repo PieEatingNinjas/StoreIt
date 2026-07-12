@@ -43,11 +43,11 @@ ORDER BY IsFavorite DESC, Name COLLATE NOCASE ASC
 
 ## 3. Favorites-First Enforcement
 
-**Decision**: Apply a two-level LINQ sort: primary key = `IsFavorite DESC` (favorites first), secondary key = the active `CardSortMode` criterion.
+**Decision**: Enforce favorites-first directly in the SQL `ORDER BY` clause in `DatabaseService` (primary key = `IsFavorite DESC`, secondary key = the active `CardSortMode` criterion, with `Id ASC` as a deterministic tie-breaker).
 
 **Rationale**:
-- This directly mirrors FR-002 and FR-005 and maps cleanly to LINQ's `.OrderByDescending(...).ThenBy(...)` / `.ThenByDescending(...)` pattern.
-- Stable sort: LINQ's `OrderBy` is a stable sort in .NET — ties within the same group keep their relative order from the previous sort (which is `LastUsed DESC` from the database), satisfying FR-008.
+- Keeps ordering rules in one place (the database query), consistent with section 1.
+- Explicit `Id ASC` tie-breakers prevent apparent shuffling when two cards have the same secondary sort value.
 
 **Sort expressions per mode**:
 
