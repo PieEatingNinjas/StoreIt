@@ -8,8 +8,7 @@ namespace StoreIt.Maui.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    public const string CardSortModePreferenceKey = "CardSortMode";
-
+    private const string CardSortModePreferenceKey = "CardSortMode";
     private const string SortLastAccessedLabel = "Laatst gebruikt";
     private const string SortNameAscendingLabel = "Naam (A-Z)";
     private const string SortNameDescendingLabel = "Naam (Z-A)";
