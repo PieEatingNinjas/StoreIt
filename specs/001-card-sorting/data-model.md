@@ -65,7 +65,7 @@ The following table defines the exact SQL ordering applied by `DatabaseService` 
 
 **Collation**: SQLite `COLLATE NOCASE` provides case-insensitive ASCII collation for name comparisons, satisfying FR-005 and the clarification that name sorting is case-insensitive.
 
-**Tie-breaking**: SQLite's default stable sort behaviour ensures that tied values within a group keep the relative order from the table scan / index. This satisfies FR-008 — no apparent shuffling between views.
+**Tie-breaking**: The `ORDER BY` clauses include `Id ASC` as a final key, ensuring a stable, deterministic order when two or more cards have the same value for the active sort field (FR-008).
 
 **Empty-group handling**: No visual group headers or separators are rendered for this feature. Favorites and non-favorites appear as a single flat list; the sort simply ensures all favorites are at the top. When there are no favorites or all cards are favorites, the list remains valid (FR-009).
 
