@@ -44,7 +44,7 @@ jobs:
       run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-android
 
     - name: 🔨 Build Android APK
-      run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-android -c Release --no-restore
+      run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-android -c Release --no-restore -p:AndroidLinkMode=None -p:PublishTrimmed=false
 
   # 🍎 iOS Build Job (macOS runner required for iOS)
   build-ios:
@@ -65,13 +65,13 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: 📦 Install .NET MAUI Workload
-      run: dotnet workload restore ${{ env.PROJECT_PATH }}
+      run: dotnet workload install maui-ios
 
     - name: 🔍 Restore Dependencies
       run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-ios -p:Configuration=Release -p:RuntimeIdentifier=ios-arm64
 
     - name: 🔨 Build iOS
-      run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-ios -c Release -r ios-arm64 --no-restore -p:EnableCodeSigning=false
+      run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-ios -c Release -r ios-arm64 --no-restore -p:EnableCodeSigning=false -p:MtouchLink=None
 
   # 🧪 Unit Tests Job
   unit-tests:
