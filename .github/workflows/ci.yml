@@ -2,77 +2,76 @@ name: 🚀 CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: 
+      - '**'
   pull_request:
-    branches: [ main ]
+    branches: [ 'main' ]
 
 env:
   DOTNET_VERSION: '10.0.x'
   PROJECT_PATH: 'src/StoreIt.Maui/StoreIt.Maui.csproj'
+  BUILD_CONFIGURATION: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'Release' || 'Debug' }}
 
 jobs:
   # 🤖 Android Build Job
   build-android:
     name: 🤖 Build Android
-    runs-on: macos-15
+    runs-on: ubuntu-latest
 
     steps:
+    
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v7
 
-    - name: 🤖 Set Xcode version 
-      run: sudo xcode-select -s /Applications/Xcode_16.4.app
-
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v7
-
-    - name: 🔧 Setup .NET
-      uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: ☕ Setup Java
-      uses: actions/setup-java@v5
-      with:
-        distribution: 'microsoft'
-        java-version: '17'
-
-    - name: 🤖 Setup Android SDK
-      uses: android-actions/setup-android@v4
-
-    - name: 📦 Install .NET MAUI Workload
-      run: dotnet workload restore ${{ env.PROJECT_PATH }}
-
-    - name: 🔍 Restore Dependencies
-      run: dotnet restore ${{ env.PROJECT_PATH }}
-
-    - name: 🔨 Build Android APK
-      run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-android -c Release
+      - name: 🔧 Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+  
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+  
+      - name: 🤖 Setup Android SDK
+        uses: android-actions/setup-android@v4
+  
+      - name: 📦 Install MAUI Android workload
+        run: dotnet workload install maui-android
+  
+      - name: 🔍 Restore Dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-android -p:Configuration=${{ env.BUILD_CONFIGURATION }}
+  
+      - name: 🔨 Build Android APK
+        run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-android -c ${{ env.BUILD_CONFIGURATION }} --no-restore -p:AndroidLinkMode=None
 
   # 🍎 iOS Build Job (macOS runner required for iOS)
   build-ios:
-    name: 🍎 Build iOS
+    name: 🍎 Build iOS (unsigned)
     runs-on: macos-26
 
     steps:
   
-    - name: 🤖 Set Xcode version 
-      run: sudo xcode-select -s /Applications/Xcode_26.5.app
-
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v7
-
-    - name: 🔧 Setup .NET
-      uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: 📦 Install .NET MAUI Workload
-      run: dotnet workload restore ${{ env.PROJECT_PATH }}
-
-    - name: 🔍 Restore Dependencies
-      run: dotnet restore ${{ env.PROJECT_PATH }}
-
-    - name: 🔨 Build iOS
-      run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-ios -c Release
+      - name: 🤖 Set Xcode version 
+        run: sudo xcode-select -s /Applications/Xcode_26.5.app
+  
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v7
+  
+      - name: 🔧 Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+  
+      - name: 📦 Install .NET MAUI iOS Workload
+        run: dotnet workload install maui-ios
+  
+      - name: 🔍 Restore Dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-ios -p:Configuration=${{ env.BUILD_CONFIGURATION }} -p:RuntimeIdentifier=ios-arm64
+  
+      - name: 🔨 Build iOS
+        run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-ios -c ${{ env.BUILD_CONFIGURATION }} -r ios-arm64 --no-restore -p:EnableCodeSigning=false -p:MtouchLink=None -p:EnableAssemblyILStripping=false -p:ArchiveOnBuild=false
 
   # 🧪 Unit Tests Job
   unit-tests:
@@ -81,23 +80,23 @@ jobs:
 
     steps:
 
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v7
-
-    - name: 🔧 Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '10.0.x'
-
-    - name: 🧪 Run Unit Tests
-      run: dotnet test tests/StoreIt.Maui.Tests/StoreIt.Maui.Tests.csproj -c Release --logger "trx;LogFileName=test-results.trx"
-
-    - name: 📤 Upload Test Results
-      uses: actions/upload-artifact@v7
-      if: always()
-      with:
-        name: test-results
-        path: '**/test-results.trx'
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v7
+  
+      - name: 🔧 Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+  
+      - name: 🧪 Run Unit Tests
+        run: dotnet test tests/StoreIt.Maui.Tests/StoreIt.Maui.Tests.csproj -c ${{ env.BUILD_CONFIGURATION }} --logger "trx;LogFileName=test-results.trx"
+  
+      - name: 📤 Upload Test Results
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: test-results
+          path: '**/test-results.trx'
 
   # 🎯 Summary Job
   ci-success:
@@ -107,21 +106,21 @@ jobs:
     if: always()
     
     steps:
-    - name: 🎉 All Jobs Completed
-      run: |
-        echo "🎯 CI Pipeline completed!"
-        echo "Build Status Summary:"
-        echo "- Android Build: ${{ needs.build-android.result }}"
-        echo "- iOS Build: ${{ needs.build-ios.result }}"
-        echo "- Unit Tests: ${{ needs.unit-tests.result }}"
-        
-    - name: ❌ Check for Failures
-      if: contains(needs.*.result, 'failure')
-      run: |
-        echo "❌ One or more jobs failed!"
-        exit 1
-        
-    - name: ✅ Success
-      if: contains(needs.*.result, 'failure') == false
-      run: |
-        echo "✅ All jobs completed successfully!"
+      - name: 🎉 All Jobs Completed
+        run: |
+          echo "🎯 CI Pipeline completed!"
+          echo "Build Status Summary:"
+          echo "- Android Build: ${{ needs.build-android.result }}"
+          echo "- iOS Build: ${{ needs.build-ios.result }}"
+          echo "- Unit Tests: ${{ needs.unit-tests.result }}"
+          
+      - name: ❌ Check for Failures
+        if: contains(needs.*.result, 'failure')
+        run: |
+          echo "❌ One or more jobs failed!"
+          exit 1
+          
+      - name: ✅ Success
+        if: contains(needs.*.result, 'failure') == false
+        run: |
+          echo "✅ All jobs completed successfully!"
