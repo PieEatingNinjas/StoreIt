@@ -11,7 +11,6 @@ env:
   DOTNET_VERSION: '10.0.x'
   PROJECT_PATH: 'src/StoreIt.Maui/StoreIt.Maui.csproj'
   BUILD_CONFIGURATION: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'Release' || 'Debug' }}
-  IOS_RT: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'ios-arm64' || 'iossimulator-arm64' }}
 
 jobs:
   # 🤖 Android Build Job
@@ -69,10 +68,10 @@ jobs:
         run: dotnet workload install maui-ios
   
       - name: 🔍 Restore Dependencies
-        run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-ios -p:Configuration=${{ env.BUILD_CONFIGURATION }} -p:RuntimeIdentifier=${{ env.IOS_RT }}
+        run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-ios -p:Configuration=${{ env.BUILD_CONFIGURATION }} -p:RuntimeIdentifier=ios-arm64
   
       - name: 🔨 Build iOS
-        run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-ios -c ${{ env.BUILD_CONFIGURATION }} -r ${{ env.IOS_RT }} --no-restore -p:EnableCodeSigning=false -p:MtouchLink=None -p:EnableAssemblyILStripping=false -p:ArchiveOnBuild=false
+        run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-ios -c ${{ env.BUILD_CONFIGURATION }} -r ios-arm64 --no-restore -p:EnableCodeSigning=false -p:MtouchLink=None -p:EnableAssemblyILStripping=false -p:ArchiveOnBuild=false
 
   # 🧪 Unit Tests Job
   unit-tests:
