@@ -1,0 +1,12 @@
+{
+  // Microsoft Learn MCP Server — official, no auth required.
+  // Wired at workspace level so every benchmark run (worktree from baseline)
+  // has identical access to up-to-date .NET/ASP.NET Core/EF Core docs.
+  // Tools exposed: microsoft_docs_search, microsoft_docs_fetch, microsoft_code_sample_search.
+  "servers": {
+    "microsoft-learn": {
+      "type": "http",
+      "url": "https://learn.microsoft.com/api/mcp"
+    }
+  }
+}
