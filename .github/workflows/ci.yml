@@ -35,14 +35,14 @@ jobs:
     - name: 🤖 Setup Android SDK
       uses: android-actions/setup-android@v4
 
-    - name: 📦 Install .NET MAUI Workload
-      run: dotnet workload restore ${{ env.PROJECT_PATH }}
+    - name: 📦 Install Android workload only
+      run: dotnet workload install maui-android
 
     - name: 🔍 Restore Dependencies
-      run: dotnet restore ${{ env.PROJECT_PATH }}
+      run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-android
 
     - name: 🔨 Build Android APK
-      run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-android -c Release
+      run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-android -c Release --no-restore
 
   # 🍎 iOS Build Job (macOS runner required for iOS)
   build-ios:
