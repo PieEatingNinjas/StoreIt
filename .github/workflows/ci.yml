@@ -22,21 +22,21 @@ jobs:
       run: sudo xcode-select -s /Applications/Xcode_16.4.app
 
     - name: 📥 Checkout Code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: 🔧 Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: ☕ Setup Java
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v6
       with:
         distribution: 'microsoft'
         java-version: '17'
 
     - name: 🤖 Setup Android SDK
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@v4
 
     - name: 📦 Install .NET MAUI Workload
       run: dotnet workload restore ${{ env.PROJECT_PATH }}
@@ -50,18 +50,18 @@ jobs:
   # 🍎 iOS Build Job (macOS runner required for iOS)
   build-ios:
     name: 🍎 Build iOS
-    runs-on: macos-15
+    runs-on: macos-26
 
     steps:
   
     - name: 🤖 Set Xcode version 
-      run: sudo xcode-select -s /Applications/Xcode_16.4.app
+      run: sudo xcode-select -s /Applications/Xcode_26.5.app
 
     - name: 📥 Checkout Code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: 🔧 Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -82,7 +82,7 @@ jobs:
     steps:
 
     - name: 📥 Checkout Code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: 🔧 Setup .NET
       uses: actions/setup-dotnet@v4
@@ -93,7 +93,7 @@ jobs:
       run: dotnet test tests/StoreIt.Maui.Tests/StoreIt.Maui.Tests.csproj -c Release --logger "trx;LogFileName=test-results.trx"
 
     - name: 📤 Upload Test Results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: always()
       with:
         name: test-results
