@@ -2,13 +2,15 @@ name: 🚀 CI/CD Pipeline
 
 on:
   push:
-    branches: [ 'main' ]
+    branches: 
+      - '**'
   pull_request:
     branches: [ 'main' ]
 
 env:
   DOTNET_VERSION: '10.0.x'
   PROJECT_PATH: 'src/StoreIt.Maui/StoreIt.Maui.csproj'
+  BUILD_CONFIGURATION: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'Release' || 'Debug' }}
 
 jobs:
   # 🤖 Android Build Job
@@ -39,10 +41,10 @@ jobs:
         run: dotnet workload install maui-android
   
       - name: 🔍 Restore Dependencies
-        run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-android
+        run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-android -p:Configuration=${{ env.BUILD_CONFIGURATION }}
   
       - name: 🔨 Build Android APK
-        run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-android -c Release --no-restore -p:AndroidLinkMode=None
+        run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-android -c ${{ env.BUILD_CONFIGURATION }} --no-restore -p:AndroidLinkMode=None
 
   # 🍎 iOS Build Job (macOS runner required for iOS)
   build-ios:
@@ -66,10 +68,10 @@ jobs:
         run: dotnet workload install maui-ios
   
       - name: 🔍 Restore Dependencies
-        run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-ios -p:Configuration=Release -p:RuntimeIdentifier=iossimulator-arm64
+        run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-ios -p:Configuration=${{ env.BUILD_CONFIGURATION }} -p:RuntimeIdentifier=ios-arm64
   
       - name: 🔨 Build iOS
-        run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-ios -c Release -r iossimulator-arm64 --no-restore -p:EnableCodeSigning=false -p:MtouchLink=None -p:EnableAssemblyILStripping=false -p:ArchiveOnBuild=false
+        run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-ios -c ${{ env.BUILD_CONFIGURATION }} -r ios-arm64 --no-restore -p:EnableCodeSigning=false -p:MtouchLink=None -p:EnableAssemblyILStripping=false -p:ArchiveOnBuild=false
 
   # 🧪 Unit Tests Job
   unit-tests:
