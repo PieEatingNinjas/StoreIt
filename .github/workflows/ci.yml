@@ -2,11 +2,9 @@ name: 🚀 CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - '**'
+    branches: [ 'main' ]
   pull_request:
-    branches:
-      - main
+    branches: [ 'main' ]
 
 env:
   DOTNET_VERSION: '10.0.x'
@@ -68,10 +66,10 @@ jobs:
         run: dotnet workload install maui-ios
   
       - name: 🔍 Restore Dependencies
-        run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-ios -p:Configuration=Release -p:RuntimeIdentifier=iossimulator-arm64 -p:PublishTrimmed=false
+        run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-ios -p:Configuration=Release -p:RuntimeIdentifier=iossimulator-arm64
   
       - name: 🔨 Build iOS
-        run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-ios -c Release -r iossimulator-arm64 --no-restore -p:EnableCodeSigning=false -p:MtouchLink=None -p:EnableAssemblyILStripping=false -p:PublishTrimmed=false
+        run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-ios -c Release -r iossimulator-arm64 --no-restore -p:EnableCodeSigning=false -p:MtouchLink=None -p:EnableAssemblyILStripping=false -p:ArchiveOnBuild=false
 
   # 🧪 Unit Tests Job
   unit-tests:
