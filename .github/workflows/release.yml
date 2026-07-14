@@ -6,7 +6,7 @@ on:
       - 'v*.*.*'  # Triggers only on version tags like v1.0.0
 
 env:
-  DOTNET_VERSION: '9.0.x'
+  DOTNET_VERSION: '10.0.x'
   PROJECT_PATH: 'src/StoreIt.Maui/StoreIt.Maui.csproj'
 
 jobs:
@@ -63,7 +63,7 @@ jobs:
         java-version: '17'
 
     - name: 📦 Install .NET MAUI Workload
-      run: dotnet workload install maui
+      run: dotnet workload restore ${{ env.PROJECT_PATH }}
 
     - name: 🔍 Restore Dependencies
       run: dotnet restore ${{ env.PROJECT_PATH }}
@@ -76,7 +76,7 @@ jobs:
     - name: 🔨 Build & Sign Android AAB
       run: |
         dotnet publish ${{ env.PROJECT_PATH }} \
-          -f net9.0-android \
+          -f net10.0-android \
           -c Release \
           /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.display-version }}" \
           /p:ApplicationVersion="${{ needs.prepare-release.outputs.build-number }}" \
@@ -97,7 +97,7 @@ jobs:
       run: |
         cd src/StoreIt.Maui
         fastlane supply \
-          --aab ../../src/StoreIt.Maui/bin/Release/net9.0-android/publish/*.aab \
+          --aab ../../src/StoreIt.Maui/bin/Release/net10.0-android/publish/*.aab \
           --package_name "$ANDROID_PACKAGE_NAME" \
           --json_key_data "$GOOGLE_PLAY_JSON_KEY_DATA" \
           --track internal \
@@ -122,7 +122,7 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: 📦 Install .NET MAUI Workload
-      run: dotnet workload install maui
+      run: dotnet workload restore ${{ env.PROJECT_PATH }}
 
     - name: 🔍 Restore Dependencies
       run: dotnet restore ${{ env.PROJECT_PATH }}
@@ -159,7 +159,7 @@ jobs:
     - name: 🔨 Build & Sign iOS IPA
       run: |
         dotnet publish ${{ env.PROJECT_PATH }} \
-          -f net9.0-ios \
+          -f net10.0-ios \
           -c Release \
           /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.display-version }}" \
           /p:ApplicationVersion="${{ needs.prepare-release.outputs.build-number }}" \
@@ -180,7 +180,7 @@ jobs:
       run: |
         cd src/StoreIt.Maui
         fastlane deliver \
-          --ipa ../../src/StoreIt.Maui/bin/Release/net9.0-ios/**/publish/*.ipa \
+          --ipa ../../src/StoreIt.Maui/bin/Release/net10.0-ios/**/publish/*.ipa \
           --api_key "$FASTLANE_HASH" \
           --skip_screenshots \
           --skip_metadata \
