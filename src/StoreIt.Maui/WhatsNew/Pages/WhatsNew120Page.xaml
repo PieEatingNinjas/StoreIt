@@ -3,10 +3,11 @@
     x:Class="StoreIt.WhatsNew.Pages.WhatsNew120Page"
     xmlns:vm="clr-namespace:StoreIt.WhatsNew"
     x:DataType="vm:WhatsNewViewModel"
-    Shell.PresentationMode="ModalAnimated">
-    <VerticalStackLayout Padding="32,48,32,32" Spacing="28" VerticalOptions="Center">
-        <Label Text="{Binding Title}" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center"/>
-        <Label Text="↕️ Sorteer je items" HorizontalTextAlignment="Center" FontSize="22" HorizontalOptions="Fill"/>
+    Shell.PresentationMode="ModalAnimated"
+    SafeAreaEdges="None">
+    <VerticalStackLayout SafeAreaEdges="None" Padding="32,48,32,32" Spacing="28" HorizontalOptions="Fill" VerticalOptions="Center">
+        <Label Text="{Binding Title}" FontSize="28" FontAttributes="Bold" HorizontalOptions="Start"/>
+        <Label Text="↕️ Sorteer je items" HorizontalTextAlignment="Start" FontSize="22" HorizontalOptions="Fill"/>
         <VerticalStackLayout Padding="20, 0" Spacing="10">
             <Label Text="✅ Kies hoe je items geordend worden: laatst gebruikt of op naam."
                 FontSize="16" TextColor="Gray" HorizontalTextAlignment="Start"/>

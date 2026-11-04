@@ -3,8 +3,9 @@
     x:Class="StoreIt.WhatsNew.Pages.WhatsNew110Page"
     xmlns:vm="clr-namespace:StoreIt.WhatsNew"
     x:DataType="vm:WhatsNewViewModel"
-    Shell.PresentationMode="ModalAnimated">
-    <VerticalStackLayout Padding="32,48,32,32" Spacing="28" VerticalOptions="Center">
+    Shell.PresentationMode="ModalAnimated"
+    SafeAreaEdges="None">
+    <VerticalStackLayout SafeAreaEdges="None" Padding="32,48,32,32" Spacing="28" VerticalOptions="Center">
         <Label Text="{Binding Title}" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center"/>
         <Label Text="🔐 Biometrische beveiliging voor privé items *" HorizontalTextAlignment="Center" FontSize="22" HorizontalOptions="Fill"/>
         <VerticalStackLayout Padding="20, 0" Spacing="10">

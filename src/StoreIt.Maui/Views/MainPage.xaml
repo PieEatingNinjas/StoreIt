@@ -34,9 +34,12 @@
         <ToolbarItem
             Command="{Binding OpenSortPickerCommand}"
             SemanticProperties.Description="Sorteervolgorde kiezen"
-            Text="Sorteren" />
+            IconImageSource="sort.png" />
+        <ToolbarItem
+            Command="{Binding AddCardCommand}"
+            IconImageSource="add.png" />
     </ContentPage.ToolbarItems>
-    <Grid Margin="0, 0, 0, -100" VerticalOptions="Fill" HorizontalOptions="Fill">
+    <Grid Margin="0, 0, 0, -100" SafeAreaEdges="Default" VerticalOptions="Fill" HorizontalOptions="Fill">
         <CollectionView
             BackgroundColor="transparent"
             ItemSizingStrategy="MeasureAllItems"
@@ -157,13 +160,13 @@
         </CollectionView>
 
         <!--  Floating Action Button  -->
-        <Button 
+        <!-- <Button 
             Margin="0, 0, 25, 110"
             Command="{Binding AddCardCommand}"
             HorizontalOptions="End"
             Style="{StaticResource RoundFloatingActionButton}"
             Text="+"
-            VerticalOptions="End" />
+            VerticalOptions="End" /> -->
 
         <!--  Loading Indicator  -->
         <Grid Margin="0, 0, 0, 100"

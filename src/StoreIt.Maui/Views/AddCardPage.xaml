@@ -6,16 +6,25 @@
     xmlns:models="clr-namespace:StoreIt.Maui.Models"
     xmlns:vm="clr-namespace:StoreIt.Maui.ViewModels"
     xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
+    xmlns:duo="clr-namespace:DuoExtensions.Maui;assembly=DuoExtensions.Maui"
     x:Name="ThisPage"
-    Title="{Binding Title}"
+    Title="{Binding SubTitle}"
     x:DataType="vm:AddCardViewModel"
-    Shell.PresentationMode="ModalAnimated">
+    SafeAreaEdges="Default">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            duo:ToolbarItemAxisBehavior.AxisBehavior="Automatic"
+            AutomationId="SaveCardToolbarItem"
+            Priority="1"
+            Command="{Binding SaveCardCommand}"
+            IconImageSource="save.png"/>
+    </ContentPage.ToolbarItems>
     <Grid>
         <ScrollView>
             <VerticalStackLayout Padding="20" Spacing="20">
 
                 <!--  Header  -->
-                <Label Style="{StaticResource PageTitleStyle}" Text="{Binding SubTitle}" />
+                <!-- <Label Style="{StaticResource PageTitleStyle}" Text="{Binding SubTitle}" /> -->
 
                 <!--  Form Fields  -->
                 <VerticalStackLayout Spacing="20">
@@ -44,19 +53,23 @@
                     <VerticalStackLayout Spacing="8">
                         <Label Style="{StaticResource InputLabelStyle}" Text="Kies een kleur *" />
 
-                        <CollectionView
+                        <CarouselView HeightRequest="100"
+                            Loop="False"
                             ItemsSource="{Binding AvailableColors}"
-                            SelectionMode="None"
-                            VerticalOptions="Start">
-                            <CollectionView.ItemsLayout>
+                         HorizontalScrollBarVisibility="Never"
+                           ItemsLayout="HorizontalList"
+                           ItemsUpdatingScrollMode="KeepScrollOffset"
+                            VerticalOptions="Start"
+                            PeekAreaInsets="130">
+                            <!-- <CarouselView.ItemsLayout>
                                 <GridItemsLayout
                                     HorizontalItemSpacing="10"
                                     Orientation="Vertical"
                                     Span="4"
                                     VerticalItemSpacing="10" />
-                            </CollectionView.ItemsLayout>
+                            </CarouselView.ItemsLayout> -->
 
-                            <CollectionView.ItemTemplate>
+                            <CarouselView.ItemTemplate>
                                 <DataTemplate x:DataType="models:CardColor">
                                     <ContentView>
                                         <Border
@@ -84,8 +97,8 @@
                                         </Border>
                                     </ContentView>
                                 </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
+                            </CarouselView.ItemTemplate>
+                        </CarouselView>
 
                         <!--  Selected Color Preview  -->
                         <HorizontalStackLayout Margin="0,10,0,0" Spacing="10">
@@ -278,7 +291,7 @@
                     </VerticalStackLayout>
 
                     <!--  Action Buttons  -->
-                    <Grid
+                    <!-- <Grid
                         Margin="0,30,0,0"
                         ColumnDefinitions="*,*"
                         ColumnSpacing="15">
@@ -303,7 +316,7 @@
                             HeightRequest="50"
                             Text="{Binding SaveButtonText}"
                             TextColor="White" />
-                    </Grid>
+                    </Grid> -->
                 </VerticalStackLayout>
             </VerticalStackLayout>
         </ScrollView>

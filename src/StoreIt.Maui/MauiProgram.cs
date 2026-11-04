@@ -8,6 +8,9 @@ using StoreIt.Navigation;
 using StoreIt.Services;
 using StoreIt.WhatsNew;
 using ZXing.Net.Maui.Controls;
+#if MAUI_DEVFLOW
+using Microsoft.Maui.DevFlow.Agent;
+#endif
 
 namespace StoreIt.Maui;
 
@@ -26,6 +29,10 @@ public static class MauiProgram
                             fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     })
                     ;
+
+#if MAUI_DEVFLOW
+                builder.AddMauiDevFlowAgent();
+#endif
 
                 // Services
                 builder.Services.AddSingleton<DatabaseService>();
