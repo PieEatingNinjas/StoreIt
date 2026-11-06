@@ -2,7 +2,6 @@
 <ContentView
     x:Class="StoreIt.Maui.Controls.BarcodePreviewControl"
     xmlns:controls="clr-namespace:StoreIt.Maui.Controls"
-    xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
     x:Name="Root"
     x:DataType="controls:BarcodePreviewControl"
     InputTransparent="True">
@@ -27,10 +26,8 @@
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="4" />
                     </Border.StrokeShape>
-                    <zxing:BarcodeGeneratorView
+                    <controls:SafeBarcodeView
                         x:Name="previewBarcodeGenerator"
-                        BackgroundColor="White"
-                        ForegroundColor="Black"
                         HeightRequest="80"
                         WidthRequest="200" />
                 </Border>

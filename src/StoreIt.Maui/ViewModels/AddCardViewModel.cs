@@ -1,6 +1,8 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using StoreIt.Maui.Helpers;
 using StoreIt.Maui.Models;
 using StoreIt.Maui.Services;
 using StoreIt.Navigation;
@@ -11,6 +13,8 @@ namespace StoreIt.Maui.ViewModels;
 [QueryProperty(nameof(CardId), NavigationParams.CardId)]
 public partial class AddCardViewModel : ObservableObject
 {
+    private const string TextDisplayOption = CodeTypeCatalog.TextFormat;
+
     private readonly DatabaseService _databaseService;
     private readonly IUserPreferencesService _userPreferencesService;
     private readonly IAppNavigationService _navigationService;
@@ -19,6 +23,8 @@ public partial class AddCardViewModel : ObservableObject
 
     private CustomerCard? _originalCard;
     private bool _cannotChangeIsPrivate;
+    private bool _isUpdatingCodeTypeOptions;
+    private bool _keepSelectedCodeType;
 
     [ObservableProperty]
     private string name = string.Empty;
@@ -27,16 +33,7 @@ public partial class AddCardViewModel : ObservableObject
     private string description = string.Empty;
 
     [ObservableProperty]
-    private string? barcodeData;
-
-    [ObservableProperty]
-    private string? barcodeFormat;
-
-    [ObservableProperty]
-    private bool showBarcodePreview;
-
-    [ObservableProperty]
-    private string customCode = string.Empty;
+    private string codeInput = string.Empty;
 
     [ObservableProperty]
     private bool isEditing;
@@ -45,10 +42,7 @@ public partial class AddCardViewModel : ObservableObject
     private int cardId;
 
     [ObservableProperty]
-    private bool showBarcodeScanning;
-
-    [ObservableProperty]
-    private bool showCustomCodeInput;
+    private string selectedDisplayAs = TextDisplayOption;
 
     [ObservableProperty]
     private string selectedColor = "#FF6B35"; // Default orange color
@@ -64,9 +58,6 @@ public partial class AddCardViewModel : ObservableObject
 
     [ObservableProperty]
     private string subTitle = "Nieuw item toevoegen";
-
-    [ObservableProperty]
-    private string saveButtonText = "Opslaan";
 
     [ObservableProperty]
     private bool isPrivate;
@@ -86,6 +77,13 @@ public partial class AddCardViewModel : ObservableObject
         new CardColor { Name = "Roze", Value = "#E91E63" }
     ];
 
+    private readonly List<CodeTypeOption> _allCodeTypes = CodeTypeCatalog.CreateOptions();
+
+    public ObservableCollection<CodeTypeOption> CodeTypeOptions { get; } = [];
+
+    [ObservableProperty]
+    private CodeTypeOption? selectedCodeType;
+
     public AddCardViewModel(DatabaseService databaseService,
         IUserPreferencesService userPreferencesService,
         IAppNavigationService navigationService,
@@ -100,9 +98,8 @@ public partial class AddCardViewModel : ObservableObject
 
         // Initialize with random color for new cards
         SelectRandomColor();
+        UpdateCodeTypeOptions();
 
-        ShowBarcodeScanning = false;
-        ShowCustomCodeInput = false;
         _ = Init();
     }
 
@@ -117,16 +114,112 @@ public partial class AddCardViewModel : ObservableObject
         {
             Title = "Item bewerken";
             SubTitle = "Item bewerken";
-            SaveButtonText = "Bijwerken";
             IsEditing = true;
             _ = LoadCardAsync(value);
         }
         else
         {
             Title = "Nieuw Item";
-            SaveButtonText = "Opslaan";
             IsEditing = false;
             SubTitle = "Nieuw item toevoegen";
+        }
+    }
+
+    partial void OnSelectedColorObjectChanged(CardColor? oldValue, CardColor? newValue)
+    {
+        oldValue?.IsSelected = false;
+        newValue?.IsSelected = true;
+    }
+
+    partial void OnCodeInputChanged(string value)
+    {
+        UpdateCodeTypeOptions();
+    }
+
+    partial void OnSelectedDisplayAsChanged(string value)
+    {
+        if (!_isUpdatingCodeTypeOptions && value is not null)
+        {
+            UpdateCodeTypeOptions();
+        }
+    }
+
+    partial void OnSelectedCodeTypeChanged(CodeTypeOption? value)
+    {
+        // The carousel may briefly report a different or null item while its items change.
+        if (_isUpdatingCodeTypeOptions || value is null || value.Format == SelectedDisplayAs)
+        {
+            return;
+        }
+
+        SelectedDisplayAs = value.Format;
+    }
+
+    [RelayCommand]
+    private void SelectCodeType(CodeTypeOption option)
+    {
+        SelectedDisplayAs = option.Format;
+    }
+
+    // Shows only the types that can represent the current input. While typing, an incompatible
+    // selection falls back to plain text; a loaded or scanned type is always kept.
+    private void UpdateCodeTypeOptions()
+    {
+        var code = CodeInput?.Trim() ?? string.Empty;
+
+        foreach (var option in _allCodeTypes)
+        {
+            option.IsValid = !option.IsBarcode || code.Length == 0 ||
+                             BarCodeHelper.IsValidBarcodeFormat(code, option.Format);
+            option.IsSample = code.Length == 0;
+            option.PreviewValue = code.Length == 0 ? option.SampleValue : option.IsValid ? code : string.Empty;
+        }
+
+        var selected = _allCodeTypes.FirstOrDefault(option => option.Format == SelectedDisplayAs)
+                       ?? _allCodeTypes[0];
+        if (!selected.IsValid && !_keepSelectedCodeType)
+        {
+            selected = _allCodeTypes[0];
+        }
+
+        foreach (var option in _allCodeTypes)
+        {
+            option.IsSelected = option == selected;
+        }
+
+        var desired = _allCodeTypes.Where(option => option.IsValid || option.IsSelected).ToList();
+
+        _isUpdatingCodeTypeOptions = true;
+        try
+        {
+            // Move the selection first so the carousel never points at an item that is about to be removed.
+            SelectedDisplayAs = selected.Format;
+            SelectedCodeType = selected;
+
+            if (!CodeTypeOptions.SequenceEqual(desired))
+            {
+                for (var i = CodeTypeOptions.Count - 1; i >= 0; i--)
+                {
+                    if (!desired.Contains(CodeTypeOptions[i]))
+                    {
+                        CodeTypeOptions.RemoveAt(i);
+                    }
+                }
+
+                for (var i = 0; i < desired.Count; i++)
+                {
+                    if (i >= CodeTypeOptions.Count || CodeTypeOptions[i] != desired[i])
+                    {
+                        CodeTypeOptions.Insert(i, desired[i]);
+                    }
+                }
+            }
+
+            SelectedCodeType = selected;
+        }
+        finally
+        {
+            _isUpdatingCodeTypeOptions = false;
         }
     }
 
@@ -139,26 +232,15 @@ public partial class AddCardViewModel : ObservableObject
             {
                 Name = _originalCard.Name;
                 Description = _originalCard.Description ?? string.Empty;
-                BarcodeData = _originalCard.BarcodeData;
-                BarcodeFormat = _originalCard.BarcodeFormat;
-                CustomCode = _originalCard.CustomCode ?? string.Empty;
                 SelectedColor = _originalCard.Color ?? "#FF6B35"; // Default to orange if no color
                 IsPrivate = _originalCard.IsPrivate;
 
                 SelectedColorObject = AvailableColors.FirstOrDefault(c => c.Value == SelectedColor) ??
                                       AvailableColors.First();
 
-                if (!string.IsNullOrEmpty(_originalCard.BarcodeData))
-                {
-                    ShowBarcodeScanning = true;
-                    ShowCustomCodeInput = false;
-                    ShowBarcodePreview = true;
-                }
-                else if (!string.IsNullOrEmpty(_originalCard.CustomCode))
-                {
-                    ShowBarcodeScanning = false;
-                    ShowCustomCodeInput = true;
-                }
+                var hasBarcode = !string.IsNullOrEmpty(_originalCard.BarcodeData);
+                var displayAs = hasBarcode ? _originalCard.BarcodeFormat ?? "QrCode" : TextDisplayOption;
+                ApplyCode(displayAs, _originalCard.BarcodeData ?? _originalCard.CustomCode ?? string.Empty);
             }
         }
         catch (Exception ex)
@@ -175,35 +257,10 @@ public partial class AddCardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void SelectBarcodeOption()
-    {
-        ShowBarcodeScanning = true;
-        ShowCustomCodeInput = false;
-        CustomCode = string.Empty; // Clear custom code when switching to barcode
-    }
-
-    [RelayCommand]
-    private void SelectCustomCodeOption()
-    {
-        ShowBarcodeScanning = false;
-        ShowCustomCodeInput = true;
-        BarcodeData = null; // Clear barcode when switching to custom code
-        BarcodeFormat = null;
-        ShowBarcodePreview = false;
-    }
-
-    [RelayCommand]
     private Task OpenScanBarcodePage()
     {
         RegisterForBarcodeResult();
         return _navigationService.NavigateToScanBarCodePage();
-    }
-
-    [RelayCommand]
-    private Task OpenManualBarcodePage()
-    {
-        RegisterForBarcodeResult();
-        return _navigationService.NavigateToAddBarCodePage(BarcodeData, BarcodeFormat);
     }
 
     private void RegisterForBarcodeResult()
@@ -275,9 +332,7 @@ public partial class AddCardViewModel : ObservableObject
     {
         WeakReferenceMessenger.Default.Unregister<BarcodeResult>(this);
 
-        BarcodeData = result.Data;
-        BarcodeFormat = result.Format;
-        ShowBarcodePreview = !string.IsNullOrEmpty(BarcodeData);
+        ApplyCode(result.Format, result.Data);
 
         // Show save hint when barcode is received
         ShowSaveHintBriefly();
@@ -292,6 +347,32 @@ public partial class AddCardViewModel : ObservableObject
         }
 
         ShowSaveHint = true;
+    }
+
+    // Applies a loaded or scanned code without auto-falling back to text.
+    private void ApplyCode(string format, string code)
+    {
+        AddCodeTypeIfMissing(format);
+
+        _keepSelectedCodeType = true;
+        try
+        {
+            SelectedDisplayAs = format;
+            CodeInput = code;
+            UpdateCodeTypeOptions();
+        }
+        finally
+        {
+            _keepSelectedCodeType = false;
+        }
+    }
+
+    private void AddCodeTypeIfMissing(string format)
+    {
+        if (_allCodeTypes.All(option => option.Format != format))
+        {
+            _allCodeTypes.Add(CodeTypeCatalog.CreateUnknown(format));
+        }
     }
 
     private void SelectRandomColor()
@@ -318,13 +399,21 @@ public partial class AddCardViewModel : ObservableObject
                 return;
             }
 
-            var hasBarcodeData = !string.IsNullOrWhiteSpace(BarcodeData);
-            var hasCustomCode = !string.IsNullOrWhiteSpace(CustomCode);
+            var hasCode = !string.IsNullOrWhiteSpace(CodeInput);
 
-            if (!hasBarcodeData && !hasCustomCode)
+            if (!hasCode)
             {
                 await _dialogService.DisplayAlert("Validatie",
-                    "Kies eerst het type (barcode of code) en vul de gegevens in.", "OK");
+                    "Voer een code of nummer in.", "OK");
+                return;
+            }
+
+            var code = CodeInput.Trim();
+            var isBarcode = SelectedDisplayAs != TextDisplayOption;
+            if (isBarcode && !BarCodeHelper.IsValidBarcodeFormat(code, SelectedDisplayAs))
+            {
+                await _dialogService.DisplayAlert("Validatie",
+                    $"De code is niet geldig voor {SelectedCodeType?.Title ?? SelectedDisplayAs}.", "OK");
                 return;
             }
 
@@ -333,9 +422,9 @@ public partial class AddCardViewModel : ObservableObject
                 Id = CardId,
                 Name = Name.Trim(),
                 Description = Description.Trim(),
-                BarcodeData = hasBarcodeData ? BarcodeData : null,
-                BarcodeFormat = hasBarcodeData ? BarcodeFormat : null,
-                CustomCode = hasCustomCode ? CustomCode.Trim() : null,
+                BarcodeData = isBarcode ? code : null,
+                BarcodeFormat = isBarcode ? SelectedDisplayAs : null,
+                CustomCode = isBarcode ? null : code,
                 Color = SelectedColor,
                 IsPrivate = IsPrivate
             };
