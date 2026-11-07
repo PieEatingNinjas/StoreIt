@@ -12,8 +12,11 @@ Built with .NET MAUI, targeting **Android** and **iOS**.
 - 🔢 **Custom codes** — Store membership numbers, access codes, and any other identifiers
 - 🎨 **Color labels** — Assign a color to each card for easy visual identification
 - ⭐ **Favorites** — Mark frequently used cards as favorites so they appear at the top
+- **Card details** — Animated modal with toolbar actions for closing, favorites, and editing; deletion is available in the overflow menu
 - 🔐 **Private cards** — Protect sensitive cards with biometric authentication (Face ID / fingerprint)
 - 🌙 **Dark & light theme** — Follows your system theme or lets you pick manually
+- **Android system bars** — Status, navigation, and tab bars match the page background in light and dark mode, with contrasting system icons
+- **Neutral action icons** — Thin anthracite outlines in light mode and white outlines in dark mode keep blue accents reserved for selection and focus
 - 💡 **Hints** — On-screen guidance that can be turned off once you're familiar with the app
 
 ---

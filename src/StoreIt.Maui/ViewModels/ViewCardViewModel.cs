@@ -17,25 +17,30 @@ public partial class ViewCardViewModel : ObservableObject
     private readonly IDialogService _dialogService;
     private readonly IBiometricService _biometricService;
 
-    [ObservableProperty] 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(EditCardCommand), nameof(DeleteCardCommand), nameof(ToggleFavoriteCommand))]
     private CustomerCard? card;
 
-    [ObservableProperty] 
+    [ObservableProperty]
     private int cardId;
 
     private bool isBrightnessControlSupported;
 
-    [ObservableProperty] 
+    [ObservableProperty]
     private bool showZoomHint;
 
-    [ObservableProperty] 
+    [ObservableProperty]
     private bool showCopyHint;
 
-    [ObservableProperty] 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(EditCardCommand), nameof(DeleteCardCommand), nameof(ToggleFavoriteCommand))]
     private bool isAuthenticating = true;
 
-    [ObservableProperty] 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(EditCardCommand), nameof(DeleteCardCommand), nameof(ToggleFavoriteCommand))]
     private bool isLoading = true;
+
+    public bool CanManageCard => Card is not null && !IsLoading && !IsAuthenticating;
 
     public ViewCardViewModel(DatabaseService databaseService,
         IPlatformBrightnessService brightnessService,
@@ -182,7 +187,7 @@ public partial class ViewCardViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanManageCard))]
     private Task EditCardAsync() => _navigationService.NavigateToEditCardPage(Card?.Id ?? 0);
 
     [RelayCommand]
@@ -194,7 +199,7 @@ public partial class ViewCardViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanManageCard))]
     private async Task DeleteCardAsync()
     {
         if (Card == null)
@@ -212,7 +217,7 @@ public partial class ViewCardViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanManageCard))]
     private async Task ToggleFavoriteAsync()
     {
         if (Card == null)

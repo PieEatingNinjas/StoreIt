@@ -21,6 +21,7 @@ public partial class ViewCardPage : ContentPage
     {
         InitializeComponent();
         BindingContext = ViewModel = viewModel;
+        Shell.SetBackButtonBehavior(this, new BackButtonBehavior { IsVisible = true });
     }
 
     protected override void OnAppearing()
@@ -75,21 +76,8 @@ public partial class ViewCardPage : ContentPage
         barcodeGenerator.HeightRequest = height;
     }
 
-    private async void OnMoreOptionsClicked(object sender, EventArgs e)
+    private void OnEditCardClicked(object sender, EventArgs e)
     {
-        string action = await DisplayActionSheetAsync($"Opties", "Annuleren", "Verwijderen", "Bewerken");
-        switch (action)
-        {
-            case "Bewerken":
-                _shouldReloadCard = true;
-                await ViewModel.EditCardCommand.ExecuteAsync(null);
-                break;
-            case "Verwijderen":
-                await ViewModel.DeleteCardCommand.ExecuteAsync(null);
-                break;
-            case "Favoriet":
-                ViewModel.ToggleFavoriteCommand.Execute(null);
-                break;
-        }
+        _shouldReloadCard = true;
     }
 }

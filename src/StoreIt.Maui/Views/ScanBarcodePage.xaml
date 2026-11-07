@@ -3,13 +3,12 @@
       x:Class="StoreIt.Maui.Views.ScanBarcodePage"
       xmlns:vm="clr-namespace:StoreIt.Maui.ViewModels"
       xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
-      Title="Barcode Scannen"
+      Title="Scan je barcode"
       x:DataType="vm:ScanBarcodeViewModel"
-      BackgroundColor="Black"
-      Shell.PresentationMode="ModalAnimated">
+      >
       <ContentPage.Resources>
             <Style x:Key="CornerIndicatorStyle" TargetType="Path">
-                  <Setter Property="Stroke" Value="{StaticResource Secondary}" />
+                  <Setter Property="Stroke" Value="{StaticResource Accent}" />
                   <Setter Property="StrokeThickness" Value="4" />
             </Style>
       </ContentPage.Resources>
@@ -20,24 +19,6 @@
                   Grid.Row="0"
                   Padding="15,10"
                   ColumnDefinitions="Auto,*, Auto">
-
-                  <!--  Back Button  -->
-                  <Button
-                        Grid.Column="0"
-                        Command="{Binding CancelCommand}"
-                        Style="{StaticResource ControlButtonStyle}"
-                        Text="✕"
-                        TextColor="White" />
-
-                  <!--  Title  -->
-                  <Label
-                        Grid.Column="1"
-                        FontAttributes="Bold"
-                        FontSize="18"
-                        HorizontalOptions="Center"
-                        Text="Scan je barcode"
-                        TextColor="White"
-                        VerticalOptions="Center" />
             </Grid>
 
             <!--  Camera View  -->
@@ -112,21 +93,6 @@
                         Text="Houd de barcode binnen het kader"
                         TextColor="White"
                         VerticalOptions="End" />
-            </Grid>
-
-            <!--  Footer  -->
-            <Grid
-                  Grid.Row="2"
-                  Padding="15,10"
-                  BackgroundColor="#80000000"
-                  IsVisible="{Binding IsScanning}">
-
-                  <Button
-                        BackgroundColor="{StaticResource Secondary}"
-                        Command="{Binding SwitchToManualCommand}"
-                        HeightRequest="50"
-                        Text="Handmatig invoeren"
-                        TextColor="White" />
             </Grid>
       </Grid>
 </ContentPage>

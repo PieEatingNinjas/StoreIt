@@ -15,7 +15,7 @@
             duo:ToolbarItemAxisBehavior.AxisBehavior="Automatic"
             AutomationId="ScanCardToolbarItem"
             Command="{Binding OpenScanBarcodePageCommand}"
-            IconImageSource="scan.png"
+            IconImageSource="{AppThemeBinding Light=scan.png, Dark=scan_dark.png}"
             Priority="0"
             SemanticProperties.Description="Kaart scannen" />
         <ToolbarItem
@@ -23,7 +23,7 @@
             AutomationId="SaveCardToolbarItem"
             Priority="1"
             Command="{Binding SaveCardCommand}"
-            IconImageSource="save.png"/>
+            IconImageSource="{AppThemeBinding Light=save.png, Dark=save_dark.png}"/>
     </ContentPage.ToolbarItems>
     <Grid>
         <ScrollView>
@@ -51,13 +51,14 @@
                             Text="Typ je code of scan de barcode. Het herkende formaat wordt automatisch overgenomen." />
                         <ImageButton
                             Grid.Column="1"
+                            Aspect="AspectFit"
                             AutomationId="ScanCardInlineButton"
                             BackgroundColor="Transparent"
                             Command="{Binding OpenScanBarcodePageCommand}"
                             HeightRequest="44"
-                            Padding="4"
+                            Padding="10"
                             SemanticProperties.Description="Barcode scannen"
-                            Source="scan.png"
+                            Source="{AppThemeBinding Light=scan.png, Dark=scan_dark.png}"
                             WidthRequest="44" />
                     </Grid>
                 </VerticalStackLayout>
@@ -146,7 +147,7 @@
                                             Grid.Row="1"
                                             FontFamily="Monospace"
                                             FontSize="22"
-                                            HorizontalOptions="Center"
+                                            HorizontalOptions="Fill"
                                             HorizontalTextAlignment="Center"
                                             IsVisible="{Binding IsText}"
                                             LineBreakMode="TailTruncation"

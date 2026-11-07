@@ -60,7 +60,6 @@ public static class MauiProgram
                 builder.Services.AddTransient<AddCardViewModel>();
                 builder.Services.AddTransient<ViewCardViewModel>();
                 builder.Services.AddTransient<ScanBarcodeViewModel>();
-                builder.Services.AddTransient<ManualBarcodeViewModel>();
                 builder.Services.AddTransient<SettingsViewModel>();
                 builder.Services.AddTransient<WhatsNewViewModel>();
 
@@ -69,7 +68,6 @@ public static class MauiProgram
                 builder.Services.AddTransient<AddCardPage>();
                 builder.Services.AddTransient<ViewCardPage>();
                 builder.Services.AddTransient<ScanBarcodePage>();
-                builder.Services.AddTransient<ManualBarcodePage>();
                 builder.Services.AddTransient<SettingsPage>();
 
 #if DEBUG
