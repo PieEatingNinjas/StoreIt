@@ -11,14 +11,12 @@
     x:DataType="vm:MainViewModel">
     <ContentPage.Resources>
         <Style x:Key="MessageLabelStyle" TargetType="Label">
-            <Setter Property="TextColor" Value="{AppThemeBinding Light=Gray, Dark=LightGray}" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
         </Style>
         <Style
             x:Key="CardBorderWithShadowStyle"
             BasedOn="{StaticResource CardBorderStyle}"
             TargetType="Border">
-            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}" />
-            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource VeryLightGray}, Dark={StaticResource Gray600}}" />
             <Setter Property="Shadow">
                 <Setter.Value>
                     <Shadow
@@ -104,15 +102,15 @@
                                         FontAttributes="Bold"
                                         FontSize="16"
                                         Text="{Binding Name}"
-                                        TextColor="{AppThemeBinding Light=Black,
-                                                                    Dark=White}" />
+                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight},
+                                                                    Dark={StaticResource PrimaryTextDark}}" />
 
                                     <Label
                                         FontSize="14"
                                         IsVisible="{Binding Description, Converter={StaticResource IsStringNotNullOrEmptyConverter}}"
                                         Text="{Binding Description}"
-                                        TextColor="{AppThemeBinding Light=Gray,
-                                                                    Dark=LightGray}" />
+                                        TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight},
+                                                                    Dark={StaticResource SecondaryTextDark}}" />
                                 </VerticalStackLayout>
 
                                 <!--  Favorite Button  -->
@@ -144,8 +142,8 @@
                                     Margin="15,0,15,12"
                                     FontSize="11"
                                     Text="{Binding LastUsed, StringFormat='Laatst gebruikt: {0:dd MMM yyyy}'}"
-                                    TextColor="{AppThemeBinding Light=#999,
-                                                                Dark=#777}" />
+                                    TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight},
+                                                                Dark={StaticResource SecondaryTextDark}}" />
                                 <!--  Tap Gesture  -->
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer

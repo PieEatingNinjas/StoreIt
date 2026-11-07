@@ -91,9 +91,7 @@
                             <DataTemplate x:DataType="models:CodeTypeOption">
                                 <Border
                                     Padding="16,12"
-                                    BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2D2D2D}"
-                                    Stroke="{AppThemeBinding Light={StaticResource VeryLightGray}, Dark=#555}"
-                                    StrokeThickness="1">
+                                    Style="{StaticResource CardBorderStyle}">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="12" />
                                     </Border.StrokeShape>
@@ -102,7 +100,8 @@
                                             Binding="{Binding IsSelected}"
                                             TargetType="Border"
                                             Value="True">
-                                            <Setter Property="Stroke" Value="{StaticResource Accent}" />
+                                            <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource SelectionBackgroundLight}, Dark={StaticResource SelectionBackgroundDark}}" />
+                                            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource SelectionBorderLight}, Dark={StaticResource SelectionBorderDark}}" />
                                             <Setter Property="StrokeThickness" Value="2" />
                                         </DataTrigger>
                                     </Border.Triggers>
@@ -171,7 +170,7 @@
                         x:Name="CodeTypeIndicator"
                         Grid.Row="2"
                         HorizontalOptions="Center"
-                        IndicatorColor="{AppThemeBinding Light={StaticResource VeryLightGray}, Dark=#555}"
+                        IndicatorColor="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
                         IndicatorSize="6"
                         SelectedIndicatorColor="{StaticResource Accent}" />
                     <Label

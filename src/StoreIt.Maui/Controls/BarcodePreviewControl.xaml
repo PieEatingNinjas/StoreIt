@@ -8,10 +8,10 @@
     <VerticalStackLayout Spacing="5">
         <Border
             Padding="15"
-            BackgroundColor="{AppThemeBinding Light=#F0F8FF,
-                                              Dark=#1E2A3A}"
-            Stroke="{AppThemeBinding Light=#ADD8E6,
-                                     Dark=#4682B4}"
+            Background="{AppThemeBinding Light={StaticResource SelectionBackgroundLight},
+                                         Dark={StaticResource SelectionBackgroundDark}}"
+            Stroke="{AppThemeBinding Light={StaticResource SurfaceBorderLight},
+                                     Dark={StaticResource SurfaceBorderDark}}"
             StrokeThickness="1">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="8" />
@@ -38,8 +38,8 @@
                     FontFamily="Monospace"
                     FontSize="14"
                     HorizontalOptions="Center"
-                    TextColor="{AppThemeBinding Light=#2E5D8A,
-                                                Dark=#87CEEB}" />
+                    TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight},
+                                                Dark={StaticResource PrimaryTextDark}}" />
             </VerticalStackLayout>
         </Border>
     </VerticalStackLayout>

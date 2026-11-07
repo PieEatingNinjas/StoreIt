@@ -15,8 +15,10 @@ Built with .NET MAUI, targeting **Android** and **iOS**.
 - **Card details** — Animated modal with toolbar actions for closing, favorites, and editing; deletion is available in the overflow menu
 - 🔐 **Private cards** — Protect sensitive cards with biometric authentication (Face ID / fingerprint)
 - 🌙 **Dark & light theme** — Follows your system theme or lets you pick manually
-- **Android system bars** — Status, navigation, and tab bars match the page background in light and dark mode, with contrasting system icons
+- **Android system bars** — Status, navigation, and tab bars match the page background in light and dark mode, with contrasting system icons; transparent native app-bar backgrounds prevent a purple strip behind the status bar on edge-to-edge devices
 - **Neutral action icons** — Thin anthracite outlines in light mode and white outlines in dark mode keep blue accents reserved for selection and focus
+- **Calm secondary palette** — Shared blue-gray surfaces, selections, and secondary actions in both themes, with neutral gray input fields; card colors and high-contrast barcode displays stay unchanged
+- **Consistent toggle colors** — Explicit light/dark track and thumb colors for on, off, and disabled states avoid manufacturer-dependent Android theme colors
 - 💡 **Hints** — On-screen guidance that can be turned off once you're familiar with the app
 
 ---

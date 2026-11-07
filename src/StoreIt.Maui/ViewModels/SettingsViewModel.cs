@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Maui.ApplicationModel;
 using StoreIt.Maui.Services;
 using StoreIt.Services;
 
@@ -81,7 +82,7 @@ public partial class SettingsViewModel : ObservableObject
         get => SelectedTheme == ThemeOption.Dark;
         set
         {
-            if (value) 
+            if (value)
             {
                 SelectedTheme = ThemeOption.Dark;
             }
@@ -100,4 +101,8 @@ public partial class SettingsViewModel : ObservableObject
     {
         await _whatsNewService.ShowLatestWhatsNewAsync(bypassCheck: true);
     }
+
+    [RelayCommand]
+    private Task OpenRepository()
+        => Browser.Default.OpenAsync(new Uri("https://github.com/PieEatingNinjas/StoreIt"));
 }

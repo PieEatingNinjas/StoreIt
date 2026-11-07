@@ -195,16 +195,16 @@ public class BoolToThemeBackgroundConverter : IValueConverter
             var resources = Application.Current.Resources;
             if (Application.Current?.RequestedTheme == AppTheme.Dark)
             {
-                return isSelected ? resources["SelectionBackgroundDark"] : resources["UnselectedBackgroundDark"];
+                return new SolidColorBrush((Color)resources[isSelected ? "SelectionBackgroundDark" : "UnselectedBackgroundDark"]);
             }
             else
             {
-                return isSelected ? resources["SelectionBackgroundLight"] : resources["UnselectedBackgroundLight"];
+                return new SolidColorBrush((Color)resources[isSelected ? "SelectionBackgroundLight" : "UnselectedBackgroundLight"]);
             }
         }
 
         // Fallback
-        return Colors.Gray;
+        return new SolidColorBrush(Colors.Gray);
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

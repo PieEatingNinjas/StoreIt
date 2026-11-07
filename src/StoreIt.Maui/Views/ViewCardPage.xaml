@@ -108,8 +108,8 @@
                                         Binding="{Binding Card.HasBarcode}"
                                         TargetType="Border"
                                         Value="False">
-                                        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource VeryLightGray}, Dark={StaticResource OffBlack}}" />
-                                        <Setter Property="Stroke" Value="{AppThemeBinding Light=#E9ECEF, Dark=#333}" />
+                                        <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource SelectionBackgroundLight}, Dark={StaticResource SelectionBackgroundDark}}" />
+                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}" />
                                     </DataTrigger>
                                 </Style.Triggers>
                                 <Setter Property="StrokeThickness" Value="1" />
@@ -160,8 +160,8 @@
                                     HorizontalTextAlignment="Center"
                                     IsVisible="{Binding Card.HasCustomCode}"
                                     Text="{Binding Card.CustomCode}"
-                                    TextColor="{AppThemeBinding Light=#333,
-                                                                Dark=#FFF}" />
+                                    TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight},
+                                                                Dark={StaticResource PrimaryTextDark}}" />
                             </VerticalStackLayout>
 
                             
