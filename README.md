@@ -4,6 +4,9 @@ A cross-platform mobile app for storing and managing your loyalty cards, members
 
 Built with .NET MAUI, targeting **Android** and **iOS**.
 
+Requires Android 7.0 (API 24) or newer, and iOS 15 or newer. The Android minimum
+supports Google Play automatic protection; Android 5 and 6 are no longer supported.
+
 ---
 
 ## Features
@@ -79,6 +82,10 @@ Contributions are welcome! Please read the [Contributing Guide](CONTRIBUTING.md)
 
 ### Card detail validation
 
+Debug simulator builds use the SDK's host-appropriate architecture: ARM64 on Apple Silicon,
+x64 on Intel Macs. Override `RuntimeIdentifier` explicitly when targeting a different architecture.
+Release builds still default to `ios-arm64` for physical devices.
+
 ```bash
 dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net10.0-android -warnaserror
 dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net10.0-ios27.1 -p:RuntimeIdentifier=iossimulator-arm64 -warnaserror
@@ -92,7 +99,7 @@ also exercised with scripted dialog responses during local UI automation.
 
 On both Android and iOS, check a barcode and a text-code card in light/dark mode:
 
-- Open from the overview: the sheet starts at 75% of the window height, with inset close/favorite controls and edit/delete actions at the bottom. Drag up to full height and back down. On smaller screens or with larger text/code, scroll to reach every action. Rotate the device and check that the three-quarter height adapts.
+- Open from the overview: the sheet slides up from the bottom to 75% of the window height, without an overlay-only pause followed by a height jump. Check both the first opening and subsequent openings, including after editing. Inset close/favorite controls and edit/delete actions remain available. Drag up to full height and back down. On smaller screens or with larger text/code, scroll to reach every action. Rotate the device and check that the three-quarter height adapts.
 - Toggle favorite in the header: its star and accessibility description update. Close with the left close icon, swipe, or Android back and check the overview ordering.
 - Edit/save and edit/back should reopen the sheet with updated details, including when using native back. Returning from the barcode scanner must stay in the editor.
 - Cancel deletion, then confirm it; cancellation keeps the sheet open, while confirmation closes it and refreshes the overview.
@@ -105,6 +112,9 @@ Card details use Plugin.Maui.BottomSheet 10.0.7 (MIT). Its navigation service pr
 above the existing Shell overview; editing remains a Shell page and returning to the overview
 reopens the card. On iOS, reopening waits for the native navigation transition to finish rather
 than presenting during `OnAppearing`. Favorite status is preserved when saving edits.
+Version 10.0.7 applies the iOS native peek height only after presenting. The sheet's `Opening`
+event applies it before presentation so the built-in slide-up animation targets the correct
+height; Android retains its existing native animation.
 The overview refreshes when the sheet is dismissed. Version 11.0.0 is not used
 because its published dependency graph references missing native packages and the unrelated
 Xamarin.Forms `Plugin.BottomSheet` package.
