@@ -1,8 +1,9 @@
 using StoreIt.Maui.ViewModels;
+using StoreIt.Navigation;
 
 namespace StoreIt.Maui.Views;
 
-public partial class ViewCardPage : ContentPage
+public partial class ViewCardPage : ContentPage, IQueryAttributable
 {
     // Zoom sizes - cycle through these on tap
     private readonly (double width, double height)[] _zoomSizes =
@@ -13,42 +14,46 @@ public partial class ViewCardPage : ContentPage
     ];
 
     private int _currentZoomIndex = 0;
-    private bool _shouldReloadCard = false;
-
-    private readonly ViewCardViewModel ViewModel;
+    private int _cardId;
+    private CancellationTokenSource? _loadingCancellation;
+    public ViewCardViewModel ViewModel { get; }
 
     public ViewCardPage(ViewCardViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = ViewModel = viewModel;
-        Shell.SetBackButtonBehavior(this, new BackButtonBehavior { IsVisible = true });
+        SetZoomSize(0);
     }
 
-    protected override void OnAppearing()
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (!query.TryGetValue(NavigationParams.CardId, out var value) || value is not int id || id <= 0)
+        {
+            throw new ArgumentException("Een geldig kaart-ID is vereist.", nameof(query));
+        }
+
+        _cardId = id;
+    }
+
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
-
-        SetZoomSize(0);
-
-        // Keep screen on when viewing barcode
+        _loadingCancellation = new CancellationTokenSource();
         DeviceDisplay.KeepScreenOn = true;
-
-        if (_shouldReloadCard)
-        {
-            _shouldReloadCard = false;
-            ViewModel.ReloadCardCommand.Execute(null);
-        }
+        await ViewModel.InitializeAsync(_cardId, _loadingCancellation.Token);
     }
 
     protected override void OnDisappearing()
     {
-        base.OnDisappearing();
-
-        // Allow screen to turn off when leaving
+        _loadingCancellation?.Cancel();
+        _loadingCancellation?.Dispose();
+        _loadingCancellation = null;
         DeviceDisplay.KeepScreenOn = false;
+        ViewModel.Deactivate();
+        base.OnDisappearing();
     }
 
-    private void OnCodeTapped(object sender, TappedEventArgs e)
+    private async void OnCodeTapped(object sender, TappedEventArgs e)
     {
         if (ViewModel.Card?.HasBarcode ?? false)
         {
@@ -56,7 +61,7 @@ public partial class ViewCardPage : ContentPage
         }
         else if (ViewModel.Card?.HasCustomCode ?? false)
         {
-            Clipboard.SetTextAsync(ViewModel.Card.CustomCode);
+            await Clipboard.SetTextAsync(ViewModel.Card.CustomCode);
             copyHint.IsShowing = true;
         }
     }
@@ -71,13 +76,16 @@ public partial class ViewCardPage : ContentPage
     {
         _currentZoomIndex = index;
         var (width, height) = _zoomSizes[index];
+        if (codeContainer.Width > 0)
+        {
+            var scale = Math.Min(1, codeContainer.Width / width);
+            width *= scale;
+            height *= scale;
+        }
 
         barcodeGenerator.WidthRequest = width;
         barcodeGenerator.HeightRequest = height;
     }
 
-    private void OnEditCardClicked(object sender, EventArgs e)
-    {
-        _shouldReloadCard = true;
-    }
+    private void OnCodeContainerSizeChanged(object? sender, EventArgs e) => SetZoomSize(_currentZoomIndex);
 }

@@ -54,6 +54,7 @@ public class AndroidBrightnessService : IPlatformBrightnessService
             var layoutParams = activity.Window.Attributes;
             layoutParams.ScreenBrightness = brightness;
             activity.Window.Attributes = layoutParams;
+            _hasStoredOriginal = false;
         }
     }
 

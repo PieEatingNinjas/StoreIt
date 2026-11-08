@@ -12,7 +12,7 @@ Built with .NET MAUI, targeting **Android** and **iOS**.
 - 🔢 **Custom codes** — Store membership numbers, access codes, and any other identifiers
 - 🎨 **Color labels** — Assign a color to each card for easy visual identification
 - ⭐ **Favorites** — Mark frequently used cards as favorites so they appear at the top
-- **Card details** — Animated modal with toolbar actions for closing, favorites, and editing; deletion is available in the overflow menu
+- **Card details** — Fullscreen Shell page with native back, favorite, and edit actions; deletion stays in the overflow menu with confirmation. A centered card header and generous code panel keep the focus on scanning. Barcode zoom, copyable codes, biometric protection, and updated details after editing remain available.
 - 🔐 **Private cards** — Protect sensitive cards with biometric authentication (Face ID / fingerprint)
 - 🌙 **Dark & light theme** — Follows your system theme or lets you pick manually
 - **Android system bars** — Status, navigation, and tab bars match the page background in light and dark mode, with contrasting system icons; transparent native app-bar backgrounds prevent a purple strip behind the status bar on edge-to-edge devices
@@ -75,6 +75,26 @@ src/
 ## Contributing
 
 Contributions are welcome! Please read the [Contributing Guide](CONTRIBUTING.md) before submitting a pull request.
+
+### Card detail validation
+
+```bash
+dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net10.0-android -warnaserror
+dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net10.0-ios27.1 -p:RuntimeIdentifier=iossimulator-arm64 -warnaserror
+dotnet test tests/StoreIt.Maui.Tests/StoreIt.Maui.Tests.csproj
+```
+
+On both Android and iOS, check a barcode and a text-code card in light/dark mode:
+
+- Open from the overview: a fullscreen page shows native back, favorite, and edit actions.
+- Toggle favorite, go back, and check the overview ordering. Edit/save and edit/back should return to updated details.
+- Cancel deletion, then confirm it; the overview must refresh without navigating away.
+- Tap to zoom a barcode (including on a narrow screen), or copy a text code.
+- Navigate back or edit the card: brightness and screen sleep return to normal.
+- Open a private card, reject authentication, and dismiss during authentication: no card data is exposed.
+
+Card details use the existing Shell navigation and MAUI controls, without a bottom-sheet dependency
+or custom presentation/reopening flow.
 
 ---
 
