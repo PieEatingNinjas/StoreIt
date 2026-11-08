@@ -14,7 +14,7 @@ name: 🚀 Release Pipeline
 # Tags: android-v<versie> / ios-v<versie>. Een bestaande tag wordt niet opnieuw gereleased.
 
 on:
-  pull_request:
+  pull_request_target:
     types: [closed]
     branches: [main]
   workflow_dispatch:
