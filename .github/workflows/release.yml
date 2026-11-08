@@ -1,55 +1,104 @@
 name: 🚀 Release Pipeline
 
+# Per platform te releasen, met een zelf gekozen versie.
+#   1. Voeg (indien nodig) releasenotes/<platform>/<versie>.md toe (of gedeeld: releasenotes/<versie>.md)
+#   2. Merge de PR naar main met label android:<versie> en/of ios:<versie>, bv. android:1.1.3 of ios:1.2.0
+#      (of start de workflow handmatig via "Run workflow" en vul de versie(s) in).
+#
+# Publicatie hangt af van de versie:
+#   x.y.z met z > 0  (patch)       -> AUTOMATISCH publiceren/submitten naar de store
+#   x.y.0 / x.0.0    (minor/major) -> enkel uploaden, handmatig publiceren in de store
+# Releasenotes zijn verplicht voor x.y.0 / x.0.0; voor patches is de default "Bugfixes en algemene verbeteringen".
+# Beta: label android:1.2.0-beta.1 / ios:1.2.0-beta.1 -> Play internal track / TestFlight, nooit productie.
+#   De store krijgt versie 1.2.0 (suffix enkel in tag/notes); notes optioneel (default "Testversie").
+# Tags: android-v<versie> / ios-v<versie>. Een bestaande tag wordt niet opnieuw gereleased.
+
 on:
-  push:
-    tags:
-      - 'v*.*.*'  # Triggers only on version tags like v1.0.0
+  pull_request:
+    types: [closed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      android:
+        description: 'Android versie (leeg = geen Android release)'
+        type: string
+      ios:
+        description: 'iOS versie (leeg = geen iOS release)'
+        type: string
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
 
 env:
   DOTNET_VERSION: '10.0.x'
   PROJECT_PATH: 'src/StoreIt.Maui/StoreIt.Maui.csproj'
+  DEFAULT_NOTES: 'Bugfixes en algemene verbeteringen'
+  ANDROID_LOCALE: ${{ vars.ANDROID_LOCALE || 'nl-NL' }}
+  IOS_LOCALE: ${{ vars.IOS_LOCALE || 'nl-NL' }}
 
 jobs:
-  # 📋 Prepare Release Info
+  # 📋 Lees versies, bepaal publicatiemodus en release notes
   prepare-release:
     name: 📋 Prepare Release Info
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true && (
+        contains(format('|{0}|', join(github.event.pull_request.labels.*.name, '|')), '|android:') ||
+        contains(format('|{0}|', join(github.event.pull_request.labels.*.name, '|')), '|ios:')))
     outputs:
-      version: ${{ steps.version.outputs.version }}
-      display-version: ${{ steps.version.outputs.display-version }}
-      build-number: ${{ steps.version.outputs.build-number }}
-      tag: ${{ steps.version.outputs.tag }}
-    
+      android-version: ${{ steps.resolve.outputs.android-version }}
+      android-store-version: ${{ steps.resolve.outputs.android-store-version }}
+      android-beta: ${{ steps.resolve.outputs.android-beta }}
+      android-auto: ${{ steps.resolve.outputs.android-auto }}
+      ios-version: ${{ steps.resolve.outputs.ios-version }}
+      ios-store-version: ${{ steps.resolve.outputs.ios-store-version }}
+      ios-beta: ${{ steps.resolve.outputs.ios-beta }}
+      ios-auto: ${{ steps.resolve.outputs.ios-auto }}
+      build-number: ${{ github.run_number }}
+      sha: ${{ steps.resolve.outputs.sha }}
+
     steps:
-    - name: 🏷️ Extract Version from Tag
-      id: version
-      run: |
-        VERSION="${GITHUB_REF#refs/tags/v}"
-        TAG="${GITHUB_REF#refs/tags/}"
-        DISPLAY_VERSION=$(echo $VERSION | cut -d'-' -f1)
-        BUILD_NUMBER=${{ github.run_number }}
-        
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
-        echo "display-version=$DISPLAY_VERSION" >> $GITHUB_OUTPUT
-        echo "build-number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
-        echo "tag=$TAG" >> $GITHUB_OUTPUT
-        
-        echo "📋 Version: $VERSION"
-        echo "📋 Display: $DISPLAY_VERSION"
-        echo "📋 Build: $BUILD_NUMBER"
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
+        fetch-depth: 0
+
+    - name: 🏷️ Resolve Versions & Release Notes
+      id: resolve
+      env:
+        LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        INPUT_ANDROID: ${{ inputs.android }}
+        INPUT_IOS: ${{ inputs.ios }}
+        REQUIRE_RELEASE: 'true'
+      run: bash .github/scripts/resolve-release.sh
+
+    - name: 📤 Upload Release Notes
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-notes
+        path: notes/
 
   # 🤖 Android Build & Deploy
   android-release:
     name: 🤖 Android Release
     runs-on: macos-15
     needs: prepare-release
-    
+    if: needs.prepare-release.outputs.android-version != ''
+
     steps:
-    - name: 🍎 Set Xcode version 
+    - name: 🍎 Set Xcode version
       run: sudo xcode-select -s /Applications/Xcode_16.4.app
 
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
+      with:
+        ref: ${{ needs.prepare-release.outputs.sha }}
 
     - name: 🔧 Setup .NET
       uses: actions/setup-dotnet@v4
@@ -78,7 +127,7 @@ jobs:
         dotnet publish ${{ env.PROJECT_PATH }} \
           -f net10.0-android \
           -c Release \
-          /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.display-version }}" \
+          /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.android-store-version }}" \
           /p:ApplicationVersion="${{ needs.prepare-release.outputs.build-number }}" \
           /p:AndroidSigningKeyStore=${{ env.ANDROID_KEYSTORE_PATH }} \
           /p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }} \
@@ -86,35 +135,76 @@ jobs:
           /p:AndroidSigningStorePass=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
           /p:AndroidPackageFormat=aab
 
-    - name: 🍎 Install Fastlane
+    - name: 📥 Download Release Notes
+      uses: actions/download-artifact@v4
+      with:
+        name: release-notes
+        path: notes
+
+    - name: 📝 Prepare Play Store Changelog
       run: |
-        sudo gem install fastlane
+        # Google Play: changelog heet <versionCode>.txt, max 500 tekens
+        DIR="$RUNNER_TEMP/play-metadata/${{ env.ANDROID_LOCALE }}/changelogs"
+        mkdir -p "$DIR"
+        head -c 500 notes/android.txt > "$DIR/${{ needs.prepare-release.outputs.build-number }}.txt"
+
+    - name: 🍎 Install Fastlane
+      run: sudo gem install fastlane
 
     - name: 🏪 Deploy to Google Play Store
       env:
         GOOGLE_PLAY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
         ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
+        AUTO_PUBLISH: ${{ needs.prepare-release.outputs.android-auto }}
+        BETA: ${{ needs.prepare-release.outputs.android-beta }}
       run: |
-        cd src/StoreIt.Maui
+        # beta: internal testtrack, meteen beschikbaar. patch: direct live op production.
+        # minor/major: concept-release, handmatig publiceren in Play Console
+        TRACK=production
+        if [ "$BETA" = "true" ]; then TRACK=internal; STATUS=completed
+        elif [ "$AUTO_PUBLISH" = "true" ]; then STATUS=completed; else STATUS=draft; fi
+        AAB=$(ls src/StoreIt.Maui/bin/Release/net10.0-android/publish/*.aab | head -n1)
         fastlane supply \
-          --aab ../../src/StoreIt.Maui/bin/Release/net10.0-android/publish/*.aab \
+          --aab "$AAB" \
           --package_name "$ANDROID_PACKAGE_NAME" \
           --json_key_data "$GOOGLE_PLAY_JSON_KEY_DATA" \
-          --track internal \
-          --release_status completed
+          --track "$TRACK" \
+          --release_status "$STATUS" \
+          --metadata_path "$RUNNER_TEMP/play-metadata" \
+          --skip_upload_metadata true \
+          --skip_upload_images true \
+          --skip_upload_screenshots true
 
-  # 🍎 iOS Build & Deploy  
+    - name: 🏷️ Create GitHub Release
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
+        VERSION: ${{ needs.prepare-release.outputs.android-version }}
+        AUTO_PUBLISH: ${{ needs.prepare-release.outputs.android-auto }}
+        BETA: ${{ needs.prepare-release.outputs.android-beta }}
+      run: |
+        PRE=()
+        if [ "$BETA" = "true" ]; then PRE=(--prerelease); NOTE="Beta geüpload naar de Google Play internal track."
+        elif [ "$AUTO_PUBLISH" = "true" ]; then NOTE="Automatisch gepubliceerd naar Google Play."; else NOTE="Geüpload naar Google Play als concept; handmatig publiceren vereist."; fi
+        printf '\n\n_%s_\n' "$NOTE" >> notes/android.txt
+        gh release create "android-v$VERSION" --target "${{ needs.prepare-release.outputs.sha }}" \
+          --title "StoreIt Android $VERSION" --notes-file notes/android.txt "${PRE[@]}"
+
+  # 🍎 iOS Build & Deploy
   ios-release:
     name: 🍎 iOS Release
     runs-on: macos-15
     needs: prepare-release
-    
+    if: needs.prepare-release.outputs.ios-version != ''
+
     steps:
-    - name: 🍎 Set Xcode version 
+    - name: 🍎 Set Xcode version
       run: sudo xcode-select -s /Applications/Xcode_16.4.app
 
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
+      with:
+        ref: ${{ needs.prepare-release.outputs.sha }}
 
     - name: 🔧 Setup .NET
       uses: actions/setup-dotnet@v4
@@ -134,25 +224,20 @@ jobs:
         IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
       run: |
-        # Create variables
         CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
         PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
         KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
-        # Import certificate and provisioning profile
         echo -n "$IOS_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
         echo -n "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode --output $PP_PATH
 
-        # Create temporary keychain
         security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
         security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
         security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
-        # Import certificate to keychain
         security import $CERTIFICATE_PATH -P "$IOS_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
         security list-keychain -d user -s $KEYCHAIN_PATH
 
-        # Apply provisioning profile
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
@@ -161,61 +246,87 @@ jobs:
         dotnet publish ${{ env.PROJECT_PATH }} \
           -f net10.0-ios \
           -c Release \
-          /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.display-version }}" \
+          /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.ios-store-version }}" \
           /p:ApplicationVersion="${{ needs.prepare-release.outputs.build-number }}" \
           /p:ArchiveOnBuild=true \
           /p:CodesignProvision="${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}" \
           /p:CodesignKey="${{ secrets.IOS_SIGNING_IDENTITY }}"
 
-    - name: 🍎 Install Fastlane
+    - name: 📥 Download Release Notes
+      uses: actions/download-artifact@v4
+      with:
+        name: release-notes
+        path: notes
+
+    - name: 📝 Prepare App Store "What's New"
       run: |
-        sudo gem install fastlane
+        # App Store: release_notes.txt per locale, max 4000 tekens
+        DIR="$RUNNER_TEMP/ios-metadata/${{ env.IOS_LOCALE }}"
+        mkdir -p "$DIR"
+        head -c 4000 notes/ios.txt > "$DIR/release_notes.txt"
+
+    - name: 🍎 Install Fastlane
+      run: sudo gem install fastlane
 
     - name: 🏪 Deploy to App Store Connect
       env:
-        APPSTORE_CONNECT_API_KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
+        APPSTORE_CONNECT_KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
         APPSTORE_CONNECT_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
-        APPSTORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
-        FASTLANE_HASH: ${{ secrets.FASTLANE_HASH }}
+        APPSTORE_CONNECT_PRIVATE_KEY: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
+        AUTO_PUBLISH: ${{ needs.prepare-release.outputs.ios-auto }}
+        BETA: ${{ needs.prepare-release.outputs.ios-beta }}
       run: |
-        cd src/StoreIt.Maui
+        # App Store Connect API key als JSON-bestand (inhoud van de .p8 in APPSTORE_CONNECT_PRIVATE_KEY)
+        API_KEY_FILE="$RUNNER_TEMP/appstore-api-key.json"
+        jq -n --arg id "$APPSTORE_CONNECT_KEY_ID" --arg issuer "$APPSTORE_CONNECT_ISSUER_ID" --arg key "$APPSTORE_CONNECT_PRIVATE_KEY" \
+          '{key_id: $id, issuer_id: $issuer, key: $key, in_house: false}' > "$API_KEY_FILE"
+
+        IPA=$(find src/StoreIt.Maui/bin/Release/net10.0-ios -name '*.ipa' | head -n1)
+
+        # beta: enkel naar TestFlight (interne testers), geen review
+        if [ "$BETA" = "true" ]; then
+          fastlane pilot upload \
+            --ipa "$IPA" \
+            --api_key_path "$API_KEY_FILE" \
+            --app_identifier "${{ vars.IOS_BUNDLE_ID || 'be.bullit.storeit' }}" \
+            --changelog "$(cat notes/ios.txt)" \
+            --distribute_external false
+          exit 0
+        fi
+
+        # patch: submit for review + automatisch releasen na goedkeuring.
+        # minor/major: enkel uploaden + "What's New" zetten; screenshots e.d. en submit doe je handmatig.
+        FLAGS=()
+        if [ "$AUTO_PUBLISH" = "true" ]; then
+          FLAGS+=(--submit_for_review --automatic_release)
+        fi
         fastlane deliver \
-          --ipa ../../src/StoreIt.Maui/bin/Release/net10.0-ios/**/publish/*.ipa \
-          --api_key "$FASTLANE_HASH" \
+          --ipa "$IPA" \
+          --api_key_path "$API_KEY_FILE" \
+          --app_identifier "${{ vars.IOS_BUNDLE_ID || 'be.bullit.storeit' }}" \
+          --app_version "${{ needs.prepare-release.outputs.ios-store-version }}" \
+          --metadata_path "$RUNNER_TEMP/ios-metadata" \
           --skip_screenshots \
-          --skip_metadata \
-          --submit_for_review
-          
-      #--api_key "$APPSTORE_CONNECT_API_KEY_CONTENT" \
-      # --api_key_id "$APPSTORE_CONNECT_API_KEY_ID" \
-      # --api_issuer_id "$APPSTORE_CONNECT_ISSUER_ID" \
+          --force \
+          "${FLAGS[@]}"
+
+    - name: 🏷️ Create GitHub Release
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_REPO: ${{ github.repository }}
+        VERSION: ${{ needs.prepare-release.outputs.ios-version }}
+        AUTO_PUBLISH: ${{ needs.prepare-release.outputs.ios-auto }}
+        BETA: ${{ needs.prepare-release.outputs.ios-beta }}
+      run: |
+        PRE=()
+        if [ "$BETA" = "true" ]; then PRE=(--prerelease); NOTE="Beta geüpload naar TestFlight."
+        elif [ "$AUTO_PUBLISH" = "true" ]; then NOTE="Automatisch ingediend bij de App Store."; else NOTE="Geüpload naar App Store Connect; handmatig indienen vereist."; fi
+        printf '\n\n_%s_\n' "$NOTE" >> notes/ios.txt
+        gh release create "ios-v$VERSION" --target "${{ needs.prepare-release.outputs.sha }}" \
+          --title "StoreIt iOS $VERSION" --notes-file notes/ios.txt "${PRE[@]}"
 
     - name: 🧹 Clean up keychain
       if: ${{ always() }}
       run: |
         security delete-keychain $RUNNER_TEMP/app-signing.keychain-db || true
         rm ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision || true
-
-  # 📦 Create GitHub Release
-  github-release:
-    name: 📦 GitHub Release
-    runs-on: ubuntu-latest
-    needs: [prepare-release, android-release] #, ios-release
-    
-    steps:
-    - name: 🏷️ Create GitHub Release
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: ${{ needs.prepare-release.outputs.tag }}
-        name: StoreIt ${{ needs.prepare-release.outputs.version }}
-        body: |
-          ## StoreIt ${{ needs.prepare-release.outputs.version }}
-          
-          🚀 New release automatically built and deployed to app stores.
-          
-          **Version**: ${{ needs.prepare-release.outputs.display-version }}
-          **Build**: ${{ needs.prepare-release.outputs.build-number }}
-          **Platforms**: Android (Google Play Store) + iOS (App Store)
-        draft: false
-        prerelease: ${{ contains(needs.prepare-release.outputs.version, 'beta') || contains(needs.prepare-release.outputs.version, 'alpha') || contains(needs.prepare-release.outputs.version, 'rc') }}
-        token: ${{ secrets.GITHUB_TOKEN }}
