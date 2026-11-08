@@ -193,13 +193,13 @@ jobs:
   # 🍎 iOS Build & Deploy
   ios-release:
     name: 🍎 iOS Release
-    runs-on: macos-15
+    runs-on: xcode-27
     needs: prepare-release
     if: needs.prepare-release.outputs.ios-version != ''
 
     steps:
     - name: 🍎 Set Xcode version
-      run: sudo xcode-select -s /Applications/Xcode_16.4.app
+      run: sudo xcode-select -s /Applications/Xcode_27.1.app
 
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
@@ -244,7 +244,7 @@ jobs:
     - name: 🔨 Build & Sign iOS IPA
       run: |
         dotnet publish ${{ env.PROJECT_PATH }} \
-          -f net10.0-ios \
+          -f net10.0-ios27.1 \
           -c Release \
           /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.ios-store-version }}" \
           /p:ApplicationVersion="${{ needs.prepare-release.outputs.build-number }}" \
@@ -281,7 +281,7 @@ jobs:
         jq -n --arg id "$APPSTORE_CONNECT_KEY_ID" --arg issuer "$APPSTORE_CONNECT_ISSUER_ID" --arg key "$APPSTORE_CONNECT_PRIVATE_KEY" \
           '{key_id: $id, issuer_id: $issuer, key: $key, in_house: false}' > "$API_KEY_FILE"
 
-        IPA=$(find src/StoreIt.Maui/bin/Release/net10.0-ios -name '*.ipa' | head -n1)
+        IPA=$(find src/StoreIt.Maui/bin/Release/net10.0-ios27.1 -name '*.ipa' | head -n1)
 
         # beta: enkel naar TestFlight (interne testers), geen review
         if [ "$BETA" = "true" ]; then
