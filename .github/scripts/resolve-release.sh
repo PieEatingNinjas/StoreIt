@@ -33,7 +33,7 @@ for P in android ios; do
   fi
   [ -z "$VERSION" ] && continue
 
-  if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-beta\.[0-9]+)?$ ]]; then
+  if ! [[ "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-beta\.(0|[1-9][0-9]*))?$ ]]; then
     fail "Ongeldige versie voor $P: '$VERSION' (verwacht x.y.z of x.y.z-beta.n)"
     continue
   fi

@@ -263,7 +263,7 @@ jobs:
         # App Store: release_notes.txt per locale, max 4000 tekens
         DIR="$RUNNER_TEMP/ios-metadata/${{ env.IOS_LOCALE }}"
         mkdir -p "$DIR"
-        head -c 4000 notes/ios.txt > "$DIR/release_notes.txt"
+        python3 -c 'from pathlib import Path; import sys; Path(sys.argv[1]).write_text(Path("notes/ios.txt").read_text(encoding="utf-8")[:4000], encoding="utf-8")' "$DIR/release_notes.txt"
 
     - name: 🍎 Install Fastlane
       run: sudo gem install fastlane
