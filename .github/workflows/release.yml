@@ -129,6 +129,7 @@ jobs:
           -c Release \
           /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.android-store-version }}" \
           /p:ApplicationVersion="${{ needs.prepare-release.outputs.build-number }}" \
+          /p:AndroidKeyStore=true \
           /p:AndroidSigningKeyStore=${{ env.ANDROID_KEYSTORE_PATH }} \
           /p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }} \
           /p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASSWORD }} \
