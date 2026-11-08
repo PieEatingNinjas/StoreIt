@@ -10,7 +10,6 @@ public partial class AppShell : Shell
         InitializeComponent();
 
         Routing.RegisterRoute(Pages.AddCardPage, typeof(AddCardPage));
-        Routing.RegisterRoute(Pages.ViewCardPage, typeof(ViewCardPage));
         Routing.RegisterRoute(Pages.ScanBarCodePage, typeof(ScanBarcodePage));
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Plugin.Maui.Biometric;
+using Plugin.Maui.BottomSheet.Hosting;
 using StoreIt.Maui.Services;
 using StoreIt.Maui.ViewModels;
 using StoreIt.Maui.Views;
@@ -22,6 +23,7 @@ public static class MauiProgram
                 builder
                     .UseMauiApp<App>()
                     .UseMauiCommunityToolkit()
+                    .UseBottomSheet()
                     .UseBarcodeReader()
                     .ConfigureFonts(fonts =>
                     {
@@ -66,7 +68,7 @@ public static class MauiProgram
                 // Pages
                 builder.Services.AddTransient<MainPage>();
                 builder.Services.AddTransient<AddCardPage>();
-                builder.Services.AddTransient<ViewCardPage>();
+                builder.Services.AddBottomSheet<ViewCardPage>(Pages.ViewCardPage);
                 builder.Services.AddTransient<ScanBarcodePage>();
                 builder.Services.AddTransient<SettingsPage>();
 

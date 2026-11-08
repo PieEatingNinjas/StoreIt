@@ -186,7 +186,17 @@ public partial class ViewCardViewModel : ObservableObject
     }
 
     [RelayCommand(CanExecute = nameof(CanManageCard))]
-    private Task EditCardAsync() => _navigationService.NavigateToEditCardPage(Card?.Id ?? 0);
+    private async Task EditCardAsync()
+    {
+        try
+        {
+            await _navigationService.NavigateToEditCardPage(Card?.Id ?? 0);
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.DisplayAlert("Fout", $"Item kon niet bewerkt worden: {ex.Message}", "OK");
+        }
+    }
 
     [RelayCommand(CanExecute = nameof(CanManageCard))]
     private async Task DeleteCardAsync()

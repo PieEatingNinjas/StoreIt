@@ -426,6 +426,7 @@ public partial class AddCardViewModel : ObservableObject
                 BarcodeFormat = isBarcode ? SelectedDisplayAs : null,
                 CustomCode = isBarcode ? null : code,
                 Color = SelectedColor,
+                IsFavorite = _originalCard?.IsFavorite ?? false,
                 IsPrivate = IsPrivate
             };
 

@@ -57,6 +57,7 @@
 		<PackageReference Include="sqlite-net-pcl" Version="1.11.284-beta" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="Plugin.Maui.Biometric" Version="0.1.0" />
+		<PackageReference Include="Plugin.Maui.BottomSheet" Version="10.0.7" />
 		<PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
 		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.10.3" />
 	</ItemGroup>
