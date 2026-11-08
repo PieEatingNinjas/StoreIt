@@ -36,6 +36,9 @@ public partial class ViewCardPage : BottomSheet, INavigationAware
         _presentationWindow.SizeChanged += OnWindowSizeChanged;
         SetZoomSize(0);
         Closing += OnClosing;
+#if IOS
+        Opening += OnOpening;
+#endif
     }
 
     public void OnNavigatedTo(IBottomSheetNavigationParameters query)
@@ -68,6 +71,19 @@ public partial class ViewCardPage : BottomSheet, INavigationAware
 
     private void OnClosing(object? sender, EventArgs e) => Release();
 
+#if IOS
+    private void OnOpening(object? sender, EventArgs e)
+    {
+        if (Handler is not Plugin.Maui.BottomSheet.Handlers.BottomSheetHandler handler)
+        {
+            throw new InvalidOperationException("De native kaartweergave kon niet gevonden worden.");
+        }
+
+        // BottomSheet 10.0.7 otherwise applies PeekHeight only after the native presentation animation.
+        handler.PlatformView.SetPeekHeight();
+    }
+#endif
+
     protected override void OnPropertyChanged(string? propertyName = null)
     {
         base.OnPropertyChanged(propertyName);
@@ -92,6 +108,9 @@ public partial class ViewCardPage : BottomSheet, INavigationAware
         DeviceDisplay.KeepScreenOn = false;
         ViewModel.Deactivate();
         Closing -= OnClosing;
+#if IOS
+        Opening -= OnOpening;
+#endif
         _presentationWindow.SizeChanged -= OnWindowSizeChanged;
     }
 
