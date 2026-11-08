@@ -1,0 +1,31 @@
+name: ✅ Release Check
+
+# Controleert op de PR of de release-labels (android:<versie>, ios:<versie>) kloppen,
+# zodat fouten zichtbaar zijn vóór de merge. Zonder release-labels slaagt deze check meteen.
+# Tip: zet deze check als "required" in de branch protection van main.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  DEFAULT_NOTES: 'Bugfixes en algemene verbeteringen'
+
+jobs:
+  release-check:
+    name: ✅ Validate release labels
+    runs-on: ubuntu-latest
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🔎 Validate
+      env:
+        LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+      run: bash .github/scripts/resolve-release.sh
