@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Plugin.Maui.Biometric;
+using Plugin.Maui.BottomSheet.Hosting;
 using StoreIt.Maui.Services;
 using StoreIt.Maui.ViewModels;
 using StoreIt.Maui.Views;
@@ -8,6 +9,9 @@ using StoreIt.Navigation;
 using StoreIt.Services;
 using StoreIt.WhatsNew;
 using ZXing.Net.Maui.Controls;
+#if MAUI_DEVFLOW
+using Microsoft.Maui.DevFlow.Agent;
+#endif
 
 namespace StoreIt.Maui;
 
@@ -19,6 +23,7 @@ public static class MauiProgram
                 builder
                     .UseMauiApp<App>()
                     .UseMauiCommunityToolkit()
+                    .UseBottomSheet()
                     .UseBarcodeReader()
                     .ConfigureFonts(fonts =>
                     {
@@ -26,6 +31,10 @@ public static class MauiProgram
                             fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     })
                     ;
+
+#if MAUI_DEVFLOW
+                builder.AddMauiDevFlowAgent();
+#endif
 
                 // Services
                 builder.Services.AddSingleton<DatabaseService>();
@@ -53,16 +62,14 @@ public static class MauiProgram
                 builder.Services.AddTransient<AddCardViewModel>();
                 builder.Services.AddTransient<ViewCardViewModel>();
                 builder.Services.AddTransient<ScanBarcodeViewModel>();
-                builder.Services.AddTransient<ManualBarcodeViewModel>();
                 builder.Services.AddTransient<SettingsViewModel>();
                 builder.Services.AddTransient<WhatsNewViewModel>();
 
                 // Pages
                 builder.Services.AddTransient<MainPage>();
                 builder.Services.AddTransient<AddCardPage>();
-                builder.Services.AddTransient<ViewCardPage>();
+                builder.Services.AddBottomSheet<ViewCardPage>(Pages.ViewCardPage);
                 builder.Services.AddTransient<ScanBarcodePage>();
-                builder.Services.AddTransient<ManualBarcodePage>();
                 builder.Services.AddTransient<SettingsPage>();
 
 #if DEBUG

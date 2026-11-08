@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
 
+	<style name="Maui.MainTheme.NoActionBar" parent="Maui.MainTheme">
+		<item name="windowActionBar">false</item>
+		<item name="windowNoTitle">true</item>
+		<item name="windowActionModeOverlay">true</item>
+		<item name="android:actionModeBackground">?attr/colorPrimary</item>
+		<item name="android:actionModeStyle">@style/ActionMode</item>
+		<item name="android:colorPrimary">@color/status_bar_background</item>
+		<item name="android:statusBarColor">@color/status_bar_background</item>
+		<item name="android:navigationBarColor">@color/system_bar_background</item>
+		<item name="android:windowLightStatusBar">@bool/light_system_bars</item>
+		<item name="android:windowLightNavigationBar">@bool/light_system_bars</item>
+		<item name="appBarLayoutStyle">@style/StoreIt.AppBarLayout</item>
+	</style>
+
+	<style name="StoreIt.AppBarLayout" parent="Widget.Design.AppBarLayout">
+		<item name="android:background">@android:color/transparent</item>
+		<item name="statusBarForeground">@android:color/transparent</item>
+	</style>
+
+	<color name="system_bar_background">#FFFFFF</color>
+	<color name="status_bar_background">#FFFFFF</color>
+	<bool name="light_system_bars">true</bool>
+
 	<style name="splashscreen" parent="Maui.MainTheme.NoActionBar">
 		<item name="android:windowNoTitle">true</item>
 		<item name="android:windowIsTranslucent">false</item>

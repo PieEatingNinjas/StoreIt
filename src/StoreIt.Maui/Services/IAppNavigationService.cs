@@ -3,11 +3,11 @@ namespace StoreIt.Services;
 public interface IAppNavigationService : INavigationService
 {
     Task NavigateToScanBarCodePage();
-    Task NavigateToAddBarCodePage(string? barcode = null, string? barcodeFormat = null);
     Task NavigateToAddCardPage();
+    /// <summary>Shows card details and completes when the sheet is dismissed.</summary>
     Task NavigateToViewCardPage(int id);
-    Task SwitchToScanBarCodePage();
-    Task SwitchToManualBarCodePage();
+
+    Task<bool> ResumeCardDetailsAsync();
     Task NavigateToEditCardPage(int id);
     Task GoToRoot();
     Task Show(Type pageType);

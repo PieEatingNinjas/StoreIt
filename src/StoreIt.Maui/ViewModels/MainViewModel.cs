@@ -68,6 +68,21 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private Task AddCardAsync() => _appNavigationService.NavigateToAddCardPage();
 
+    public async Task ActivateAsync()
+    {
+        try
+        {
+            if (await _appNavigationService.ResumeCardDetailsAsync())
+            {
+                await LoadCardsAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.DisplayAlert("Fout", $"De kaartweergave kon niet geopend worden: {ex.Message}", "OK");
+        }
+    }
+
     [RelayCommand]
     private async Task ViewCardAsync(CustomerCard card)
     {
@@ -76,8 +91,15 @@ public partial class MainViewModel : ObservableObject
             return;
         }
 
-        await _databaseService.UpdateLastUsedAsync(card.Id);
-        await _appNavigationService.NavigateToViewCardPage(card.Id);
+        try
+        {
+            await _appNavigationService.NavigateToViewCardPage(card.Id);
+            await LoadCardsAsync();
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.DisplayAlert("Fout", $"De kaartweergave kon niet geopend worden: {ex.Message}", "OK");
+        }
     }
 
     [RelayCommand]

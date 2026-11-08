@@ -2,12 +2,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using StoreIt.Maui.Models;
 using StoreIt.Maui.Services;
-using StoreIt.Navigation;
 using StoreIt.Services;
 
 namespace StoreIt.Maui.ViewModels;
 
-[QueryProperty(nameof(CardId), NavigationParams.CardId)]
 public partial class ViewCardViewModel : ObservableObject
 {
     private readonly DatabaseService _databaseService;
@@ -17,25 +15,28 @@ public partial class ViewCardViewModel : ObservableObject
     private readonly IDialogService _dialogService;
     private readonly IBiometricService _biometricService;
 
-    [ObservableProperty] 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(EditCardCommand), nameof(DeleteCardCommand), nameof(ToggleFavoriteCommand))]
     private CustomerCard? card;
 
-    [ObservableProperty] 
-    private int cardId;
+    private readonly bool isBrightnessControlSupported;
+    private bool _brightnessSaved;
 
-    private bool isBrightnessControlSupported;
-
-    [ObservableProperty] 
+    [ObservableProperty]
     private bool showZoomHint;
 
-    [ObservableProperty] 
+    [ObservableProperty]
     private bool showCopyHint;
 
-    [ObservableProperty] 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(EditCardCommand), nameof(DeleteCardCommand), nameof(ToggleFavoriteCommand))]
     private bool isAuthenticating = true;
 
-    [ObservableProperty] 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(EditCardCommand), nameof(DeleteCardCommand), nameof(ToggleFavoriteCommand))]
     private bool isLoading = true;
+
+    public bool CanManageCard => Card is not null && !IsLoading && !IsAuthenticating;
 
     public ViewCardViewModel(DatabaseService databaseService,
         IPlatformBrightnessService brightnessService,
@@ -53,15 +54,13 @@ public partial class ViewCardViewModel : ObservableObject
         isBrightnessControlSupported = _brightnessService.IsBrightnessControlSupported;
     }
 
-    partial void OnCardIdChanged(int value)
+    public Task InitializeAsync(int id, CancellationToken cancellationToken = default)
     {
-        if (value > 0)
-        {
-            _ = LoadCardWithBiometricAsync(value);
-        }
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
+        return LoadCardWithBiometricAsync(id, cancellationToken);
     }
 
-    private async Task LoadCardWithBiometricAsync(int id)
+    private async Task LoadCardWithBiometricAsync(int id, CancellationToken cancellationToken)
     {
         try
         {
@@ -70,11 +69,13 @@ public partial class ViewCardViewModel : ObservableObject
 
             // Load the card first to check whether it is a private card
             var card = await _databaseService.GetCardAsync(id);
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (card == null)
             {
                 IsAuthenticating = false;
                 await _dialogService.DisplayAlert("Fout", "Item niet gevonden.", "OK");
+                cancellationToken.ThrowIfCancellationRequested();
                 await _navigationService.GoBack();
                 return;
             }
@@ -85,17 +86,20 @@ public partial class ViewCardViewModel : ObservableObject
                 IsAuthenticating = true;
 
                 var isBiometricAvailable = await _biometricService.IsAvailableAsync();
+                cancellationToken.ThrowIfCancellationRequested();
 
                 if (isBiometricAvailable)
                 {
                     // Require biometric authentication for private cards
                     var authResult = await _biometricService.AuthenticateAsync("Authenticeer om dit item te bekijken");
+                    cancellationToken.ThrowIfCancellationRequested();
 
                     if (!authResult)
                     {
                         // Authentication failed — navigate back
                         await _dialogService.DisplayAlert("Authenticatie vereist",
                             "Je moet je authenticeren om je item te kunnen bekijken.", "OK");
+                        cancellationToken.ThrowIfCancellationRequested();
                         await _navigationService.GoBack();
                         return;
                     }
@@ -106,38 +110,50 @@ public partial class ViewCardViewModel : ObservableObject
                     await _dialogService.DisplayAlert("Beveiliging niet beschikbaar",
                         "Dit item is beveiligd, maar je apparaat ondersteunt dit niet. Stel biometrische beveiliging (opnieuw) in op je apparaat.",
                         "OK");
+                    cancellationToken.ThrowIfCancellationRequested();
                     await _navigationService.GoBack();
                     return;
                 }
             }
 
             // Authentication succeeded or not required — load the card
-            await SetCardAsync(card);
+            await SetCardAsync(card, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // The page was left while loading or authenticating.
         }
         catch (Exception ex)
         {
             await _dialogService.DisplayAlert("Fout", $"Er ging iets mis bij het authenticeren: {ex.Message}", "OK");
-            await _navigationService.GoBack();
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                await _navigationService.GoBack();
+            }
         }
         finally
         {
-            IsAuthenticating = false;
-            IsLoading = false;
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                IsAuthenticating = false;
+                IsLoading = false;
+            }
         }
     }
 
-    private async Task SetCardAsync(CustomerCard? card)
+    private async Task SetCardAsync(CustomerCard? card, CancellationToken cancellationToken)
     {
-        Card = card;
-
         if (card is not null)
         {
             await _databaseService.UpdateLastUsedAsync(card.Id);
+            cancellationToken.ThrowIfCancellationRequested();
+            Card = card;
 
             if (isBrightnessControlSupported)
             {
                 // Save original brightness when entering card view
                 _brightnessService.SaveOriginalBrightness();
+                _brightnessSaved = true;
 
                 if (card.HasBarcode)
                 {
@@ -155,19 +171,6 @@ public partial class ViewCardViewModel : ObservableObject
         }
     }
 
-    private async Task LoadCardAsync(int id)
-    {
-        try
-        {
-            var card = await _databaseService.GetCardAsync(id);
-            await SetCardAsync(card);
-        }
-        catch (Exception ex)
-        {
-            await _dialogService.DisplayAlert("Ooops...", $"Item kon niet geladen worden: {ex.Message}", "OK");
-        }
-    }
-
     private void LoadHints()
     {
         if (_userPreferencesService.GetHintsEnabled())
@@ -182,58 +185,84 @@ public partial class ViewCardViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
-    private Task EditCardAsync() => _navigationService.NavigateToEditCardPage(Card?.Id ?? 0);
-
-    [RelayCommand]
-    private async Task ReloadCardAsync()
+    [RelayCommand(CanExecute = nameof(CanManageCard))]
+    private async Task EditCardAsync()
     {
-        if (Card != null)
+        try
         {
-            await LoadCardAsync(Card.Id);
+            await _navigationService.NavigateToEditCardPage(Card?.Id ?? 0);
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.DisplayAlert("Fout", $"Item kon niet bewerkt worden: {ex.Message}", "OK");
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanManageCard))]
     private async Task DeleteCardAsync()
     {
-        if (Card == null)
+        var selectedCard = Card;
+        if (selectedCard == null)
         {
             return;
         }
 
         bool confirm = await _dialogService.DisplayAlert("Ben je zeker?",
-            $"Ben je zeker dat je item '{Card.Name}' wil verwijderen?", "Ja", "Nee");
+            $"Ben je zeker dat je item '{selectedCard.Name}' wil verwijderen?", "Ja", "Nee");
 
         if (confirm)
         {
-            await _databaseService.DeleteCardAsync(Card);
-            await _navigationService.GoBack();
+            try
+            {
+                await _databaseService.DeleteCardAsync(selectedCard);
+                await _navigationService.GoBack();
+            }
+            catch (Exception ex)
+            {
+                await _dialogService.DisplayAlert("Fout", $"Item kon niet verwijderd worden: {ex.Message}", "OK");
+            }
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanManageCard))]
     private async Task ToggleFavoriteAsync()
     {
-        if (Card == null)
+        var selectedCard = Card;
+        if (selectedCard == null)
         {
             return;
         }
 
-        Card.IsFavorite = !Card.IsFavorite;
-        await _databaseService.SaveCardAsync(Card);
-        OnPropertyChanged(nameof(Card));
+        var wasFavorite = selectedCard.IsFavorite;
+        try
+        {
+            selectedCard.IsFavorite = !wasFavorite;
+            await _databaseService.SaveCardAsync(selectedCard);
+            OnPropertyChanged(nameof(Card));
+        }
+        catch (Exception ex)
+        {
+            selectedCard.IsFavorite = wasFavorite;
+            OnPropertyChanged(nameof(Card));
+            await _dialogService.DisplayAlert("Fout", $"Favoriet kon niet gewijzigd worden: {ex.Message}", "OK");
+        }
     }
 
     [RelayCommand]
-    private Task GoBackAsync()
+    private Task GoBackAsync() => _navigationService.GoBack();
+
+    public void Deactivate()
     {
-        // Always restore original brightness when leaving card view
-        if (isBrightnessControlSupported && (Card?.HasBarcode ?? false))
+        if (_brightnessSaved)
         {
             _brightnessService.RestoreOriginalBrightness();
+            _brightnessSaved = false;
         }
 
-        return _navigationService.GoBack();
+        Card = null;
+        IsLoading = true;
+        IsAuthenticating = false;
+        ShowZoomHint = false;
+        ShowCopyHint = false;
     }
 }

@@ -22,9 +22,6 @@ public partial class ScanBarcodeViewModel : ObservableObject
     [RelayCommand]
     private Task Cancel() => _navigationService.GoBack();
 
-    [RelayCommand]
-    private Task SwitchToManual() => _navigationService.SwitchToManualBarCodePage();
-
     private Task Accept()
     {
         if (!string.IsNullOrEmpty(ScannedData) && !string.IsNullOrEmpty(ScannedFormat))

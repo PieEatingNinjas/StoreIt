@@ -7,142 +7,125 @@
     xmlns:local="clr-namespace:StoreIt.Maui.Views"
     Title="Instellingen"
     x:Name="root"
-    x:DataType="vm:SettingsViewModel">
+    x:DataType="vm:SettingsViewModel"
+    SafeAreaEdges="Default">
     <ContentPage.Resources>
         <Style x:Key="SectionHeaderStyle" TargetType="Label">
-            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontSize" Value="17" />
             <Setter Property="FontAttributes" Value="Bold" />
-            <Setter Property="TextColor" Value="{AppThemeBinding Light=#333, Dark=#FFF}" />
-            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
+            <Setter Property="Margin" Value="0,0,0,4" />
         </Style>
         <Style x:Key="SectionTextStyle" TargetType="Label">
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="Margin" Value="4, 0" />
-            <Setter Property="TextColor" Value="{AppThemeBinding Light=#333, Dark=#AAA}" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
         </Style>
         <Style x:Key="PageDescriptionStyle" TargetType="Label">
             <Setter Property="FontSize" Value="16" />
-            <Setter Property="TextColor" Value="{AppThemeBinding Light=#666, Dark=#AAA}" />
-            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+        <Style x:Key="SettingsCardStyle" TargetType="Border" BasedOn="{StaticResource CardBorderStyle}">
+            <Setter Property="StrokeShape">
+                <Setter.Value>
+                    <RoundRectangle CornerRadius="16" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ThemeOptionStyle" TargetType="Border">
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="Padding" Value="15" />
+            <Setter Property="StrokeShape">
+                <Setter.Value>
+                    <RoundRectangle CornerRadius="12" />
+                </Setter.Value>
+            </Setter>
         </Style>
     </ContentPage.Resources>
 
-    <ScrollView Padding="20">
-        <VerticalStackLayout Spacing="25">            
+    <ScrollView Padding="20,16">
+        <VerticalStackLayout Spacing="20">
             <!--  Header  -->
-            <VerticalStackLayout Spacing="5">
-                <Label Style="{StaticResource PageDescriptionStyle}" Text="Pas de app aan naar jouw voorkeur" />
-            </VerticalStackLayout>
+            <Label Style="{StaticResource PageDescriptionStyle}" Text="Pas de app aan naar jouw voorkeur" />
 
             <!--  Theme Section  -->
-            <Border Padding="20" Style="{StaticResource CardBorderStyle}">
+            <Border Padding="18" Style="{StaticResource SettingsCardStyle}">
                 <VerticalStackLayout Spacing="15">
                     <VerticalStackLayout Spacing="5">
-                        <Label Style="{StaticResource SectionHeaderStyle}" Text="🎨 Thema" />
+                        <Label Style="{StaticResource SectionHeaderStyle}" Text="Thema" />
                         <Label Style="{StaticResource SectionTextStyle}" Text="Kies het uiterlijk van de app" />
                     </VerticalStackLayout>
 
                     <!--  Theme Options  -->
-                    <VerticalStackLayout Spacing="10">
+                    <VerticalStackLayout Spacing="8">
                         <!--  System/Device Theme  -->
                         <Border
-                            BackgroundColor="{Binding IsSystemTheme, Converter={StaticResource BoolToThemeBackgroundConverter}}"
+                            Background="{Binding IsSystemTheme, Converter={StaticResource BoolToThemeBackgroundConverter}}"
                             Stroke="{Binding IsSystemTheme, Converter={StaticResource BoolToThemeBorderConverter}}"
-                            Style="{StaticResource SelectionContainerStyle}">
-                            <Grid ColumnDefinitions="Auto,*">
-                                <Label
-                                    Grid.Column="0"
-                                    FontSize="20"
-                                    Text="📱"
-                                    VerticalOptions="Center" />
-
-                                <VerticalStackLayout
-                                    Grid.Column="1"
-                                    Margin="15,0,0,0"
-                                    VerticalOptions="Center">
+                            Style="{StaticResource ThemeOptionStyle}">
+                            <VerticalStackLayout Spacing="2">
                                     <Label
                                         FontAttributes="Bold"
                                         FontSize="16"
                                         Text="Apparaat volgen"
                                         TextColor="{Binding IsSystemTheme, Converter={StaticResource BoolToThemeTextColorConverter}}" />
                                     <Label
-                                        FontSize="12"
+                                        FontSize="13"
                                         Text="Gebruikt de systeeminstelling"
                                         TextColor="{AppThemeBinding Light=#666,
-                                                                    Dark=#AAA}" />
-                                </VerticalStackLayout>
-                            </Grid>
+                                                                                               Dark=#AAA}" />
+                            </VerticalStackLayout>
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding ThemeSelectedCommand}" 
-                                     CommandParameter="{x:Static services:ThemeOption.System}"/>
+                                <TapGestureRecognizer
+                                    Command="{Binding ThemeSelectedCommand}"
+                                    CommandParameter="{x:Static services:ThemeOption.System}" />
                             </Border.GestureRecognizers>
                         </Border>
                         <!--  Light Theme  -->
                         <Border
-                            BackgroundColor="{Binding IsLightTheme, Converter={StaticResource BoolToThemeBackgroundConverter}}"
+                            Background="{Binding IsLightTheme, Converter={StaticResource BoolToThemeBackgroundConverter}}"
                             Stroke="{Binding IsLightTheme, Converter={StaticResource BoolToThemeBorderConverter}}"
-                            Style="{StaticResource SelectionContainerStyle}">
-
-                            <Grid ColumnDefinitions="Auto,*">
-                                <Label
-                                    Grid.Column="0"
-                                    FontSize="20"
-                                    Text="☀️"
-                                    VerticalOptions="Center" />
-
-                                <VerticalStackLayout
-                                    Grid.Column="1"
-                                    Margin="15,0,0,0"
-                                    VerticalOptions="Center">
+                            Style="{StaticResource ThemeOptionStyle}">
+                            <VerticalStackLayout Spacing="2">
                                     <Label
                                         FontAttributes="Bold"
                                         FontSize="16"
                                         Text="Licht thema"
                                         TextColor="{Binding IsLightTheme, Converter={StaticResource BoolToThemeTextColorConverter}}" />
                                     <Label
-                                        FontSize="12"
+                                        FontSize="13"
                                         Text="Lichte achtergrond met donkere tekst"
                                         TextColor="{AppThemeBinding Light=#666,
-                                                                    Dark=#AAA}" />
-                                </VerticalStackLayout>
-                            </Grid>
+                                                                                               Dark=#AAA}" />
+                            </VerticalStackLayout>
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding ThemeSelectedCommand}" 
-                                     CommandParameter="{x:Static services:ThemeOption.Light}"/>
+                                <TapGestureRecognizer
+                                    Command="{Binding ThemeSelectedCommand}"
+                                    CommandParameter="{x:Static services:ThemeOption.Light}" />
                             </Border.GestureRecognizers>
                         </Border>
                         <!--  Dark Theme  -->
                         <Border
-                            BackgroundColor="{Binding IsDarkTheme, Converter={StaticResource BoolToThemeBackgroundConverter}}"
+                            Background="{Binding IsDarkTheme, Converter={StaticResource BoolToThemeBackgroundConverter}}"
                             Stroke="{Binding IsDarkTheme, Converter={StaticResource BoolToThemeBorderConverter}}"
-                            Style="{StaticResource SelectionContainerStyle}">
-
-                            <Grid ColumnDefinitions="Auto,*">
-                                <Label
-                                    Grid.Column="0"
-                                    FontSize="20"
-                                    Text="🌙"
-                                    VerticalOptions="Center" />
-
-                                <VerticalStackLayout
-                                    Grid.Column="1"
-                                    Margin="15,0,0,0"
-                                    VerticalOptions="Center">
+                            Style="{StaticResource ThemeOptionStyle}">
+                            <VerticalStackLayout Spacing="2">
                                     <Label
                                         FontAttributes="Bold"
                                         FontSize="16"
                                         Text="Donker thema"
                                         TextColor="{Binding IsDarkTheme, Converter={StaticResource BoolToThemeTextColorConverter}}" />
                                     <Label
-                                        FontSize="12"
+                                        FontSize="13"
                                         Text="Donkere achtergrond met lichte tekst"
                                         TextColor="{AppThemeBinding Light=#666,
                                                                     Dark=#AAA}" />
-                                </VerticalStackLayout>
-                            </Grid>
+                            </VerticalStackLayout>
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding ThemeSelectedCommand}" 
-                                     CommandParameter="{x:Static services:ThemeOption.Dark}"/>
+                                <TapGestureRecognizer
+                                    Command="{Binding ThemeSelectedCommand}"
+                                    CommandParameter="{x:Static services:ThemeOption.Dark}" />
                             </Border.GestureRecognizers>
                         </Border>
                     </VerticalStackLayout>
@@ -150,13 +133,13 @@
             </Border>
 
             <!--  Hints Section  -->
-            <Border Padding="20" Style="{StaticResource CardBorderStyle}">
+            <Border Padding="18" Style="{StaticResource SettingsCardStyle}">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
+                    <RoundRectangle CornerRadius="16" />
                 </Border.StrokeShape>
 
                 <VerticalStackLayout Spacing="5">
-                    <Label Style="{StaticResource SectionHeaderStyle}" Text="💡 Hints" />
+                    <Label Style="{StaticResource SectionHeaderStyle}" Text="Hints" />
 
                     <Grid ColumnDefinitions="*, Auto">
                         <Label
@@ -172,21 +155,33 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!--  Future Settings Sections  -->
-            <Border Padding="20" Style="{StaticResource CardBorderStyle}">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
+            <!--  Contact & Feedback Section  -->
+            <Border Padding="18" Style="{StaticResource SettingsCardStyle}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Style="{StaticResource SectionHeaderStyle}" Text="Contact &amp; feedback" />
+                    <Label
+                        Style="{StaticResource SectionTextStyle}"
+                        Text="Een vraag, idee of feedback? Bekijk StoreIt op GitHub." />
+                    <Button
+                        Padding="0"
+                        Background="Transparent"
+                        FontAttributes="Bold"
+                        HorizontalOptions="Start"
+                        Text="Naar de GitHub-repository  ↗"
+                        TextColor="{StaticResource Accent}"
+                        Command="{Binding OpenRepositoryCommand}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!--  About Section  -->
+            <Border Padding="18" Style="{StaticResource SettingsCardStyle}">
                 <VerticalStackLayout Spacing="10" InputTransparent="True">
-                    <Label Style="{StaticResource SectionHeaderStyle}" Text="ℹ️ Over de app" />
+                    <Label Style="{StaticResource SectionHeaderStyle}" Text="Over de app" />
                     <HorizontalStackLayout Spacing="0">
                         <Label Style="{StaticResource SectionTextStyle}" Text="{x:Static appmodel:AppInfo.Name}" />
-                        <Label Style="{StaticResource SectionTextStyle}" Text=" v" Margin="0"/>
-                        <Label Style="{StaticResource SectionTextStyle}" Text="{x:Static appmodel:AppInfo.VersionString}" Margin="0"/>
+                        <Label Style="{StaticResource SectionTextStyle}" Text=" v" />
+                        <Label Style="{StaticResource SectionTextStyle}" Text="{x:Static appmodel:AppInfo.VersionString}" />
                     </HorizontalStackLayout>
-
-                    <!--  Spacer  -->
-                    <BoxView BackgroundColor="Transparent" HeightRequest="10" />
 
                     <!--  Built with love message  -->
                     <Label

@@ -1,8 +1,11 @@
+using Plugin.Maui.BottomSheet;
+using Plugin.Maui.BottomSheet.Navigation;
 using StoreIt.Maui.ViewModels;
+using StoreIt.Navigation;
 
 namespace StoreIt.Maui.Views;
 
-public partial class ViewCardPage : ContentPage
+public partial class ViewCardPage : BottomSheet, INavigationAware
 {
     // Zoom sizes - cycle through these on tap
     private readonly (double width, double height)[] _zoomSizes =
@@ -13,41 +16,101 @@ public partial class ViewCardPage : ContentPage
     ];
 
     private int _currentZoomIndex = 0;
-    private bool _shouldReloadCard = false;
-
-    private readonly ViewCardViewModel ViewModel;
+    private int _cardId;
+    private CancellationTokenSource? _loadingCancellation;
+    private bool _released;
+    private readonly Window _presentationWindow;
+    private readonly TaskCompletionSource _dismissed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    public ViewCardViewModel ViewModel { get; }
+    public Task Dismissed => _dismissed.Task;
 
     public ViewCardPage(ViewCardViewModel viewModel)
     {
         InitializeComponent();
+        ContainerView.SetBinding(VisualElement.BackgroundProperty,
+            static (ViewCardPage sheet) => sheet.Background, source: this);
         BindingContext = ViewModel = viewModel;
+        _presentationWindow = Shell.Current.Window
+            ?? throw new InvalidOperationException("Het actieve venster kon niet gevonden worden.");
+        UpdateSheetHeight();
+        _presentationWindow.SizeChanged += OnWindowSizeChanged;
+        SetZoomSize(0);
+        Closing += OnClosing;
     }
 
-    protected override void OnAppearing()
+    public void OnNavigatedTo(IBottomSheetNavigationParameters query)
     {
-        base.OnAppearing();
-
-        SetZoomSize(0);
-
-        // Keep screen on when viewing barcode
-        DeviceDisplay.KeepScreenOn = true;
-
-        if (_shouldReloadCard)
+        if (!query.TryGetValue(NavigationParams.CardId, out var value) || value is not int id || id <= 0)
         {
-            _shouldReloadCard = false;
-            ViewModel.ReloadCardCommand.Execute(null);
+            throw new ArgumentException("Een geldig kaart-ID is vereist.", nameof(query));
+        }
+
+        _cardId = id;
+    }
+
+    public Task InitializeAsync()
+    {
+        if (_released)
+        {
+            return Task.CompletedTask;
+        }
+
+        _loadingCancellation = new CancellationTokenSource();
+        DeviceDisplay.KeepScreenOn = true;
+        return ViewModel.InitializeAsync(_cardId, _loadingCancellation.Token);
+    }
+
+    public void OnNavigatedFrom(IBottomSheetNavigationParameters parameters)
+    {
+        Release();
+        _dismissed.TrySetResult();
+    }
+
+    private void OnClosing(object? sender, EventArgs e) => Release();
+
+    protected override void OnPropertyChanged(string? propertyName = null)
+    {
+        base.OnPropertyChanged(propertyName);
+        if (propertyName == nameof(Background) && Background is SolidColorBrush brush)
+        {
+            // BottomSheet 10.0.7 maps only this legacy property to the native safe-area background.
+            SetValue(VisualElement.BackgroundColorProperty, brush.Color);
         }
     }
 
-    protected override void OnDisappearing()
+    public void Release()
     {
-        base.OnDisappearing();
+        if (_released)
+        {
+            return;
+        }
 
-        // Allow screen to turn off when leaving
+        _released = true;
+        _loadingCancellation?.Cancel();
+        _loadingCancellation?.Dispose();
+        _loadingCancellation = null;
         DeviceDisplay.KeepScreenOn = false;
+        ViewModel.Deactivate();
+        Closing -= OnClosing;
+        _presentationWindow.SizeChanged -= OnWindowSizeChanged;
     }
 
-    private void OnCodeTapped(object sender, TappedEventArgs e)
+    private void OnWindowSizeChanged(object? sender, EventArgs e) => UpdateSheetHeight();
+
+    private void UpdateSheetHeight()
+    {
+        var height = _presentationWindow.Height * 0.75;
+#if IOS
+        // The plugin adds the bottom safe area to its native peek detent.
+        if (_presentationWindow.Handler?.PlatformView is UIKit.UIWindow nativeWindow)
+        {
+            height -= nativeWindow.SafeAreaInsets.Bottom;
+        }
+#endif
+        PeekHeight = height;
+    }
+
+    private async void OnCodeTapped(object sender, TappedEventArgs e)
     {
         if (ViewModel.Card?.HasBarcode ?? false)
         {
@@ -55,7 +118,7 @@ public partial class ViewCardPage : ContentPage
         }
         else if (ViewModel.Card?.HasCustomCode ?? false)
         {
-            Clipboard.SetTextAsync(ViewModel.Card.CustomCode);
+            await Clipboard.SetTextAsync(ViewModel.Card.CustomCode);
             copyHint.IsShowing = true;
         }
     }
@@ -70,26 +133,16 @@ public partial class ViewCardPage : ContentPage
     {
         _currentZoomIndex = index;
         var (width, height) = _zoomSizes[index];
+        if (codeContainer.Width > 0)
+        {
+            var scale = Math.Min(1, codeContainer.Width / _zoomSizes.Max(size => size.width));
+            width *= scale;
+            height *= scale;
+        }
 
         barcodeGenerator.WidthRequest = width;
         barcodeGenerator.HeightRequest = height;
     }
 
-    private async void OnMoreOptionsClicked(object sender, EventArgs e)
-    {
-        string action = await DisplayActionSheetAsync($"Opties", "Annuleren", "Verwijderen", "Bewerken");
-        switch (action)
-        {
-            case "Bewerken":
-                _shouldReloadCard = true;
-                await ViewModel.EditCardCommand.ExecuteAsync(null);
-                break;
-            case "Verwijderen":
-                await ViewModel.DeleteCardCommand.ExecuteAsync(null);
-                break;
-            case "Favoriet":
-                ViewModel.ToggleFavoriteCommand.Execute(null);
-                break;
-        }
-    }
+    private void OnCodeContainerSizeChanged(object? sender, EventArgs e) => SetZoomSize(_currentZoomIndex);
 }

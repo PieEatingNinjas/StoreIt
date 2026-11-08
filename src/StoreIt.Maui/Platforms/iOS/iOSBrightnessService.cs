@@ -35,6 +35,7 @@ public class iOSBrightnessService : IPlatformBrightnessService
         if (_hasStoredOriginal && _originalBrightness >= 0)
         {
             UIScreen.MainScreen.Brightness = _originalBrightness;
+            _hasStoredOriginal = false;
         }
     }
 }

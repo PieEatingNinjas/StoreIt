@@ -18,6 +18,7 @@ public partial class MainPage : ContentPage
         if (BindingContext is MainViewModel vm)
         {
             await vm.LoadCardsCommand.ExecuteAsync(null);
+            await vm.ActivateAsync();
         }
     }
 
