@@ -73,8 +73,8 @@
                                     <Label
                                         FontSize="13"
                                         Text="Gebruikt de systeeminstelling"
-                                        TextColor="{AppThemeBinding Light=#666,
-                                                                                               Dark=#AAA}" />
+                                        TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight},
+                                                                    Dark={StaticResource SecondaryTextDark}}" />
                             </VerticalStackLayout>
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer
@@ -96,8 +96,8 @@
                                     <Label
                                         FontSize="13"
                                         Text="Lichte achtergrond met donkere tekst"
-                                        TextColor="{AppThemeBinding Light=#666,
-                                                                                               Dark=#AAA}" />
+                                        TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight},
+                                                                    Dark={StaticResource SecondaryTextDark}}" />
                             </VerticalStackLayout>
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer
@@ -119,8 +119,8 @@
                                     <Label
                                         FontSize="13"
                                         Text="Donkere achtergrond met lichte tekst"
-                                        TextColor="{AppThemeBinding Light=#666,
-                                                                    Dark=#AAA}" />
+                                        TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight},
+                                                                    Dark={StaticResource SecondaryTextDark}}" />
                             </VerticalStackLayout>
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer
@@ -168,7 +168,7 @@
                         FontAttributes="Bold"
                         HorizontalOptions="Start"
                         Text="Naar de GitHub-repository  ↗"
-                        TextColor="{StaticResource Accent}"
+                        TextColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}"
                         Command="{Binding OpenRepositoryCommand}" />
                 </VerticalStackLayout>
             </Border>
@@ -189,8 +189,8 @@
                         FontSize="12"
                         HorizontalTextAlignment="Center"
                         Text="Built with ❤️ in Belgium"
-                        TextColor="{AppThemeBinding Light=#999,
-                                                    Dark=#777}" />
+                        TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight},
+                                                    Dark={StaticResource SecondaryTextDark}}" />
                 </VerticalStackLayout>
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding OpenWhatsNewCommand}" />

@@ -104,5 +104,5 @@ public partial class SettingsViewModel : ObservableObject
 
     [RelayCommand]
     private Task OpenRepository()
-        => Browser.Default.OpenAsync(new Uri("https://github.com/PieEatingNinjas/StoreIt"));
+        => Browser.Default.OpenAsync(new Uri("https://pieeatingninjas.github.io/StoreIt/"));
 }
