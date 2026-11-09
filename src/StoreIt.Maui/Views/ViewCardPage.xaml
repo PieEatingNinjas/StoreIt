@@ -5,7 +5,7 @@
     xmlns:controls="clr-namespace:StoreIt.Maui.Controls"
     xmlns:vm="clr-namespace:StoreIt.Maui.ViewModels"
     x:DataType="vm:ViewCardViewModel"
-    Background="{AppThemeBinding Light=White, Dark={StaticResource Gray950}}"
+    Background="{AppThemeBinding Light={StaticResource AppBackgroundLight}, Dark={StaticResource AppBackgroundDark}}"
     CornerRadius="28"
     HasHandle="True"
     IsCancelable="True"
@@ -77,7 +77,7 @@
     <bottomsheet:BottomSheet.Content>
         <bottomsheet:BottomSheetContent>
             <Grid Padding="8,12,8,0" SafeAreaEdges="None"
-                  Background="{AppThemeBinding Light=White, Dark={StaticResource Gray950}}">
+                  Background="{AppThemeBinding Light={StaticResource AppBackgroundLight}, Dark={StaticResource AppBackgroundDark}}">
                 <ScrollView x:Name="cardScroll" VerticalScrollBarVisibility="Never" HorizontalScrollBarVisibility="Never" IsVisible="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}">
                     <Grid
                         HorizontalOptions="Fill"
@@ -135,7 +135,7 @@
                                             InputTransparent="True"
                                             IsVisible="{Binding Card.HasBarcode}"
                                             Text="{Binding Card.BarcodeData}"
-                                            TextColor="#666666" />
+                                            TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" />
                                         <Label
                                             FontAttributes="Bold"
                                             FontFamily="{OnPlatform Android=monospace, Default=Courier}"

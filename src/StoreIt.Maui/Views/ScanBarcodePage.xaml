@@ -8,7 +8,7 @@
       >
       <ContentPage.Resources>
             <Style x:Key="CornerIndicatorStyle" TargetType="Path">
-                  <Setter Property="Stroke" Value="{StaticResource Accent}" />
+                  <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}" />
                   <Setter Property="StrokeThickness" Value="4" />
             </Style>
       </ContentPage.Resources>
