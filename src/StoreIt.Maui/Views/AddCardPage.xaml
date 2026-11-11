@@ -9,7 +9,7 @@
     x:Name="ThisPage"
     Title="{Binding SubTitle}"
     x:DataType="vm:AddCardViewModel"
-    SafeAreaEdges="Default">
+    SafeAreaEdges="Container, None">
     <ContentPage.ToolbarItems>
         <ToolbarItem
             duo:ToolbarItemAxisBehavior.AxisBehavior="Automatic"
@@ -25,262 +25,244 @@
             Command="{Binding SaveCardCommand}"
             IconImageSource="{AppThemeBinding Light=save.png, Dark=save_dark.png}"/>
     </ContentPage.ToolbarItems>
-    <Grid>
-        <ScrollView>
-            <VerticalStackLayout Padding="20" Spacing="20">
-                <VerticalStackLayout Spacing="8">
-                    <Label Style="{StaticResource InputLabelStyle}" Text="Naam *" />
-                    <Entry
-                        MaxLength="50"
-                        Placeholder="Bijv. Albert Heijn"
-                        Style="{StaticResource InputEntryStyle}"
-                        Text="{Binding Name}" />
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="8">
-                    <Label Style="{StaticResource InputLabelStyle}" Text="Code of nummer *" />
-                    <Entry
-                        MaxLength="250"
-                        Placeholder="Bijv. 123456789 of ABC-123"
-                        Style="{StaticResource CodeInputEntryStyle}"
-                        Text="{Binding CodeInput}" />
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                        <Label
-                            Grid.Column="0"
-                            Style="{StaticResource InputLabelSubStyle}"
-                            Text="Typ je code of scan de barcode. Het herkende formaat wordt automatisch overgenomen." />
-                        <ImageButton
-                            Grid.Column="1"
-                            Aspect="AspectFit"
-                            AutomationId="ScanCardInlineButton"
-                            BackgroundColor="Transparent"
-                            Command="{Binding OpenScanBarcodePageCommand}"
-                            HeightRequest="44"
-                            Padding="10"
-                            SemanticProperties.Description="Barcode scannen"
-                            Source="{AppThemeBinding Light=scan.png, Dark=scan_dark.png}"
-                            WidthRequest="44" />
-                    </Grid>
-                </VerticalStackLayout>
-
-                <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
+    <ScrollView SafeAreaEdges="Container">
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <VerticalStackLayout Spacing="8">
+                <Label Style="{StaticResource InputLabelStyle}" Text="Naam *" />
+                <Entry
+                    MaxLength="50"
+                    Placeholder="Bijv. Albert Heijn"
+                    Style="{StaticResource InputEntryStyle}"
+                    Text="{Binding Name}" />
+            </VerticalStackLayout>
+            <VerticalStackLayout Spacing="8">
+                <Label Style="{StaticResource InputLabelStyle}" Text="Code of nummer *" />
+                <Entry
+                    MaxLength="250"
+                    Placeholder="Bijv. 123456789 of ABC-123"
+                    Style="{StaticResource CodeInputEntryStyle}"
+                    Text="{Binding CodeInput}" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                     <Label
-                        Grid.Row="0"
-                        Style="{StaticResource InputLabelStyle}"
-                        Text="Type Code" />
-                    <CarouselView
-                        x:Name="CodeTypeCarousel"
-                        Grid.Row="1"
-                        Margin="-20, 0"
-                        CurrentItem="{Binding SelectedCodeType, Mode=TwoWay}"
-                        HeightRequest="220"
-                        HorizontalScrollBarVisibility="Never"
-                        IndicatorView="CodeTypeIndicator"
-                        ItemsSource="{Binding CodeTypeOptions}"
-                        ItemsUpdatingScrollMode="KeepItemsInView"
-                        Loop="False"
-                        PeekAreaInsets="40">
-                        <CarouselView.ItemsLayout>
-                            <LinearItemsLayout
-                                ItemSpacing="12"
-                                Orientation="Horizontal"
-                                SnapPointsAlignment="Center"
-                                SnapPointsType="MandatorySingle" />
-                        </CarouselView.ItemsLayout>
-                        <CarouselView.ItemTemplate>
-                            <DataTemplate x:DataType="models:CodeTypeOption">
-                                <Border
-                                    Padding="16,12"
-                                    Style="{StaticResource CardBorderStyle}">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="12" />
-                                    </Border.StrokeShape>
-                                    <Border.Triggers>
-                                        <DataTrigger
-                                            Binding="{Binding IsSelected}"
-                                            TargetType="Border"
-                                            Value="True">
-                                            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource SelectionBorderLight}, Dark={StaticResource SelectionBorderDark}}" />
-                                            <Setter Property="StrokeThickness" Value="2" />
-                                        </DataTrigger>
-                                    </Border.Triggers>
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer
-                                            Command="{Binding ViewModel.SelectCodeTypeCommand, Source={x:Reference ThisPage}, x:DataType=local:AddCardPage}"
-                                            CommandParameter="{Binding .}" />
-                                    </Border.GestureRecognizers>
-                                    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="8">
-                                        <VerticalStackLayout Grid.Row="0" Spacing="2">
-                                            <Label
-                                                FontAttributes="Bold"
-                                                FontSize="16"
-                                                Style="{StaticResource InputLabelStyle}"
-                                                Text="{Binding Title}" />
-                                            <Label
-                                                LineBreakMode="WordWrap"
-                                                MaxLines="2"
-                                                Style="{StaticResource InputLabelSubStyle}"
-                                                Text="{Binding Subtitle}" />
-                                        </VerticalStackLayout>
-
-                                        <Border
-                                            Grid.Row="1"
-                                            Padding="8"
-                                            BackgroundColor="White"
-                                            HorizontalOptions="Center"
-                                            IsVisible="{Binding IsBarcode}"
-                                            StrokeThickness="0"
-                                            VerticalOptions="Center">
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="4" />
-                                            </Border.StrokeShape>
-                                            <controls:SafeBarcodeView
-                                                Format="{Binding BarcodeFormat}"
-                                                HeightRequest="90"
-                                                Value="{Binding PreviewValue}"
-                                                WidthRequest="{Binding PreviewWidth}" />
-                                        </Border>
-
-                                        <Label
-                                            Grid.Row="1"
-                                            FontFamily="Monospace"
-                                            FontSize="22"
-                                            HorizontalOptions="Fill"
-                                            HorizontalTextAlignment="Center"
-                                            IsVisible="{Binding IsText}"
-                                            LineBreakMode="TailTruncation"
-                                            MaxLines="2"
-                                            Style="{StaticResource InputLabelStyle}"
-                                            Text="{Binding PreviewValue}"
-                                            VerticalOptions="Center" />
-
-                                        <Label
-                                            Grid.Row="2"
-                                            FontSize="12"
-                                            HorizontalOptions="Center"
-                                            Style="{StaticResource InputLabelSubStyle}"
-                                            Text="{Binding StatusText}" />
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </CarouselView.ItemTemplate>
-                    </CarouselView>
-                    <IndicatorView
-                        x:Name="CodeTypeIndicator"
-                        Grid.Row="2"
-                        HorizontalOptions="Center"
-                        IndicatorColor="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
-                        IndicatorSize="6"
-                        SelectedIndicatorColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}" />
-                    <Label
-                        Grid.Row="3"
-                        LineBreakMode="WordWrap"
+                        Grid.Column="0"
                         Style="{StaticResource InputLabelSubStyle}"
-                        Text="Swipe om te kiezen hoe je code getoond wordt. Enkel types die passen bij je code worden getoond." />
+                        Text="Typ je code of scan de barcode. Het herkende formaat wordt automatisch overgenomen." />
+                    <ImageButton
+                        Grid.Column="1"
+                        Aspect="AspectFit"
+                        AutomationId="ScanCardInlineButton"
+                        BackgroundColor="Transparent"
+                        Command="{Binding OpenScanBarcodePageCommand}"
+                        HeightRequest="44"
+                        Padding="10"
+                        SemanticProperties.Description="Barcode scannen"
+                        Source="{AppThemeBinding Light=scan.png, Dark=scan_dark.png}"
+                        WidthRequest="44" />
                 </Grid>
-
-                <VerticalStackLayout Spacing="8">
-                    <Label Style="{StaticResource InputLabelStyle}" Text="Beschrijving (optioneel)" />
-                    <Entry
-                        MaxLength="75"
-                        Placeholder="Bijv. Hoofdkaart gezin"
-                        Style="{StaticResource InputEntryStyle}"
-                        Text="{Binding Description}" />
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label
-                            Grid.Column="0"
-                            Style="{StaticResource InputLabelStyle}"
-                            Text="Kleur" />
-                        <Label
-                            Grid.Column="1"
-                            Style="{StaticResource InputLabelSubStyle}"
-                            Text="{Binding SelectedColorObject.Name}"
-                            VerticalOptions="End" />
-                    </Grid>
-                    <FlexLayout
-                        x:Name="ColorSwatches"
-                        AlignItems="Center"
-                        BindableLayout.ItemsSource="{Binding AvailableColors}"
-                        ChildAdded="ColorSwatches_ChildAdded"
-                        Direction="Row"
-                        SizeChanged="ColorSwatches_SizeChanged"
-                        Wrap="Wrap">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="models:CardColor">
-                                <Grid
-                                    HeightRequest="48"
-                                    SemanticProperties.Description="{Binding Name}">
+            </VerticalStackLayout>
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8">
+                <Label
+                    Grid.Row="0"
+                    Style="{StaticResource InputLabelStyle}"
+                    Text="Type Code" />
+                <CarouselView
+                    x:Name="CodeTypeCarousel"
+                    Grid.Row="1"
+                    Margin="-20, 0"
+                    CurrentItem="{Binding SelectedCodeType, Mode=TwoWay}"
+                    HeightRequest="220"
+                    HorizontalScrollBarVisibility="Never"
+                    IndicatorView="CodeTypeIndicator"
+                    ItemsSource="{Binding CodeTypeOptions}"
+                    ItemsUpdatingScrollMode="KeepItemsInView"
+                    Loop="False"
+                    PeekAreaInsets="40">
+                    <CarouselView.ItemsLayout>
+                        <LinearItemsLayout
+                            ItemSpacing="12"
+                            Orientation="Horizontal"
+                            SnapPointsAlignment="Center"
+                            SnapPointsType="MandatorySingle" />
+                    </CarouselView.ItemsLayout>
+                    <CarouselView.ItemTemplate>
+                        <DataTemplate x:DataType="models:CodeTypeOption">
+                            <Border
+                                Padding="16,12"
+                                Style="{StaticResource CardBorderStyle}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+                                <Border.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding IsSelected}"
+                                        TargetType="Border"
+                                        Value="True">
+                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource SelectionBorderLight}, Dark={StaticResource SelectionBorderDark}}" />
+                                        <Setter Property="StrokeThickness" Value="2" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding ViewModel.SelectCodeTypeCommand, Source={x:Reference ThisPage}, x:DataType=local:AddCardPage}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Grid RowDefinitions="Auto,*,Auto" RowSpacing="8">
+                                    <VerticalStackLayout Grid.Row="0" Spacing="2">
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="16"
+                                            Style="{StaticResource InputLabelStyle}"
+                                            Text="{Binding Title}" />
+                                        <Label
+                                            LineBreakMode="WordWrap"
+                                            MaxLines="2"
+                                            Style="{StaticResource InputLabelSubStyle}"
+                                            Text="{Binding Subtitle}" />
+                                    </VerticalStackLayout>
                                     <Border
-                                        BackgroundColor="Transparent"
-                                        HeightRequest="40"
+                                        Grid.Row="1"
+                                        Padding="8"
+                                        BackgroundColor="White"
                                         HorizontalOptions="Center"
-                                        IsVisible="{Binding IsSelected}"
-                                        Stroke="{Binding Brush}"
-                                        StrokeThickness="2"
-                                        VerticalOptions="Center"
-                                        WidthRequest="40">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="20" />
-                                        </Border.StrokeShape>
-                                    </Border>
-                                    <Border
-                                        BackgroundColor="{Binding Value}"
-                                        HeightRequest="32"
-                                        HorizontalOptions="Center"
+                                        IsVisible="{Binding IsBarcode}"
                                         StrokeThickness="0"
-                                        VerticalOptions="Center"
-                                        WidthRequest="32">
+                                        VerticalOptions="Center">
                                         <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="16" />
+                                            <RoundRectangle CornerRadius="4" />
                                         </Border.StrokeShape>
+                                        <controls:SafeBarcodeView
+                                            Format="{Binding BarcodeFormat}"
+                                            HeightRequest="90"
+                                            Value="{Binding PreviewValue}"
+                                            WidthRequest="{Binding PreviewWidth}" />
                                     </Border>
                                     <Label
-                                        FontAttributes="Bold"
-                                        FontSize="16"
-                                        HorizontalOptions="Center"
-                                        IsVisible="{Binding IsSelected}"
-                                        Text="✓"
-                                        TextColor="White"
+                                        Grid.Row="1"
+                                        FontFamily="Monospace"
+                                        FontSize="22"
+                                        HorizontalOptions="Fill"
+                                        HorizontalTextAlignment="Center"
+                                        IsVisible="{Binding IsText}"
+                                        LineBreakMode="TailTruncation"
+                                        MaxLines="2"
+                                        Style="{StaticResource InputLabelStyle}"
+                                        Text="{Binding PreviewValue}"
                                         VerticalOptions="Center" />
-                                    <Grid.GestureRecognizers>
-                                        <TapGestureRecognizer
-                                            Command="{Binding ViewModel.SelectColorCommand, Source={x:Reference ThisPage}, x:DataType=local:AddCardPage}"
-                                            CommandParameter="{Binding .}" />
-                                    </Grid.GestureRecognizers>
+                                    <Label
+                                        Grid.Row="2"
+                                        FontSize="12"
+                                        HorizontalOptions="Center"
+                                        Style="{StaticResource InputLabelSubStyle}"
+                                        Text="{Binding StatusText}" />
                                 </Grid>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
-                    </FlexLayout>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout IsVisible="{Binding IsPrivateOptionAvailable}" Spacing="8">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label
-                            Grid.Column="0"
-                            Style="{StaticResource InputLabelStyle}"
-                            Text="Privé item"
-                            VerticalOptions="Center" />
-                        <Switch
-                            Grid.Column="1"
-                            IsToggled="{Binding IsPrivate, Mode=OneWay}"
-                            Toggled="Switch_Toggled" />
-                    </Grid>
-                    <Label
-                        Style="{StaticResource InputLabelSubStyle}"
-                        Text="Privé items vereisen biometrische authenticatie om te bekijken" />
-                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CarouselView.ItemTemplate>
+                </CarouselView>
+                <IndicatorView
+                    x:Name="CodeTypeIndicator"
+                    Grid.Row="2"
+                    HorizontalOptions="Center"
+                    IndicatorColor="{AppThemeBinding Light={StaticResource SurfaceBorderLight}, Dark={StaticResource SurfaceBorderDark}}"
+                    IndicatorSize="6"
+                    SelectedIndicatorColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}" />
+                <Label
+                    Grid.Row="3"
+                    LineBreakMode="WordWrap"
+                    Style="{StaticResource InputLabelSubStyle}"
+                    Text="Swipe om te kiezen hoe je code getoond wordt. Enkel types die passen bij je code worden getoond." />
+            </Grid>
+            <VerticalStackLayout Spacing="8">
+                <Label Style="{StaticResource InputLabelStyle}" Text="Beschrijving (optioneel)" />
+                <Entry
+                    MaxLength="75"
+                    Placeholder="Bijv. Hoofdkaart gezin"
+                    Style="{StaticResource InputEntryStyle}"
+                    Text="{Binding Description}" />
             </VerticalStackLayout>
-        </ScrollView>
-        <controls:HintControl
-            x:Name="SaveHint"
-            Margin="20,0,20,20"
-            HorizontalOptions="Center"
-            Icon="💾"
-            IsShowing="{Binding ShowSaveHint}"
-            Text="Vergeet niet op te slaan via de knop rechtsboven."
-            VerticalOptions="End" />
-    </Grid>
+            <VerticalStackLayout Spacing="12">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label
+                        Grid.Column="0"
+                        Style="{StaticResource InputLabelStyle}"
+                        Text="Kleur" />
+                    <Label
+                        Grid.Column="1"
+                        Style="{StaticResource InputLabelSubStyle}"
+                        Text="{Binding SelectedColorObject.Name}"
+                        VerticalOptions="End" />
+                </Grid>
+                <FlexLayout
+                    x:Name="ColorSwatches"
+                    AlignItems="Center"
+                    BindableLayout.ItemsSource="{Binding AvailableColors}"
+                    ChildAdded="ColorSwatches_ChildAdded"
+                    Direction="Row"
+                    SizeChanged="ColorSwatches_SizeChanged"
+                    Wrap="Wrap">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:CardColor">
+                            <Grid
+                                HeightRequest="48"
+                                SemanticProperties.Description="{Binding Name}">
+                                <Border
+                                    BackgroundColor="Transparent"
+                                    HeightRequest="40"
+                                    HorizontalOptions="Center"
+                                    IsVisible="{Binding IsSelected}"
+                                    Stroke="{Binding Brush}"
+                                    StrokeThickness="2"
+                                    VerticalOptions="Center"
+                                    WidthRequest="40">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="20" />
+                                    </Border.StrokeShape>
+                                </Border>
+                                <Border
+                                    BackgroundColor="{Binding Value}"
+                                    HeightRequest="32"
+                                    HorizontalOptions="Center"
+                                    StrokeThickness="0"
+                                    VerticalOptions="Center"
+                                    WidthRequest="32">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="16" />
+                                    </Border.StrokeShape>
+                                </Border>
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    HorizontalOptions="Center"
+                                    IsVisible="{Binding IsSelected}"
+                                    Text="✓"
+                                    TextColor="White"
+                                    VerticalOptions="Center" />
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding ViewModel.SelectColorCommand, Source={x:Reference ThisPage}, x:DataType=local:AddCardPage}"
+                                        CommandParameter="{Binding .}" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+            </VerticalStackLayout>
+            <VerticalStackLayout IsVisible="{Binding IsPrivateOptionAvailable}" Spacing="8">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label
+                        Grid.Column="0"
+                        Style="{StaticResource InputLabelStyle}"
+                        Text="Privé item"
+                        VerticalOptions="Center" />
+                    <Switch
+                        Grid.Column="1"
+                        IsToggled="{Binding IsPrivate, Mode=OneWay}"
+                        Toggled="Switch_Toggled" />
+                </Grid>
+                <Label
+                    Style="{StaticResource InputLabelSubStyle}"
+                    Text="Privé items vereisen biometrische authenticatie om te bekijken" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

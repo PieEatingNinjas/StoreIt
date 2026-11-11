@@ -8,7 +8,7 @@
     Title="Instellingen"
     x:Name="root"
     x:DataType="vm:SettingsViewModel"
-    SafeAreaEdges="Default">
+    SafeAreaEdges="Container, None">
     <ContentPage.Resources>
         <Style x:Key="SectionHeaderStyle" TargetType="Label">
             <Setter Property="FontSize" Value="17" />
