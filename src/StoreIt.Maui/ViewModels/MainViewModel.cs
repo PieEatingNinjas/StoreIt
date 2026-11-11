@@ -51,6 +51,8 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadCardsAsync()
     {
+        IsLoading = true;
+
         try
         {
             Cards = await _databaseService.GetCardsAsync(_sortMode);

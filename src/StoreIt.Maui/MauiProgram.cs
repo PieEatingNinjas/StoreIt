@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using DuoExtensions.Maui;
 using Microsoft.Extensions.Logging;
 using Plugin.Maui.Biometric;
 using Plugin.Maui.BottomSheet.Hosting;
@@ -25,6 +26,7 @@ public static class MauiProgram
                     .UseMauiCommunityToolkit()
                     .UseBottomSheet()
                     .UseBarcodeReader()
+                    .UseEdgeToEdgeCollectionView()
                     .ConfigureFonts(fonts =>
                     {
                             fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

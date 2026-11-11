@@ -7,7 +7,7 @@
     xmlns:vm="clr-namespace:StoreIt.Maui.ViewModels"
     x:Name="mainPage"
     Title="Mijn Kaarten"
-    SafeAreaEdges="Container, None, Container, None"
+    SafeAreaEdges="Container, None"
     x:DataType="vm:MainViewModel">
     <ContentPage.Resources>
         <Style x:Key="MessageLabelStyle" TargetType="Label">
@@ -38,17 +38,29 @@
             Command="{Binding AddCardCommand}"
             IconImageSource="{AppThemeBinding Light=add.png, Dark=add_dark.png}" />
     </ContentPage.ToolbarItems>
-    <Grid Margin="0, 0, 0, 0" SafeAreaEdges="Container, Container, Container, None" VerticalOptions="Fill" HorizontalOptions="Fill">
-        <CollectionView
-            BackgroundColor="transparent"
-            ItemSizingStrategy="MeasureAllItems"
-            ItemsSource="{Binding Cards}"
-            VerticalOptions="Fill">
-            <CollectionView.Footer>
-                <Grid HeightRequest="150" BackgroundColor="transparent" />
-            </CollectionView.Footer>
-            <CollectionView.EmptyView>
+    <CollectionView
+        BackgroundColor="{AppThemeBinding Light={StaticResource AppBackgroundLight}, Dark={StaticResource AppBackgroundDark}}"
+        ItemSizingStrategy="MeasureAllItems"
+        ItemsSource="{Binding Cards}"
+        VerticalOptions="Fill">
+        <CollectionView.Footer>
+            <Grid HeightRequest="150" BackgroundColor="transparent" />
+        </CollectionView.Footer>
+        <CollectionView.EmptyView>
+            <Grid
+                BackgroundColor="{Binding BackgroundColor, Source={x:Reference mainPage}, x:DataType=local:MainPage}"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill">
+                
+                <ActivityIndicator
+                    HeightRequest="25"
+                    HorizontalOptions="Center"
+                    IsRunning="{Binding IsLoading}"
+                    IsVisible="{Binding IsLoading}"
+                    VerticalOptions="Center" />
+    
                 <VerticalStackLayout
+                    IsVisible="{Binding IsLoading, Converter={StaticResource InverseBoolConverter}}"
                     HorizontalOptions="Center"
                     Spacing="20"
                     VerticalOptions="Center">
@@ -56,130 +68,96 @@
                         FontSize="60"
                         HorizontalOptions="Center"
                         Text="👋" />
-
                     <Label
                         FontSize="18"
                         HorizontalOptions="Center"
                         Style="{StaticResource MessageLabelStyle}"
                         Text="Geen klantenkaarten gevonden" />
-
                     <Label
                         FontSize="14"
                         HorizontalOptions="Center"
                         Style="{StaticResource MessageLabelStyle}"
                         Text="Tik op de + knop om je eerste kaart toe te voegen" />
-
                 </VerticalStackLayout>
-            </CollectionView.EmptyView>
-
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:CustomerCard">
-                    <ContentView
-                        x:Name="element"
-                        Margin="10, 5"
-                        Padding="0"
-                        BackgroundColor="transparent">
-                        <Border Margin="10,5" Style="{StaticResource CardBorderWithShadowStyle}">
-                            <Grid
-                                Padding="0"
-                                ColumnDefinitions="8,*,Auto,Auto"
-                                RowDefinitions="Auto, Auto">
-
-                                <!--  Color Strip  -->
-                                <BoxView
-                                    Grid.RowSpan="2"
-                                    Grid.Column="0"
-                                    Margin="0,0,0,-10"
-                                    BackgroundColor="{Binding Color}"
-                                    WidthRequest="8" />
-
-                                <!--  Card Content  -->
-                                <VerticalStackLayout
-                                    Grid.Column="1"
-                                    Padding="15,12"
-                                    Spacing="4">
-                                    <Label
-                                        FontAttributes="Bold"
-                                        FontSize="16"
-                                        Text="{Binding Name}"
-                                        TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight},
-                                                                    Dark={StaticResource PrimaryTextDark}}" />
-
-                                    <Label
-                                        FontSize="14"
-                                        IsVisible="{Binding Description, Converter={StaticResource IsStringNotNullOrEmptyConverter}}"
-                                        Text="{Binding Description}"
-                                        TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight},
-                                                                    Dark={StaticResource SecondaryTextDark}}" />
-                                </VerticalStackLayout>
-
-                                <!--  Favorite Button  -->
+            </Grid>
+        </CollectionView.EmptyView>
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="models:CustomerCard">
+                <ContentView
+                    x:Name="element"
+                    Margin="10, 5"
+                    Padding="0"
+                    BackgroundColor="transparent">
+                    <Border Margin="10,5" Style="{StaticResource CardBorderWithShadowStyle}">
+                        <Grid
+                            Padding="0"
+                            ColumnDefinitions="8,*,Auto,Auto"
+                            RowDefinitions="Auto, Auto">
+                            <!--  Color Strip  -->
+                            <BoxView
+                                Grid.RowSpan="2"
+                                Grid.Column="0"
+                                Margin="0,0,0,-10"
+                                BackgroundColor="{Binding Color}"
+                                WidthRequest="8" />
+                            <!--  Card Content  -->
+                            <VerticalStackLayout
+                                Grid.Column="1"
+                                Padding="15,12"
+                                Spacing="4">
                                 <Label
-                                    Grid.Column="3"
-                                    Padding="8"
-                                    BackgroundColor="transparent"
-                                    FontSize="18"
-                                    HeightRequest="40"
-                                    SemanticProperties.Description="Toggle favoriet"
-                                    SemanticProperties.Hint="Tap om favoriet te maken of te verwijderen"
-                                    Text="{Binding IsFavorite, Converter={StaticResource BoolToStarConverter}}"
-                                    TextColor="{Binding IsFavorite, Converter={StaticResource BoolToColorConverter}}"
-                                    WidthRequest="40">
-                                        <Label.GestureRecognizers>
-                                            <TapGestureRecognizer
-                                                Command="{Binding ViewModel.ToggleFavoriteCommand, Source={x:Reference mainPage}, x:DataType=local:MainPage}"
-                                                CommandParameter="{Binding .}"
-                                                Tapped="TapGestureRecognizer_Tapped" />
-                                        </Label.GestureRecognizers>
-                                </Label>
-
-                            
-
-                                <!--  Last Used  -->
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    Text="{Binding Name}"
+                                    TextColor="{AppThemeBinding Light={StaticResource PrimaryTextLight},
+                                                                Dark={StaticResource PrimaryTextDark}}" />
                                 <Label
-                                    Grid.Row="1"
-                                    Grid.Column="1"
-                                    Margin="15,0,15,12"
-                                    FontSize="11"
-                                    Text="{Binding LastUsed, StringFormat='Laatst gebruikt: {0:dd MMM yyyy}'}"
+                                    FontSize="14"
+                                    IsVisible="{Binding Description, Converter={StaticResource IsStringNotNullOrEmptyConverter}}"
+                                    Text="{Binding Description}"
                                     TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight},
                                                                 Dark={StaticResource SecondaryTextDark}}" />
-                                <!--  Tap Gesture  -->
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding ViewModel.ViewCardCommand, Source={x:Reference mainPage}, x:DataType=local:MainPage}"
-                                        CommandParameter="{Binding .}"
-                                        Tapped="TapGestureRecognizer_Tapped" />
-                                </Grid.GestureRecognizers>
-                            </Grid>
-                        </Border>
-                    </ContentView>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-
-        <!--  Floating Action Button  -->
-        <!-- <Button 
-            Margin="0, 0, 25, 110"
-            Command="{Binding AddCardCommand}"
-            HorizontalOptions="End"
-            Style="{StaticResource RoundFloatingActionButton}"
-            Text="+"
-            VerticalOptions="End" /> -->
-
-        <!--  Loading Indicator  -->
-        <Grid Margin="0, 0, 0, 100"
-            BackgroundColor="{Binding BackgroundColor, Source={x:Reference mainPage}, x:DataType=local:MainPage}"
-            HorizontalOptions="Fill"
-            IsVisible="{Binding IsLoading}"
-            VerticalOptions="Fill">
-            <ActivityIndicator
-                HeightRequest="25"
-                HorizontalOptions="Center"
-                IsRunning="{Binding IsLoading}"
-                IsVisible="{Binding IsLoading}"
-                VerticalOptions="Center" />
-        </Grid>
-
-    </Grid>
+                            </VerticalStackLayout>
+                            <!--  Favorite Button  -->
+                            <Label
+                                Grid.Column="3"
+                                Padding="8"
+                                BackgroundColor="transparent"
+                                FontSize="18"
+                                HeightRequest="40"
+                                SemanticProperties.Description="Toggle favoriet"
+                                SemanticProperties.Hint="Tap om favoriet te maken of te verwijderen"
+                                Text="{Binding IsFavorite, Converter={StaticResource BoolToStarConverter}}"
+                                TextColor="{Binding IsFavorite, Converter={StaticResource BoolToColorConverter}}"
+                                WidthRequest="40">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding ViewModel.ToggleFavoriteCommand, Source={x:Reference mainPage}, x:DataType=local:MainPage}"
+                                            CommandParameter="{Binding .}"
+                                            Tapped="TapGestureRecognizer_Tapped" />
+                                    </Label.GestureRecognizers>
+                            </Label>
+                        
+                            <!--  Last Used  -->
+                            <Label
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="15,0,15,12"
+                                FontSize="11"
+                                Text="{Binding LastUsed, StringFormat='Laatst gebruikt: {0:dd MMM yyyy}'}"
+                                TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight},
+                                                            Dark={StaticResource SecondaryTextDark}}" />
+                            <!--  Tap Gesture  -->
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding ViewModel.ViewCardCommand, Source={x:Reference mainPage}, x:DataType=local:MainPage}"
+                                    CommandParameter="{Binding .}"
+                                    Tapped="TapGestureRecognizer_Tapped" />
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                    </Border>
+                </ContentView>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
 </ContentPage>
