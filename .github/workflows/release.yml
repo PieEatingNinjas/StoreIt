@@ -11,6 +11,7 @@ name: 🚀 Release Pipeline
 # Releasenotes zijn verplicht voor x.y.0 / x.0.0; voor patches is de default "Bugfixes en algemene verbeteringen".
 # Beta: label android:1.2.0-beta.1 / ios:1.2.0-beta.1 -> Play internal track / TestFlight, nooit productie.
 #   De store krijgt versie 1.2.0 (suffix enkel in tag/notes); notes optioneel (default "Testversie").
+#   Handmatig: kies de bronbranch bij "Run workflow"; buiten main zijn enkel beta-versies toegestaan.
 # Tags: android-v<versie> / ios-v<versie>. Een bestaande tag wordt niet opnieuw gereleased.
 
 on:
@@ -66,7 +67,7 @@ jobs:
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
       with:
-        ref: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
+        ref: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.pull_request.merge_commit_sha }}
         fetch-depth: 0
 
     - name: 🏷️ Resolve Versions & Release Notes

@@ -4,6 +4,7 @@
 #
 # Env:   LABELS (JSON array van labelnamen), INPUT_ANDROID / INPUT_IOS (optioneel, workflow_dispatch),
 #        REQUIRE_RELEASE (true = fout als er geen platform geselecteerd is), DEFAULT_NOTES
+#        GITHUB_EVENT_NAME / GITHUB_REF (handmatige releases buiten main moeten beta zijn)
 # Output: notes/<platform>.txt en (indien GITHUB_OUTPUT gezet) <platform>-version, <platform>-auto, sha
 set -euo pipefail
 
@@ -16,6 +17,11 @@ fail() {
   echo "::error::$1"
   ERRORS=$((ERRORS+1))
 }
+
+if [ "${GITHUB_EVENT_NAME:-}" = workflow_dispatch ] && [[ "${GITHUB_REF:-}" != refs/heads/* ]]; then
+  fail "Start een handmatige release vanaf een branch, niet vanaf een tag"
+  exit 1
+fi
 
 for P in android ios; do
   if [ "$P" = android ]; then INPUT="${INPUT_ANDROID:-}"; else INPUT="${INPUT_IOS:-}"; fi
@@ -46,6 +52,12 @@ for P in android ios; do
   STORE_VERSION="${VERSION%%-*}"
   BETA=false
   [ "$STORE_VERSION" != "$VERSION" ] && BETA=true
+
+  if [ "${GITHUB_EVENT_NAME:-}" = workflow_dispatch ] &&
+     [ "${GITHUB_REF:-}" != refs/heads/main ] && [ "$BETA" != true ]; then
+    fail "$P $VERSION: buiten main zijn enkel beta-releases (x.y.z-beta.n) toegestaan"
+    continue
+  fi
 
   # Alleen patch releases (z > 0) worden automatisch gepubliceerd; betas gaan enkel naar testtracks
   if [ "$BETA" = false ] && [ "${STORE_VERSION##*.}" != "0" ]; then AUTO=true; else AUTO=false; fi

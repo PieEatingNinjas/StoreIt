@@ -25,6 +25,19 @@ De stores zien enkel `x.y.z`; het buildnummer (run-nummer) maakt elke build unie
 Een bestaande tag (`android-v1.1.3` / `ios-v1.2.0`) wordt niet opnieuw gereleased; de workflow faalt dan vóór het bouwen.
 De tag en GitHub Release worden aangemaakt na een geslaagde store-upload van dat platform.
 
+## Beta testen vanaf een featurebranch
+
+Start de Release Pipeline via **Run workflow** en selecteer de gewenste branch bij **Use workflow from**.
+Vul voor elk te bouwen platform een beta-versie in, bv. `1.2.0-beta.1`; laat het andere platform leeg.
+De broncode en release notes komen van de geselecteerde branch, vastgepind op de commit waarmee de workflow is gestart.
+Beide buildjobs en de releasetags gebruiken diezelfde commit.
+
+Buiten `main` zijn uitsluitend beta-versies toegestaan. Ook een combinatie van een beta voor het ene platform
+en een niet-beta voor het andere wordt geweigerd voordat er gebouwd of geüpload wordt.
+Niet-beta-releases moeten vanaf `main` starten. Handmatig starten vanaf een tag is niet toegestaan.
+De geselecteerde branch moet deze versie van de workflow en het releasescript bevatten;
+werk oudere featurebranches eerst bij vanuit `main`. Gebruik voor iedere beta een nieuwe, nog niet gebruikte versie.
+
 ## Bestanden
 
 Zoekvolgorde:
