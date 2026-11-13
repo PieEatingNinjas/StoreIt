@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net10.0-android;net10.0-ios27.1</TargetFrameworks>
+		<TargetFrameworks>net10.0-android;net10.0-ios27.2</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>StoreIt</RootNamespace>
 		<UseMaui>true</UseMaui>
