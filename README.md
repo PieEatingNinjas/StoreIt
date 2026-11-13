@@ -88,7 +88,7 @@ Release builds still default to `ios-arm64` for physical devices.
 
 ```bash
 dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net10.0-android -warnaserror
-dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net10.0-ios27.1 -p:RuntimeIdentifier=iossimulator-arm64 -warnaserror
+dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net10.0-ios27.2 -p:RuntimeIdentifier=iossimulator-arm64 -warnaserror
 dotnet test tests/StoreIt.Maui.Tests/StoreIt.Maui.Tests.csproj
 ```
 

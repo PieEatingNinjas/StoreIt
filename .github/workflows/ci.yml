@@ -68,10 +68,10 @@ jobs:
         run: dotnet workload install maui-ios
   
       - name: 🔍 Restore Dependencies
-        run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-ios27.1 -p:Configuration=${{ env.BUILD_CONFIGURATION }} -p:RuntimeIdentifier=ios-arm64
+        run: dotnet restore ${{ env.PROJECT_PATH }} -p:TargetFramework=net10.0-ios27.2 -p:Configuration=${{ env.BUILD_CONFIGURATION }} -p:RuntimeIdentifier=ios-arm64
   
       - name: 🔨 Build iOS
-        run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-ios27.1 -c ${{ env.BUILD_CONFIGURATION }} -r ios-arm64 --no-restore -p:EnableCodeSigning=false -p:MtouchLink=None -p:EnableAssemblyILStripping=false -p:ArchiveOnBuild=false
+        run: dotnet build ${{ env.PROJECT_PATH }} -f net10.0-ios27.2 -c ${{ env.BUILD_CONFIGURATION }} -r ios-arm64 --no-restore -p:EnableCodeSigning=false -p:MtouchLink=None -p:EnableAssemblyILStripping=false -p:ArchiveOnBuild=false
 
   # 🧪 Unit Tests Job
   unit-tests:
