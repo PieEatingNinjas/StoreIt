@@ -8,6 +8,7 @@ public static class WhatsNewRegistry
     [
         new() { Id = 2, Version = "1.1.0", PageType = typeof(WhatsNew110Page) },
         new() { Id = 3, Version = "1.2.0", PageType = typeof(WhatsNew120Page) },
+        new() { Id = 4, Version = "2.0.0", PageType = typeof(WhatsNew200Page) },
     ];
 }
 

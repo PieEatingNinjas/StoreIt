@@ -161,13 +161,13 @@
                     <Label Style="{StaticResource SectionHeaderStyle}" Text="Contact &amp; feedback" />
                     <Label
                         Style="{StaticResource SectionTextStyle}"
-                        Text="Een vraag, idee of feedback? Bekijk StoreIt op GitHub." />
+                        Text="Een vraag, idee of feedback?" />
                     <Button
                         Padding="0"
                         Background="Transparent"
                         FontAttributes="Bold"
                         HorizontalOptions="Start"
-                        Text="Naar de GitHub-repository  ↗"
+                        Text="Over StoreIt  ↗"
                         TextColor="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource AccentDark}}"
                         Command="{Binding OpenRepositoryCommand}" />
                 </VerticalStackLayout>

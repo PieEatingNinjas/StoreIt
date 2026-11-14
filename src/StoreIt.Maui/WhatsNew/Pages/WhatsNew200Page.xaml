@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="StoreIt.WhatsNew.Pages.WhatsNew200Page"
+    xmlns:vm="clr-namespace:StoreIt.WhatsNew"
+    x:DataType="vm:WhatsNewViewModel"
+    Shell.PresentationMode="ModalAnimated"
+    SafeAreaEdges="None">
+    <VerticalStackLayout SafeAreaEdges="None" Padding="32,48,32,32" Spacing="28" HorizontalOptions="Fill" VerticalOptions="Center">
+        <Label Text="🥳 Versie 2.0 is hier!" FontSize="28" FontAttributes="Bold" HorizontalOptions="Start"/>
+        <!-- <Label Text="{Binding Title}" FontSize="28" FontAttributes="Bold" HorizontalOptions="Start"/> -->
+        <Label Text="Zelfde app, nieuw design!" HorizontalTextAlignment="Start" FontSize="22" HorizontalOptions="Fill"/>
+        <VerticalStackLayout Padding="20, 0" Spacing="10">
+            <Label Text="✅ Nieuwe app logo."
+                FontSize="16" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalTextAlignment="Start"/>
+            <Label Text="✅ Make-over van de gebruikersinterface."
+                FontSize="16" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalTextAlignment="Start"/>
+                <Label Text="✅ Makkelijker in gebruik!"
+                FontSize="16" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalTextAlignment="Start"/>
+            <Label Text="✅ Klaar voor toekomstige nieuwigheden."
+                FontSize="16" TextColor="{AppThemeBinding Light={StaticResource SecondaryTextLight}, Dark={StaticResource SecondaryTextDark}}" HorizontalTextAlignment="Start"/>
+        </VerticalStackLayout>
+        <HorizontalStackLayout Spacing="16" HorizontalOptions="Center">
+            <Button Text="Sluiten" Command="{Binding CloseCommand}"
+                Style="{StaticResource SecondaryButtonStyle}" />
+            <Button Text="Niet meer tonen" Command="{Binding HideForFutureCommand}"
+                Style="{StaticResource SecondaryButtonStyle}" IsVisible="{Binding IsHideForFutureVisible}"/>
+        </HorizontalStackLayout>
+    </VerticalStackLayout>
+</ContentPage>
