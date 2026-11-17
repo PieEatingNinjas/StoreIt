@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net10.0-android;net10.0-ios27.2</TargetFrameworks>
+		<TargetFrameworks>net11.0-android;net11.0-ios27.2</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>StoreIt</RootNamespace>
 		<UseMaui>true</UseMaui>
@@ -9,7 +9,6 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<WarningsAsErrors>true</WarningsAsErrors>
-		<MauiVersion>10.0.110</MauiVersion>
 
 		<!-- Display name -->
 		<ApplicationTitle>StoreIt</ApplicationTitle>
@@ -50,16 +49,16 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>	
 	<ItemGroup>		
-		<PackageReference Include="CommunityToolkit.Maui" Version="14.2.0" />		
-		<PackageReference Include="DuoExtensions.Maui" Version="0.2.0-preview.1" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.110" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.9" />
-		<PackageReference Include="sqlite-net-pcl" Version="1.11.284-beta" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="17.0.0" />		
+		<PackageReference Include="DuoExtensions.Maui" Version="0.2.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(MauiVersion)" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.11.285" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-		<PackageReference Include="Plugin.Maui.Biometric" Version="0.1.0" />
+		<PackageReference Include="Plugin.Maui.Biometric" Version="0.1.2" />
 		<PackageReference Include="Plugin.Maui.BottomSheet" Version="10.0.7" />
 		<PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
-		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.10.3" />
+		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.10.4" />
 	</ItemGroup>
 
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
@@ -70,11 +69,11 @@
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
-        <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net11.0-android'">
+		<RuntimeIdentifiers>android-arm;android-arm64;android-x64</RuntimeIdentifiers>
     </PropertyGroup>
 	
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-android' and '$(Configuration)' == 'Release'">
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net11.0-android' and '$(Configuration)' == 'Release'">
 		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     </PropertyGroup>
 
