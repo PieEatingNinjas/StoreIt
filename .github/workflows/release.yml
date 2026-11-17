@@ -309,6 +309,7 @@ jobs:
           --app_version "${{ needs.prepare-release.outputs.ios-store-version }}" \
           --metadata_path "$RUNNER_TEMP/ios-metadata" \
           --skip_screenshots \
+          --precheck_include_in_app_purchases false \
           --force \
           "${FLAGS[@]}"
 
