@@ -35,7 +35,7 @@ permissions:
   contents: write
 
 env:
-  DOTNET_VERSION: '10.0.x'
+  DOTNET_VERSION: '11.0.x'
   PROJECT_PATH: 'src/StoreIt.Maui/StoreIt.Maui.csproj'
   DEFAULT_NOTES: 'Bugfixes en algemene verbeteringen'
   ANDROID_LOCALE: ${{ vars.ANDROID_LOCALE || 'nl-NL' }}
@@ -126,7 +126,7 @@ jobs:
     - name: 🔨 Build & Sign Android AAB
       run: |
         dotnet publish ${{ env.PROJECT_PATH }} \
-          -f net10.0-android \
+          -f net11.0-android \
           -c Release \
           /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.android-store-version }}" \
           /p:ApplicationVersion="${{ needs.prepare-release.outputs.build-number }}" \
@@ -165,7 +165,7 @@ jobs:
         TRACK=production
         if [ "$BETA" = "true" ]; then TRACK=internal; STATUS=completed
         elif [ "$AUTO_PUBLISH" = "true" ]; then STATUS=completed; else STATUS=draft; fi
-        AAB=$(ls src/StoreIt.Maui/bin/Release/net10.0-android/publish/*.aab | head -n1)
+        AAB=$(ls src/StoreIt.Maui/bin/Release/net11.0-android/publish/*.aab | head -n1)
         fastlane supply \
           --aab "$AAB" \
           --package_name "$ANDROID_PACKAGE_NAME" \
@@ -246,7 +246,7 @@ jobs:
     - name: 🔨 Build & Sign iOS IPA
       run: |
         dotnet publish ${{ env.PROJECT_PATH }} \
-          -f net10.0-ios27.2 \
+          -f net11.0-ios27.2 \
           -c Release \
           /p:ApplicationDisplayVersion="${{ needs.prepare-release.outputs.ios-store-version }}" \
           /p:ApplicationVersion="${{ needs.prepare-release.outputs.build-number }}" \
@@ -283,7 +283,7 @@ jobs:
         jq -n --arg id "$APPSTORE_CONNECT_KEY_ID" --arg issuer "$APPSTORE_CONNECT_ISSUER_ID" --arg key "$APPSTORE_CONNECT_PRIVATE_KEY" \
           '{key_id: $id, issuer_id: $issuer, key: $key, in_house: false}' > "$API_KEY_FILE"
 
-        IPA=$(find src/StoreIt.Maui/bin/Release/net10.0-ios27.2 -name '*.ipa' | head -n1)
+        IPA=$(find src/StoreIt.Maui/bin/Release/net11.0-ios27.2 -name '*.ipa' | head -n1)
 
         # beta: enkel naar TestFlight (interne testers), geen review
         if [ "$BETA" = "true" ]; then

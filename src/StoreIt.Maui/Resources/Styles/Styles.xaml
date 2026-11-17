@@ -445,6 +445,10 @@
     <Style TargetType="Page" ApplyToDerivedTypes="True">
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource AppBackgroundLight}, Dark={StaticResource AppBackgroundDark}}" />
+        <!-- Keep Shell appearance available when MAUI resolves it from a page, including modal pages. -->
+        <Setter Property="Shell.BackgroundColor" Value="Transparent" />
+        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light={StaticResource Accent}, Dark={StaticResource PrimaryTextDark}}" />
+        <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Light={StaticResource PrimaryTextLight}, Dark={StaticResource PrimaryTextDark}}" />
     </Style>
 
     <Style TargetType="Shell" ApplyToDerivedTypes="True">
