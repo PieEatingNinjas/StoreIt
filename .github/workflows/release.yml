@@ -310,6 +310,7 @@ jobs:
           --metadata_path "$RUNNER_TEMP/ios-metadata" \
           --skip_screenshots \
           --force \
+          --run_precheck_before_submit false \
           "${FLAGS[@]}"
 
     - name: 🏷️ Create GitHub Release
