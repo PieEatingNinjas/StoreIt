@@ -25,8 +25,8 @@ public sealed class CardShareService(ICardSerializer serializer, IShare share) :
         await share.RequestAsync(new ShareTextRequest
         {
             Title = "StoreIt-kaart delen",
-            Text = $"Ik deel de StoreIt-kaart \"{card.Name}\" met je. " +
-                   $"Open deze link in StoreIt om de kaart toe te voegen: {link.AbsoluteUri}\n\n" +
+            Text = $"Ik deel de StoreIt-kaart \"{card.Name}\" met je.\n\n" +
+                   $"{link.AbsoluteUri}\n\n" +
                    $"StoreIt nog niet geïnstalleerd? Download de app via {DownloadUrl}",
             Uri = link.AbsoluteUri
         });

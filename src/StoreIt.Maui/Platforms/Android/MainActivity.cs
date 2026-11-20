@@ -13,7 +13,12 @@ namespace StoreIt.Maui;
 [IntentFilter(
     [Intent.ActionView],
     Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
-    DataScheme = "storeit")]
+    DataScheme = "storeit",
+    DataHost = "import")]
+[IntentFilter(
+    [Intent.ActionSend],
+    Categories = new[] { Intent.CategoryDefault },
+    DataMimeType = "text/plain")]
 public class MainActivity : MauiAppCompatActivity
 {
     protected override void OnCreate(Bundle? savedInstanceState)
@@ -31,14 +36,41 @@ public class MainActivity : MauiAppCompatActivity
 
     private static void HandleIncomingIntent(Intent? intent)
     {
-        if (intent?.Action != Intent.ActionView || intent.DataString is not { } value ||
-            !Uri.TryCreate(value, UriKind.Absolute, out var uri))
+        string? value = intent?.Action switch
+        {
+            Intent.ActionView => intent.DataString,
+            Intent.ActionSend => ExtractStoreItLink(
+                intent.GetCharSequenceExtra(Intent.ExtraText)?.ToString()),
+            _ => null
+        };
+        if (value is null || !Uri.TryCreate(value, UriKind.Absolute, out var uri))
         {
             return;
         }
 
         _ = ForwardIncomingLinkAsync(uri);
     }
+
+    private static string? ExtractStoreItLink(string? text)
+    {
+        const string prefix = "storeit://import?d=";
+        var start = text?.IndexOf(prefix, StringComparison.OrdinalIgnoreCase) ?? -1;
+        if (start < 0)
+        {
+            return null;
+        }
+
+        var end = start + prefix.Length;
+        while (end < text!.Length && IsBase64UrlCharacter(text[end]))
+        {
+            end++;
+        }
+
+        return end > start + prefix.Length ? text[start..end] : null;
+    }
+
+    private static bool IsBase64UrlCharacter(char value) =>
+        char.IsAsciiLetterOrDigit(value) || value is '-' or '_';
 
     private static async Task ForwardIncomingLinkAsync(Uri uri)
     {
