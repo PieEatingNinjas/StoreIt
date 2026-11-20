@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="../tests/StoreIt.Maui.Tests/StoreIt.Maui.Tests.csproj" />
   <Project Path="StoreIt.Maui/StoreIt.Maui.csproj" />
+  <Project Path="StoreIt.Sharing/StoreIt.Sharing.csproj" />
 </Solution>

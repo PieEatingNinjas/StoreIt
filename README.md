@@ -18,6 +18,8 @@ Requires **Android 7.0 (API 24)** or newer and **iOS 15** or newer.
 - Scan barcodes or store cards and codes manually.
 - Organize cards with favorites, sorting, and color labels.
 - Protect private cards with biometric authentication.
+- Share individual cards between iOS and Android through the native share sheet.
+- Import shared cards directly after opening a StoreIt link.
 - View barcodes and copy text codes.
 - Light and dark themes.
 
@@ -39,6 +41,7 @@ Requires **Android 7.0 (API 24)** or newer and **iOS 15** or newer.
 - **MVVM:** XAML views with compiled bindings; observable state and commands use CommunityToolkit.Mvvm.
 - **Dependency injection:** ViewModels, services, and navigation are registered in [MauiProgram.cs](src/StoreIt.Maui/MauiProgram.cs).
 - **Local persistence:** SQLite stores cards on-device; platform services handle biometrics and device behavior.
+- **Sharing core:** A platform-independent [StoreIt.Sharing](src/StoreIt.Sharing) library validates, compresses, imports, and version-checks shared card payloads.
 - **Navigation:** Shell hosts pages; native bottom sheets present card details above the overview.
 
 Package versions and target frameworks are defined in [StoreIt.Maui.csproj](src/StoreIt.Maui/StoreIt.Maui.csproj).
@@ -61,8 +64,8 @@ Run from the repository root:
 
 ```bash
 dotnet restore src/StoreIt.Maui/StoreIt.Maui.csproj
-dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net10.0-android -warnaserror
-dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net10.0-ios27.2 -p:RuntimeIdentifier=iossimulator-arm64 -warnaserror
+dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net11.0-android -warnaserror
+dotnet build src/StoreIt.Maui/StoreIt.Maui.csproj -f net11.0-ios27.2 -p:RuntimeIdentifier=iossimulator-arm64 -warnaserror
 dotnet test tests/StoreIt.Maui.Tests/StoreIt.Maui.Tests.csproj
 ```
 
@@ -70,9 +73,10 @@ The iOS simulator command targets Apple Silicon; use `iossimulator-x64` on Intel
 Debug builds otherwise use the SDK's host-appropriate simulator architecture.
 Release builds default to `ios-arm64` for physical devices.
 
-The xUnit project is currently a placeholder with no tests; device/simulator smoke
-testing is still required. [GitHub Actions](.github/workflows/ci.yml) builds both platforms
-and runs the test project.
+The xUnit project covers strict sharing serialization, payload validation, version checks,
+and atomic import orchestration. Device/simulator smoke testing is still required for the
+native share sheet and platform URL routing. [GitHub Actions](.github/workflows/ci.yml) builds
+both platforms and runs the test project.
 
 ## Project Structure
 

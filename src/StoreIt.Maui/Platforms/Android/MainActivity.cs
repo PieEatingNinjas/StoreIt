@@ -1,4 +1,5 @@
 using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using AndroidX.Core.View;
@@ -6,15 +7,51 @@ using MauiApplication = Microsoft.Maui.Controls.Application;
 
 namespace StoreIt.Maui;
 
-[Activity(Theme = "@style/splashscreen", MainLauncher = true, LaunchMode = LaunchMode.SingleTop,
+[Activity(Theme = "@style/splashscreen", MainLauncher = true, Exported = true, LaunchMode = LaunchMode.SingleTop,
     ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode |
                            ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
+[IntentFilter(
+    [Intent.ActionView],
+    Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
+    DataScheme = "storeit")]
 public class MainActivity : MauiAppCompatActivity
 {
     protected override void OnCreate(Bundle? savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
+        HandleIncomingIntent(Intent);
         UpdateSystemBars();
+    }
+
+    protected override void OnNewIntent(Intent? intent)
+    {
+        base.OnNewIntent(intent);
+        HandleIncomingIntent(intent);
+    }
+
+    private static void HandleIncomingIntent(Intent? intent)
+    {
+        if (intent?.Action != Intent.ActionView || intent.DataString is not { } value ||
+            !Uri.TryCreate(value, UriKind.Absolute, out var uri))
+        {
+            return;
+        }
+
+        _ = ForwardIncomingLinkAsync(uri);
+    }
+
+    private static async Task ForwardIncomingLinkAsync(Uri uri)
+    {
+        for (var attempt = 0; attempt < 50; attempt++)
+        {
+            if (MauiApplication.Current is { } application)
+            {
+                application.SendOnAppLinkRequestReceived(uri);
+                return;
+            }
+
+            await Task.Delay(100);
+        }
     }
 
     protected override void OnResume()

@@ -65,6 +65,10 @@
 		<InterfaceDefinition Include="Resources\Splash.storyboard" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\StoreIt.Sharing\StoreIt.Sharing.csproj" />
+	</ItemGroup>
+
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' and '$(Configuration)' == 'Release'">
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 	</PropertyGroup>

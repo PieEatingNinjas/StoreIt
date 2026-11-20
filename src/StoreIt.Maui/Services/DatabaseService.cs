@@ -5,22 +5,37 @@ namespace StoreIt.Maui.Services;
 
 public class DatabaseService
 {
+    private readonly SemaphoreSlim _initializationLock = new(1, 1);
     private SQLiteAsyncConnection? _database;
 
     private async Task Init()
     {
         if (_database is not null)
-        {   
+        {
             return;
         }
 
-        var databasePath = Path.Combine(FileSystem.AppDataDirectory, "CustomerCards.db3");
-        _database = new SQLiteAsyncConnection(databasePath);
-        await _database.CreateTableAsync<CustomerCard>();
+        await _initializationLock.WaitAsync();
+        try
+        {
+            if (_database is not null)
+            {
+                return;
+            }
 
-        // Migrations: safely add columns introduced in later versions
-        await TryAlterTableAsync("ALTER TABLE CustomerCards ADD COLUMN CustomCode TEXT");
-        await TryAlterTableAsync("ALTER TABLE CustomerCards ADD COLUMN IsPrivate INTEGER DEFAULT 0");
+            var databasePath = Path.Combine(FileSystem.AppDataDirectory, "CustomerCards.db3");
+            var database = new SQLiteAsyncConnection(databasePath);
+            await database.CreateTableAsync<CustomerCard>();
+
+            // Migrations: safely add columns introduced in later versions
+            await TryAlterTableAsync(database, "ALTER TABLE CustomerCards ADD COLUMN CustomCode TEXT");
+            await TryAlterTableAsync(database, "ALTER TABLE CustomerCards ADD COLUMN IsPrivate INTEGER DEFAULT 0");
+            _database = database;
+        }
+        finally
+        {
+            _initializationLock.Release();
+        }
     }
 
     public async Task<List<CustomerCard>> GetCardsAsync(CardSortMode sortMode = CardSortMode.LastAccessed)
@@ -51,6 +66,37 @@ public class DatabaseService
             card.LastUsed = DateTime.Now;
             return await _database!.InsertAsync(card);
         }
+    }
+
+    public async Task<int> SaveCardsAsync(
+        IReadOnlyCollection<CustomerCard> cards,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(cards);
+        if (cards.Count == 0)
+        {
+            return 0;
+        }
+
+        await Init();
+        cancellationToken.ThrowIfCancellationRequested();
+        var now = DateTime.Now;
+        var cardsToSave = cards.ToArray();
+        foreach (var card in cardsToSave)
+        {
+            card.Id = 0;
+            card.DateAdded = now;
+            card.LastUsed = now;
+        }
+
+        await _database!.RunInTransactionAsync(connection =>
+        {
+            foreach (var card in cardsToSave)
+            {
+                connection.Insert(card);
+            }
+        });
+        return cardsToSave.Length;
     }
 
     public async Task<int> DeleteCardAsync(CustomerCard card)
@@ -88,11 +134,11 @@ public class DatabaseService
                 .ThenBy(c => c.Id),
         };
 
-    private async Task TryAlterTableAsync(string sql)
+    private static async Task TryAlterTableAsync(SQLiteAsyncConnection database, string sql)
     {
         try
         {
-            await _database!.ExecuteAsync(sql);
+            await database.ExecuteAsync(sql);
         }
         catch { /* Column already exists — safe to ignore */ }
     }

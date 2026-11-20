@@ -21,7 +21,7 @@ public partial class ScanBarcodePage : ContentPage
         };
     }
 
-    private void OnBarcodesDetected(object sender, BarcodeDetectionEventArgs e)
+    private void OnBarcodesDetected(object? sender, BarcodeDetectionEventArgs e)
     {
         if (BindingContext is ScanBarcodeViewModel vm)
         {

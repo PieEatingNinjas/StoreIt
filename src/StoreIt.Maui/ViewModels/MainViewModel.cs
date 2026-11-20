@@ -17,6 +17,7 @@ public partial class MainViewModel : ObservableObject
     private readonly IAppNavigationService _appNavigationService;
     private readonly IDialogService _dialogService;
     private readonly IUserPreferencesService _userPreferences;
+    private readonly IIncomingLinkHandler _incomingLinkHandler;
 
     [ObservableProperty]
     private List<CustomerCard> cards = [];
@@ -31,12 +32,13 @@ public partial class MainViewModel : ObservableObject
 
     public MainViewModel(DatabaseService databaseService,
         IAppNavigationService appNavigationService, IDialogService dialogService,
-        IUserPreferencesService userPreferences)
+        IUserPreferencesService userPreferences, IIncomingLinkHandler incomingLinkHandler)
     {
         _databaseService = databaseService;
         _appNavigationService = appNavigationService;
         _dialogService = dialogService;
         _userPreferences = userPreferences;
+        _incomingLinkHandler = incomingLinkHandler;
 
         var storedMode = _userPreferences.GetString(CardSortModePreferenceKey, nameof(CardSortMode.LastAccessed));
         if (!Enum.TryParse(storedMode, ignoreCase: true, out CardSortMode parsedMode) ||
@@ -66,6 +68,16 @@ public partial class MainViewModel : ObservableObject
             IsLoading = false;
         }
     }
+
+    private async void OnCardsImported(object? sender, EventArgs e) => await LoadCardsAsync();
+
+    public void SubscribeToImports()
+    {
+        _incomingLinkHandler.CardsImported -= OnCardsImported;
+        _incomingLinkHandler.CardsImported += OnCardsImported;
+    }
+
+    public void UnsubscribeFromImports() => _incomingLinkHandler.CardsImported -= OnCardsImported;
 
     [RelayCommand]
     private Task AddCardAsync() => _appNavigationService.NavigateToAddCardPage();
@@ -108,9 +120,9 @@ public partial class MainViewModel : ObservableObject
     private async Task ToggleFavoriteAsync(CustomerCard card)
     {
         if (card is null)
-        {    
+        {
             return;
-        } 
+        }
 
         card.IsFavorite = !card.IsFavorite;
         await _databaseService.SaveCardAsync(card);

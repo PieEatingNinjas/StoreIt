@@ -18,7 +18,7 @@ public partial class AddCardPage : ContentPage
         BindingContext = ViewModel = viewModel;
     }
 
-    private async void Switch_Toggled(object sender, ToggledEventArgs e)
+    private async void Switch_Toggled(object? sender, ToggledEventArgs e)
     {
         try
         {
@@ -26,7 +26,7 @@ public partial class AddCardPage : ContentPage
         }
         catch
         {
-            
+
         }
     }
 

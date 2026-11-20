@@ -1,4 +1,4 @@
-﻿using StoreIt.Maui.ViewModels;
+using StoreIt.Maui.ViewModels;
 
 namespace StoreIt.Maui.Views;
 
@@ -17,12 +17,19 @@ public partial class MainPage : ContentPage
         base.OnAppearing();
         if (BindingContext is MainViewModel vm)
         {
+            vm.SubscribeToImports();
             await vm.LoadCardsCommand.ExecuteAsync(null);
             await vm.ActivateAsync();
         }
     }
 
-    private void TapGestureRecognizer_Tapped(object sender, TappedEventArgs e)
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        ViewModel.UnsubscribeFromImports();
+    }
+
+    private void TapGestureRecognizer_Tapped(object? sender, TappedEventArgs e)
     {
         if (sender is VisualElement element)
         {

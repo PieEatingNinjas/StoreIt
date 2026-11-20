@@ -129,7 +129,7 @@ public partial class ViewCardPage : BottomSheet, INavigationAware
         PeekHeight = height;
     }
 
-    private async void OnCodeTapped(object sender, TappedEventArgs e)
+    private async void OnCodeTapped(object? sender, TappedEventArgs e)
     {
         if (ViewModel.Card?.HasBarcode ?? false)
         {

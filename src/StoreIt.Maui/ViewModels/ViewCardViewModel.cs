@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using StoreIt.Maui.Models;
 using StoreIt.Maui.Services;
 using StoreIt.Services;
+using StoreIt.Sharing.Services;
 
 namespace StoreIt.Maui.ViewModels;
 
@@ -14,9 +15,11 @@ public partial class ViewCardViewModel : ObservableObject
     private readonly IAppNavigationService _navigationService;
     private readonly IDialogService _dialogService;
     private readonly IBiometricService _biometricService;
+    private readonly ICardShareService _cardShareService;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(EditCardCommand), nameof(DeleteCardCommand), nameof(ToggleFavoriteCommand))]
+    [NotifyCanExecuteChangedFor(nameof(EditCardCommand), nameof(DeleteCardCommand),
+        nameof(ToggleFavoriteCommand), nameof(ShareCardCommand))]
     private CustomerCard? card;
 
     private readonly bool isBrightnessControlSupported;
@@ -29,11 +32,13 @@ public partial class ViewCardViewModel : ObservableObject
     private bool showCopyHint;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(EditCardCommand), nameof(DeleteCardCommand), nameof(ToggleFavoriteCommand))]
-    private bool isAuthenticating = true;
+    [NotifyCanExecuteChangedFor(nameof(EditCardCommand), nameof(DeleteCardCommand),
+        nameof(ToggleFavoriteCommand), nameof(ShareCardCommand))]
+    private bool isAuthenticating = false;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(EditCardCommand), nameof(DeleteCardCommand), nameof(ToggleFavoriteCommand))]
+    [NotifyCanExecuteChangedFor(nameof(EditCardCommand), nameof(DeleteCardCommand),
+        nameof(ToggleFavoriteCommand), nameof(ShareCardCommand))]
     private bool isLoading = true;
 
     public bool CanManageCard => Card is not null && !IsLoading && !IsAuthenticating;
@@ -43,7 +48,8 @@ public partial class ViewCardViewModel : ObservableObject
         IUserPreferencesService userPreferencesService,
         IAppNavigationService appNavigationService,
         IDialogService dialogService,
-        IBiometricService biometricService)
+        IBiometricService biometricService,
+        ICardShareService cardShareService)
     {
         _databaseService = databaseService;
         _brightnessService = brightnessService;
@@ -51,6 +57,7 @@ public partial class ViewCardViewModel : ObservableObject
         _navigationService = appNavigationService;
         _dialogService = dialogService;
         _biometricService = biometricService;
+        _cardShareService = cardShareService;
         isBrightnessControlSupported = _brightnessService.IsBrightnessControlSupported;
     }
 
@@ -195,6 +202,39 @@ public partial class ViewCardViewModel : ObservableObject
         catch (Exception ex)
         {
             await _dialogService.DisplayAlert("Fout", $"Item kon niet bewerkt worden: {ex.Message}", "OK");
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanManageCard))]
+    private async Task ShareCardAsync()
+    {
+        var selectedCard = Card;
+        if (selectedCard is null)
+        {
+            return;
+        }
+
+        if (selectedCard.IsPrivate && !await _dialogService.DisplayAlert(
+                "Beveiligde kaart delen?",
+                "De deellink bevat de kaartgegevens voor iedereen met de link. De gedeelde link zelf is niet versleuteld " +
+                "en biometrische beveiliging op je apparaat beschermt de gegevens niet nadat je ze deelt. Toch delen?",
+                "Delen",
+                "Annuleren"))
+        {
+            return;
+        }
+
+        try
+        {
+            await _cardShareService.ShareAsync(selectedCard);
+        }
+        catch (InvalidCardPayloadException ex)
+        {
+            await _dialogService.DisplayAlert("Delen mislukt", ex.Message, "OK");
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.DisplayAlert("Delen mislukt", $"De kaart kon niet gedeeld worden: {ex.Message}", "OK");
         }
     }
 
